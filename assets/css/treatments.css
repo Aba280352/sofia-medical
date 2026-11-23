@@ -1,0 +1,81 @@
+/* =========================================================
+   Home: treatment areas as tabs (dark band).
+   The full existing text of every area is in the HTML (SEO);
+   only the selected panel is shown.
+   ========================================================= */
+.sm-treat { background: var(--dark); color: var(--on-dark); padding-block: var(--section-y); position: relative; overflow-x: clip; }
+.sm-treat::before {
+  content: ""; position: absolute; inset: 0; pointer-events: none;
+  background: radial-gradient(45% 60% at 100% 0%, rgba(88, 135, 153, .35), transparent 70%),
+              radial-gradient(40% 55% at 0% 100%, rgba(171, 207, 223, .12), transparent 70%);
+}
+.sm-treat > .sm-wrap { position: relative; }
+.sm-treat__head { margin-bottom: var(--head-to-content); }
+.sm-treat__title { font-size: var(--fs-h2); color: #FEFEFE; }
+.sm-treat__title .hl { color: var(--c-light-blue); }
+
+.sm-treat__grid { display: grid; grid-template-columns: minmax(0, 4fr) minmax(0, 8fr); gap: clamp(24px, 3vw, 48px); align-items: start; }
+
+/* Tab list (right). Text first, icon on its LEFT */
+.sm-treat__tabs { display: grid; gap: 6px; }
+/* desktop: the tab list stays in view below the sticky header while the panel scrolls */
+@media (min-width: 1025px) { .sm-treat__tabs { position: sticky; top: calc(92px + 24px); } }
+.sm-tab {
+  display: flex; align-items: center; justify-content: space-between; gap: 14px; width: 100%;
+  min-height: 68px; padding: 14px 20px; border: 0; border-radius: var(--radius);
+  background: transparent; color: rgba(254, 254, 254, .72); cursor: pointer; text-align: start;
+  font: var(--fw-heading) 20px/1.2 var(--font-main);
+  transition: background-color var(--dur-micro) var(--ease-soft), color var(--dur-micro) var(--ease-soft);
+  position: relative;
+}
+/* straight divider under each tab (a border would curve with the radius) */
+.sm-tab::after { content: ""; position: absolute; inset-inline: 20px; bottom: -3px; height: 1px; background: var(--line-on-dark); }
+.sm-tab:last-child::after { display: none; }
+/* selected marker: a straight bar on the start edge */
+.sm-tab::before { content: ""; position: absolute; inset-inline-start: 0; top: 14px; bottom: 14px; width: 3px; border-radius: 3px; background: var(--c-light-blue); opacity: 0; transition: opacity var(--dur-micro) var(--ease-soft); }
+.sm-tab[aria-selected="true"]::before { opacity: 1; }
+.sm-tab .sm-ico { width: 28px; height: 28px; color: var(--c-light-blue); flex: none; }
+.sm-tab:hover { color: #FEFEFE; background: rgba(254, 254, 254, .05); }
+.sm-tab[aria-selected="true"] { color: #FEFEFE; background: rgba(254, 254, 254, .09); }
+.sm-tab:focus-visible { outline: 2px solid #FEFEFE; outline-offset: 2px; }
+
+/* Panel (left): white card with text and photo */
+.sm-panel { border-radius: var(--radius); background: var(--bg); color: var(--dark); overflow: hidden;
+  display: grid; grid-template-columns: minmax(0, 7fr) minmax(0, 5fr); min-height: 520px; }
+.sm-panel[hidden] { display: none; }
+.sm-panel__body { padding: clamp(28px, 3vw, 48px); display: flex; flex-direction: column; }
+.sm-panel__title { font-size: clamp(26px, 2.2vw, 34px); line-height: 1.15; color: var(--dark); }
+.sm-panel__body p { margin-top: 16px; font-size: 17px; line-height: 1.65; }
+.sm-panel__more { margin-top: 12px; }
+.sm-panel__more summary {
+  display: inline-flex; align-items: center; gap: 8px; min-height: 44px; cursor: pointer; list-style: none;
+  color: var(--brand-ink); font-weight: var(--fw-medium); font-size: 16px;
+}
+.sm-panel__more summary::-webkit-details-marker { display: none; }
+.sm-panel__more summary .sm-ico { width: 18px; height: 18px; transition: rotate var(--dur-ui) var(--ease-out); }
+.sm-panel__more[open] summary .sm-ico { rotate: 180deg; }
+.sm-panel__more[open] summary .sm-more-open { display: none; }
+.sm-panel__more:not([open]) summary .sm-more-close { display: none; }
+.sm-panel__actions { display: flex; flex-wrap: wrap; gap: var(--gap-sm); margin-top: auto; padding-top: 28px; }
+.sm-panel__media { position: relative; background: #DCE9EE; }
+.sm-panel__media img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; }
+
+/* ---------- Mobile and tablet ---------- */
+@media (max-width: 1024px) {
+  .sm-treat__grid { grid-template-columns: minmax(0, 1fr); gap: 20px; }
+  .sm-treat__tabs {
+    display: flex; gap: 8px; overflow-x: auto; scroll-snap-type: x mandatory; padding-bottom: 4px;
+    margin-inline: calc(-1 * var(--side)); padding-inline: var(--side); scrollbar-width: none;
+  }
+  .sm-treat__tabs::-webkit-scrollbar { display: none; }
+  .sm-tab { width: auto; flex: none; min-height: 52px; padding: 10px 16px; font-size: 16px; scroll-snap-align: start;
+    background: rgba(254, 254, 254, .06); white-space: nowrap; }
+  .sm-tab::after, .sm-tab::before { display: none; }
+  .sm-tab .sm-ico { width: 22px; height: 22px; }
+  .sm-tab[aria-selected="true"] { background: var(--c-light-blue); color: var(--dark); box-shadow: none; }
+  .sm-tab[aria-selected="true"] .sm-ico { color: var(--dark); }
+  .sm-panel { grid-template-columns: minmax(0, 1fr); min-height: 0; }
+  .sm-panel__media { order: -1; aspect-ratio: 16 / 10; }
+  .sm-panel__body { padding: 24px 20px 28px; }
+  .sm-panel__actions .btn { flex: 1 1 100%; }
+}

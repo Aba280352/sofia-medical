@@ -1,0 +1,119 @@
+/* =========================================================
+   Home hero: one full-width image (clinic atmosphere, no people)
+   whose right side is an empty teal area for the text.
+   Desktop image 16:9, mobile image 9:16. Services strip overlaps
+   the bottom of the image. Static (no motion yet).
+   ========================================================= */
+.sm-hero, .sm-flow { --sm-lift: 110px; /* the services strip sits about half on the hero image */ }
+.sm-hero { position: relative; overflow-x: clip; }
+/* One continuous textured background from the services strip to the end of About */
+.sm-flow {
+  position: relative; display: flow-root; /* keeps the strip's negative margin from pulling the whole block up */
+  overflow-x: clip;
+  background: #E8F2F6 url("../img/bg-silk-1600.webp") center top / cover no-repeat;
+  background-image: image-set(url("../img/bg-silk-1600.webp") 1x, url("../img/bg-silk-2560.webp") 2x);
+}
+
+/* ---------- Image stage ---------- */
+.sm-hero__stage {
+  position: relative; isolation: isolate;
+  background: #0E4A5E; /* close to the teal of the image, shown only while it loads */
+  color: #FEFEFE;
+  min-height: clamp(520px, 42vw, 680px);
+  display: flex; align-items: center;
+  padding-block: 44px calc(40px + var(--sm-lift));
+}
+.sm-hero__bg { position: absolute; inset: 0; z-index: -1; }
+.sm-hero__bg img { width: 100%; height: 100%; object-fit: cover; object-position: 30% 50%; }
+
+.sm-hero__grid { display: flex; justify-content: flex-start; }
+.sm-hero__content { width: min(100%, 640px); }
+
+.sm-hero__title {
+  font-size: clamp(40px, 4vw, 58px); font-weight: var(--fw-hero); line-height: 1.08;
+  letter-spacing: -0.01em; color: #FEFEFE;
+}
+.sm-hero__brand { display: block; color: var(--c-light-blue); }
+.sm-hero__lead { margin-top: 14px; max-width: 32em; font-size: var(--fs-lead); line-height: 1.55; color: rgba(254, 254, 254, .9); }
+.sm-hero__actions { display: flex; flex-wrap: wrap; gap: var(--gap-sm); margin-top: 26px; }
+.btn-wa { background: var(--wa); color: var(--dark); }
+.btn-wa:hover { background: var(--wa-hover); }
+.sm-hero .btn:focus-visible { outline-color: #FEFEFE; }
+
+/* Insurance: round seal image + the existing sentence */
+.sm-hero__insure { display: flex; align-items: center; gap: 16px; margin-top: 20px; max-width: 32em; }
+.sm-hero__seal { flex: none; width: 100px; height: auto; } /* an image, not an icon: stays on the right of its text */
+.sm-hero__insure p { font-size: 16px; line-height: 1.45; color: rgba(254, 254, 254, .9); }
+.sm-hero__insure strong { display: block; font-weight: var(--fw-medium); font-size: 17px; color: #FEFEFE; }
+
+/* ---------- Services strip (overlaps the image) ---------- */
+.sm-hero__services { position: relative; z-index: 3; margin-top: calc(-1 * var(--sm-lift)); padding-bottom: 56px; }
+.sm-services { border-radius: var(--radius); background: var(--bg); box-shadow: 0 24px 60px rgba(4, 62, 82, .14); padding: 10px; }
+.sm-services__list { display: grid; grid-template-columns: repeat(6, minmax(0, 1fr)); }
+.sm-services__list > li { position: relative; }
+.sm-services__list > li + li::before {
+  content: ""; position: absolute; inset-inline-start: 0; top: 18px; bottom: 18px; width: 1px; background: var(--line);
+}
+.sm-service {
+  display: flex; flex-direction: column; align-items: flex-start; gap: 14px; height: 100%;
+  padding: 22px 20px; border-radius: 10px; color: var(--dark); text-decoration: none;
+  transition: background-color var(--dur-micro) var(--ease-soft);
+}
+.sm-service:hover { background: var(--bg-alt); }
+.sm-service__ico { display: grid; place-items: center; width: 56px; height: 56px; border-radius: 50%; background: var(--bg-alt); color: var(--brand); transition: background-color var(--dur-micro) var(--ease-soft); }
+.sm-service:hover .sm-service__ico { background: var(--bg); }
+.sm-service__ico .sm-ico { width: 32px; height: 32px; }
+.sm-service__name { font-size: 18px; font-weight: var(--fw-heading); line-height: 1.25; text-wrap: balance; }
+.sm-service__more { display: inline-flex; align-items: center; gap: 6px; margin-top: auto; font-size: 15px; font-weight: var(--fw-medium); color: var(--brand-ink); }
+.sm-service__more .sm-ico { width: 18px; height: 18px; }
+
+/* ---------- Narrow desktop ---------- */
+@media (min-width: 1025px) and (max-width: 1240px) {
+  .sm-hero__content { width: min(100%, 560px); }
+  .sm-services__list { grid-template-columns: repeat(3, minmax(0, 1fr)); row-gap: 4px; }
+  .sm-services__list > li:nth-child(3n + 1)::before { display: none; }
+  .sm-service { flex-direction: row; align-items: center; }
+  .sm-service__more { display: none; }
+}
+
+/* ---------- Mobile and tablet: 9:16 image, text on the teal top ---------- */
+@media (max-width: 1024px) {
+  .sm-hero, .sm-flow { --sm-lift: 32px; }
+  .sm-flow { background-image: url("../img/bg-silk-900.webp"); }
+  .sm-hero__stage {
+    min-height: 0; align-items: flex-start;
+    padding-block: 36px calc(min(62vw, 420px) + var(--sm-lift)); /* room for the clinic visual below the text */
+    background: #0E4A5E;
+  }
+  .sm-hero__bg img { object-position: 50% 100%; }
+  /* Keep every line of text on solid teal; the clinic shows only below the text */
+  .sm-hero__bg::after {
+    content: ""; position: absolute; inset: 0;
+    /* solid until the end of the text block, then the clinic fades in */
+    background: linear-gradient(180deg, #0B465A 0, #0B465A calc(100% - min(62vw, 420px) - var(--sm-lift) - 8px), rgba(11, 70, 90, 0) calc(100% - min(62vw, 420px) + 72px));
+  }
+  .sm-hero__content { width: 100%; }
+  .sm-hero__lead { font-size: 18px; margin-top: 14px; }
+  .sm-hero__actions { margin-top: 24px; flex-wrap: nowrap; }
+  .sm-hero__actions .btn { flex: 1 1 0; padding-inline: 14px; }
+  .sm-hero__actions .btn-cta .sm-ico--arrow { display: none; }
+  .sm-hero__insure { margin-top: 20px; gap: 12px; }
+  .sm-hero__seal { width: 84px; }
+  .sm-hero__insure p { font-size: 15px; }
+  .sm-hero__insure strong { font-size: 16px; }
+  .sm-hero__services { padding-bottom: 40px; }
+  .sm-services { padding: 6px; }
+  .sm-services__list { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .sm-services__list > li + li::before { display: none; }
+  .sm-services__list > li { border-bottom: 1px solid var(--line); }
+  .sm-services__list > li:nth-child(odd) { border-inline-end: 1px solid var(--line); }
+  .sm-services__list > li:nth-last-child(-n + 2) { border-bottom: 0; }
+  .sm-service { padding: 18px 14px; gap: 10px; }
+  .sm-service__ico { width: 48px; height: 48px; }
+  .sm-service__ico .sm-ico { width: 28px; height: 28px; }
+  .sm-service__name { font-size: 17px; }
+  .sm-service__more { display: none; }
+}
+
+/* WhatsApp icon: Iconoir is drawn for a 1.5 stroke; thinner looks broken at this size */
+.btn-wa .sm-ico { width: 26px; height: 26px; }
