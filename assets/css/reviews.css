@@ -60,3 +60,10 @@
 .sm-video__play:focus-visible { outline: 2px solid var(--dark); outline-offset: -4px; }
 .sm-video.is-playing .sm-video__play { display: none; }
 .sm-reviews__head .btn + .btn { margin-inline-start: 10px; }
+
+/* Phones: the "all reviews" buttons stack at full width */
+@media (max-width: 767px) {
+  .sm-carousel + .sm-reviews__head, .sm-videos + .sm-reviews__head { display: flex; flex-direction: column; gap: 10px; }
+  .sm-reviews__head .btn { width: 100%; }
+  .sm-reviews__head .btn + .btn { margin-inline-start: 0; }
+}

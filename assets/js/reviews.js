@@ -7,7 +7,6 @@
   const cards = [...track.querySelectorAll(".sm-review")];
   const N = cards.length;
   const live = root.querySelector(".sm-carousel__live");
-  const playBtn = root.querySelector("[data-play]");
   const reduce = matchMedia("(prefers-reduced-motion: reduce)").matches;
   const EASE = (t) => { // cubic-bezier(.22,1,.36,1) approximated by easeOutQuint-like curve
     const p = 1 - t; return 1 - p * p * p * p * p; };
@@ -64,17 +63,10 @@
     clearTimeout(timer);
     if (playing && !hover && !focusIn && !dragging) timer = setTimeout(() => { next(); schedule(); }, 5000);
   }
-  function setPlaying(on) {
-    playing = on;
-    playBtn.querySelector("span").textContent = on ? "עצירה" : "הפעלה";
-    live.setAttribute("aria-live", on ? "off" : "polite");
-    schedule();
-  }
   root.addEventListener("mouseenter", () => { hover = true; schedule(); });
   root.addEventListener("mouseleave", () => { hover = false; schedule(); });
   root.addEventListener("focusin", () => { focusIn = true; schedule(); });
   root.addEventListener("focusout", (e) => { if (!root.contains(e.relatedTarget)) { focusIn = false; schedule(); } });
-  playBtn.addEventListener("click", () => setPlaying(!playing));
   root.querySelector("[data-next]").addEventListener("click", () => { next(); schedule(); });
   root.querySelector("[data-prev]").addEventListener("click", () => { prev(); schedule(); });
   root.addEventListener("keydown", (e) => {
@@ -121,7 +113,7 @@
   }
   addEventListener("resize", () => { fit(); render(); });
   document.fonts?.ready.then(() => { fit(); render(); });
-  fit(); render(); setPlaying(playing);
+  fit(); render(); schedule();
 })();
 
 /* Video testimonials: the big play button starts the video (files load only now) */

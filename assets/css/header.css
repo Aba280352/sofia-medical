@@ -179,3 +179,9 @@ html[lang="ar"] { --font-main: Tahoma, "Noto Sans Arabic", Arial, sans-serif; }
   .sm-logo img { height: 44px; }
   .sm-header__cta { padding-inline: 12px; font-size: 15px; }
 }
+
+/* Phones: the CTA sits in the middle of the bar, logo right, menu left */
+@media (max-width: 767px) {
+  .sm-header:not(.sm-header--landing) .sm-header__in { position: relative; }
+  .sm-header:not(.sm-header--landing) .sm-header__cta { position: absolute; left: 50%; top: 50%; transform: translate(-50%, -50%); white-space: nowrap; }
+}

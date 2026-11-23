@@ -49,3 +49,5 @@
   .sm-faq__lead { font-size: 18px; }
   .sm-acc summary { min-height: 64px; }
 }
+
+@media (max-width: 767px) { .sm-faq__all { width: 100%; } }

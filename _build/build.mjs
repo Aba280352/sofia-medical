@@ -331,7 +331,6 @@ const heroHome = () => `
       </div>
       <div class="sm-carousel__controls">
         <button class="sm-carousel__btn" type="button" data-prev aria-label="ההמלצה הקודמת">${icon("arrow-left", "sm-ico")}</button>
-        <button class="sm-carousel__btn" type="button" data-play><span>עצירה</span></button>
         <button class="sm-carousel__btn" type="button" data-next aria-label="ההמלצה הבאה">${icon("arrow-left", "sm-ico")}</button>
       </div>
       <p class="sm-sr sm-carousel__live" aria-live="off"></p>
