@@ -437,12 +437,15 @@ const footer = () => `
 // localhost and under /sofia-medical/). Robots and paths are set again in
 // WordPress, this only affects the static preview.
 const PREVIEW = true;
+const VER = Date.now().toString(36);
 const write = (rel, html) => {
   const up = "../".repeat(rel.split("/").length - 1);
   html = html
     .replace(/([\s"',(])\/assets\//g, `$1${up}assets/`)
     .replace(/href="\/(en|ru|ar)\/"/g, `href="${up}$1/"`)
-    .replace(/href="\/"/g, `href="${up || "./"}"`);
+    .replace(/href="\/"/g, `href="${up || "./"}"`)
+    // cache busting: every build gets a new version on CSS and JS
+    .replace(/(assets\/(?:css|js)\/[\w-]+\.(?:css|js))"/g, `$1?v=${VER}"`);
   if (PREVIEW) html = html.replace(/<meta name="robots" content="[^"]*">/, '<meta name="robots" content="noindex, nofollow">');
   const p = join(SITE, rel);
   mkdirSync(dirname(p), { recursive: true });
