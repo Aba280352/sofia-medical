@@ -85,5 +85,7 @@
   .sm-about__text { display: contents; }
   .sm-about__text > * { order: 3; min-width: 0; }
   .sm-about__text > .sm-about__title { order: 1; }
-  .sm-about__media { order: 2; margin: 28px 0 44px; }
+  /* same visible gap above and below: 28px (+16px for the dark block under the photo) */
+  .sm-about__media { order: 2; margin: 28px 0 calc(28px + 16px); }
+  .sm-about__text > .sm-about__lead { margin-top: 0; }
 }
