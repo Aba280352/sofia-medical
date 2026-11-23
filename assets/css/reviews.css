@@ -63,7 +63,8 @@
 
 /* Phones: the "all reviews" buttons stack at full width */
 @media (max-width: 767px) {
-  .sm-carousel + .sm-reviews__head, .sm-videos + .sm-reviews__head { display: flex; flex-direction: column; gap: 10px; }
+  .sm-carousel + .sm-reviews__head, .sm-videos + .sm-reviews__head { display: flex; flex-direction: column; gap: 20px; margin-top: 20px; }
+  .sm-reviews__head .sm-reviews__all { margin: 0; } /* one even 20px gap: videos, button, button */
   .sm-reviews__head .btn { width: 100%; }
   .sm-reviews__head .btn + .btn { margin-inline-start: 0; }
 }
