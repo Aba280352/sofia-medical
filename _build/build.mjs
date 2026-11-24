@@ -1264,6 +1264,7 @@ const areaMain = (p) => {
   <div class="sm-wrap sm-svcpage__grid">
     <div class="sm-prose sm-prose--area">
         ${body.map((t) => `<p>${latin(t)}</p>`).join("\n        ")}
+        ${p.more ? `<p class="sm-prose__more"><a class="btn btn-ghost" href="${p.more.href}">${p.more.label}</a></p>` : ""}
     </div>
     <aside class="sm-svcpage__side" aria-label="יצירת קשר ושירותים בתחום">
       <div class="sm-side__box sm-side__box--cta">
