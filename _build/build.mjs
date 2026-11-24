@@ -11,6 +11,7 @@ import { REVIEWS } from "./data-reviews.mjs";
 import { FAQ } from "./data-faq.mjs";
 import { SERVICES_PAGE } from "./data-services.mjs";
 import { SERVICE_PAGES } from "./data-service-pages.mjs";
+import { ARTICLES } from "./data-articles.mjs";
 
 const SITE = join(dirname(fileURLToPath(import.meta.url)), "..");
 const ICONS = join(SITE, "..", "design", "icons");
@@ -799,6 +800,131 @@ const servicePageMain = (p, i) => `
 </section>
 </main>`;
 
+
+/* ---------- Articles (/מאמרים + /מאמרים/<slug>) ----------
+   Listing: H1 "מאמרים" as on the current page, lead = its meta description,
+   cards with the existing excerpts, filter by treatment area (labels = the
+   existing treatment tab names). Article: content of the current page
+   (data-articles.mjs), H1 identical, lead = meta description, FAQ schema
+   where the article has questions. All article photos on the old site are
+   Getty stock, so none are used. NEW UI copy for approval: "מאמרים נוספים". */
+const ARTICLES_URL = "/מאמרים";
+const ARTICLES_DESC = "מאמרים מקצועיים על שיקום, כאב והפרעות שינה עם טיפים, מחקרים והסברים מהצוות המומחה של סופיה מדיקל, יחד עם ידע עדכני ומעמיק.";
+const TOPICS = {
+  rehab: { name: "רפואה שיקומית", icon: "accessibility" },
+  pain: { name: "מרפאת כאב", icon: "zap" },
+  sleep: { name: "הפרעות שינה", icon: "moon" },
+  uro: { name: "שיקום מיני ואורולוגי", icon: "heart-pulse" },
+};
+const topicTag = (k) => `<span class="sm-topic">${icon(TOPICS[k].icon, "sm-ico")}<span>${TOPICS[k].name}</span></span>`;
+const ctaBand = () => `
+<section class="sm-cta" aria-labelledby="cta-title">
+  <div class="sm-wrap">
+    <div class="sm-cta__box">
+      <div class="sm-cta__text">
+        <h2 id="cta-title" class="sm-cta__title">השאירו פרטים <span class="hl">ונחזור אליכם</span></h2>
+        <p>קיימים הסדרים עם כללית מושלם, <span dir="ltr">BWell</span> ומגדל לייעוץ רפואי בתחום השיקום וטיפול בכאב</p>
+      </div>
+      <div class="sm-cta__actions">
+        <a class="btn btn-cta" href="/צור-קשר">השארת פרטים ${icon("arrow-left", "sm-ico sm-ico--arrow")}</a>
+        <a class="btn btn-ghost" href="${CONTACT.mobile.href}"><span dir="ltr">${CONTACT.mobile.display}</span> ${icon("smartphone", "sm-ico")}</a>
+      </div>
+    </div>
+  </div>
+</section>`;
+
+const articlesMain = () => `
+<main id="main" tabindex="-1">
+<section class="sm-phero sm-phero--plain" aria-labelledby="articles-h1">
+  <div class="sm-wrap sm-phero__grid">
+    <div class="sm-phero__text">
+      <nav class="sm-crumbs" aria-label="פירורי לחם">
+        <ol role="list">
+          <li><a href="/">בית</a>${icon("chevron-left", "sm-ico")}</li>
+          <li><span aria-current="page">מאמרים</span></li>
+        </ol>
+      </nav>
+      <h1 id="articles-h1" class="sm-phero__title">מאמרים</h1>
+      <p class="sm-phero__lead">${ARTICLES_DESC}</p>
+    </div>
+  </div>
+</section>
+
+<section class="sm-arts" aria-label="רשימת המאמרים" data-arts>
+  <div class="sm-wrap">
+    <div class="sm-arts__filter" role="group" aria-label="סינון לפי תחום" hidden>
+      <button type="button" class="sm-arts__btn" aria-pressed="true" data-topic="all">הכל</button>
+      ${Object.entries(TOPICS).map(([k, t]) => `<button type="button" class="sm-arts__btn" aria-pressed="false" data-topic="${k}">${icon(t.icon, "sm-ico")}<span>${t.name}</span></button>`).join("\n      ")}
+    </div>
+    <ul class="sm-arts__grid" role="list">
+      ${ARTICLES.map((a) => `<li class="sm-art" data-topic="${a.topic}">
+        ${topicTag(a.topic)}
+        <h2 class="sm-art__title"><a href="${a.href}">${latin(a.h1)}</a></h2>
+        <p class="sm-art__text">${latin(a.excerpt)}</p>
+        <span class="sm-art__more" aria-hidden="true">קרא עוד${icon("chevron-left", "sm-ico")}</span>
+      </li>`).join("\n      ")}
+    </ul>
+    <p class="sm-arts__count" aria-live="polite"></p>
+  </div>
+</section>
+${ctaBand()}
+</main>`;
+
+const artBlocks = (a) => a.blocks.map((b) => {
+  if (b.t === "h2") return `<h2 class="sm-prose__h2">${latin(b.x)}</h2>`;
+  if (b.t === "h3") return `<h3 class="sm-prose__h3">${latin(b.x)}</h3>`;
+  if (b.t === "p") return `<p>${latin(b.x)}</p>`;
+  if (b.t === "ul") return `<ul class="sm-prose__list" role="list">${b.x.map((x) => `<li>${svcItem(x)}</li>`).join("")}</ul>`;
+  if (b.t === "check") return `<ul class="sm-prose__check" role="list">${b.x.map((x) => `<li>${icon("check", "sm-ico")}<span>${svcItem(x)}</span></li>`).join("")}</ul>`;
+  if (b.t === "video") return `<div class="sm-prose__video"><iframe src="https://www.youtube-nocookie.com/embed/${b.x}" title="סרטון: ${esc(a.h1)}" loading="lazy" allow="accelerometer; encrypted-media; gyroscope; picture-in-picture; fullscreen" allowfullscreen></iframe></div>`;
+  return "";
+}).join("\n        ");
+
+const articleMain = (a, i) => {
+  const related = ARTICLES.filter((x, k) => k !== i && x.topic === a.topic).slice(0, 6);
+  return `
+<main id="main" tabindex="-1">
+<section class="sm-phero sm-phero--plain" aria-labelledby="art-h1">
+  <div class="sm-wrap sm-phero__grid">
+    <div class="sm-phero__text">
+      <nav class="sm-crumbs" aria-label="פירורי לחם">
+        <ol role="list">
+          <li><a href="/">בית</a>${icon("chevron-left", "sm-ico")}</li>
+          <li><a href="${ARTICLES_URL}">מאמרים</a>${icon("chevron-left", "sm-ico")}</li>
+          <li><span aria-current="page">${latin(a.h1.split(":")[0])}</span></li>
+        </ol>
+      </nav>
+      <p class="sm-phero__topic">${topicTag(a.topic)}</p>
+      <h1 id="art-h1" class="sm-phero__title sm-phero__title--svc">${latin(a.h1)}</h1>
+      <p class="sm-phero__lead">${latin(a.desc)}</p>
+    </div>
+  </div>
+</section>
+
+<section class="sm-svcpage">
+  <div class="sm-wrap sm-svcpage__grid">
+    <article class="sm-prose">
+        ${artBlocks(a)}
+    </article>
+    <aside class="sm-svcpage__side" aria-label="יצירת קשר ומאמרים נוספים">
+      <div class="sm-side__box sm-side__box--cta">
+        <p class="sm-side__title">השאירו פרטים <span class="hl">ונחזור אליכם</span></p>
+        <p class="sm-side__text">קיימים הסדרים עם כללית מושלם, <span dir="ltr">BWell</span> ומגדל לייעוץ רפואי בתחום השיקום וטיפול בכאב</p>
+        <a class="btn btn-cta" href="/צור-קשר">השארת פרטים ${icon("arrow-left", "sm-ico sm-ico--arrow")}</a>
+        <a class="btn btn-ghost" href="${CONTACT.mobile.href}"><span dir="ltr">${CONTACT.mobile.display}</span> ${icon("smartphone", "sm-ico")}</a>
+      </div>
+      <nav class="sm-side__box" aria-labelledby="art-more">
+        <p class="sm-side__title" id="art-more">מאמרים נוספים</p>
+        <ul class="sm-side__links" role="list">
+          ${related.map((x) => `<li><a href="${x.href}"><span>${latin(x.h1)}</span>${icon("chevron-left", "sm-ico")}</a></li>`).join("\n          ")}
+        </ul>
+      </nav>
+    </aside>
+  </div>
+</section>
+</main>`;
+};
+
 /* ---------- Write pages ---------- */
 // PREVIEW: the local build is also published on GitHub Pages for the client,
 // so every page is noindex and all site paths are relative (works on
@@ -992,6 +1118,75 @@ SERVICE_PAGES.forEach((p, i) => {
 <link rel="stylesheet" href="/assets/css/footer.css">
 <script type="application/ld+json">${JSON.stringify(ld)}</script>`,
     body: header("he", SERVICES_URL) + servicePageMain(p, i) + footer(),
+  }));
+});
+
+// Articles listing: same URL, title and meta description as the current page
+{
+  const url = SITE_URL + encodeURI(ARTICLES_URL);
+  const title = "מאמרים ומדריכים על שיקום רפואי וטיפול בכאב | סופיה מדיקל";
+  const clinicId = SITE_URL + "/#clinic";
+  const ld = { "@context": "https://schema.org", "@graph": [
+    { "@type": "CollectionPage", "@id": url + "#page", url, name: title, description: ARTICLES_DESC, inLanguage: "he-IL",
+      about: { "@id": clinicId }, breadcrumb: { "@id": url + "#crumbs" }, mainEntity: { "@id": url + "#list" } },
+    { "@type": "ItemList", "@id": url + "#list", numberOfItems: ARTICLES.length, itemListElement: ARTICLES.map((a, i) => ({ "@type": "ListItem", position: i + 1, url: SITE_URL + encodeURI(a.href), name: a.h1 })) },
+    { "@type": "BreadcrumbList", "@id": url + "#crumbs", itemListElement: [
+      { "@type": "ListItem", position: 1, name: "בית", item: SITE_URL + "/" },
+      { "@type": "ListItem", position: 2, name: "מאמרים", item: url } ] },
+  ] };
+  write("מאמרים/index.html", page({
+    lang: "he", title, description: ARTICLES_DESC, robots: "index, follow", canonical: url,
+    head: `
+<meta property="og:type" content="website">
+<meta property="og:locale" content="he_IL">
+<meta property="og:site_name" content="סופיה מדיקל">
+<meta property="og:title" content="${esc(title)}">
+<meta property="og:description" content="${esc(ARTICLES_DESC)}">
+<meta property="og:url" content="${url}">
+<meta property="og:image" content="${SITE_URL}/assets/img/treat-rehab-900.webp">
+<link rel="stylesheet" href="/assets/css/page-about.css">
+<link rel="stylesheet" href="/assets/css/page-service.css">
+<link rel="stylesheet" href="/assets/css/page-articles.css">
+<link rel="stylesheet" href="/assets/css/footer.css">
+<script src="/assets/js/articles-filter.js" defer></script>
+<script type="application/ld+json">${JSON.stringify(ld)}</script>`,
+    body: header("he", ARTICLES_URL) + articlesMain() + footer(),
+  }));
+}
+
+// Single articles: same URLs, titles and meta descriptions as the current site
+ARTICLES.forEach((a, i) => {
+  const url = SITE_URL + encodeURI(a.href);
+  const listUrl = SITE_URL + encodeURI(ARTICLES_URL);
+  const clinicId = SITE_URL + "/#clinic";
+  const graph = [
+    { "@type": "MedicalWebPage", "@id": url + "#page", url, name: a.title, description: a.desc, inLanguage: "he-IL",
+      mainEntity: { "@id": url + "#article" }, breadcrumb: { "@id": url + "#crumbs" } },
+    { "@type": "Article", "@id": url + "#article", headline: a.h1, description: a.desc, inLanguage: "he-IL", mainEntityOfPage: url,
+      author: { "@id": clinicId }, publisher: { "@id": clinicId } },
+    { "@type": "MedicalClinic", "@id": clinicId, name: "סופיה מדיקל", url: SITE_URL + "/", logo: SITE_URL + "/assets/img/logo-icon.png", telephone: "+972-50-465-1970",
+      address: { "@type": "PostalAddress", streetAddress: "יוחנן הסנדלר 6, קומה 5", addressLocality: "כפר סבא", addressCountry: "IL" } },
+    { "@type": "BreadcrumbList", "@id": url + "#crumbs", itemListElement: [
+      { "@type": "ListItem", position: 1, name: "בית", item: SITE_URL + "/" },
+      { "@type": "ListItem", position: 2, name: "מאמרים", item: listUrl },
+      { "@type": "ListItem", position: 3, name: a.h1, item: url } ] },
+  ];
+  if (a.faq.length) graph.push({ "@type": "FAQPage", "@id": url + "#faq", mainEntity: a.faq.map((f) => ({ "@type": "Question", name: f.q, acceptedAnswer: { "@type": "Answer", text: f.a } })) });
+  write(a.href.slice(1) + "/index.html", page({
+    lang: "he", title: a.title, description: a.desc, robots: "index, follow", canonical: url,
+    head: `
+<meta property="og:type" content="article">
+<meta property="og:locale" content="he_IL">
+<meta property="og:site_name" content="סופיה מדיקל">
+<meta property="og:title" content="${esc(a.title)}">
+<meta property="og:description" content="${esc(a.desc)}">
+<meta property="og:url" content="${url}">
+<link rel="stylesheet" href="/assets/css/page-about.css">
+<link rel="stylesheet" href="/assets/css/page-service.css">
+<link rel="stylesheet" href="/assets/css/page-articles.css">
+<link rel="stylesheet" href="/assets/css/footer.css">
+<script type="application/ld+json">${JSON.stringify({ "@context": "https://schema.org", "@graph": graph })}</script>`,
+    body: header("he", ARTICLES_URL) + articleMain(a, i) + footer(),
   }));
 });
 

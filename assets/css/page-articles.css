@@ -1,0 +1,75 @@
+/* =========================================================
+   Articles: listing (/מאמרים) and single article (/מאמרים/<slug>)
+   The article body reuses page-service.css (prose + side boxes).
+   Desktop in VW/%, mobile in PX.
+   ========================================================= */
+
+/* Topic tag: icon left of the text (RTL), no pill */
+.sm-topic { display: inline-flex; align-items: center; gap: 8px; font-size: 15px; font-weight: var(--fw-medium); color: var(--brand-ink); }
+.sm-topic .sm-ico { order: 2; width: 20px; height: 20px; color: var(--brand); }
+.sm-phero__topic { margin-top: 22px; }
+.sm-phero__topic + .sm-phero__title { margin-top: 10px; }
+
+/* ---------- Listing ---------- */
+.sm-arts { padding-block: var(--section-y); }
+.sm-arts__filter { display: flex; flex-wrap: wrap; gap: 10px; margin-bottom: clamp(28px, 2.6vw, 44px); }
+.sm-arts__btn {
+  display: inline-flex; align-items: center; gap: 8px; min-height: 44px; padding: 8px 18px;
+  border: 1px solid var(--line); border-radius: 8px; background: var(--bg);
+  font: inherit; font-size: 16px; font-weight: var(--fw-medium); color: var(--dark); cursor: pointer;
+  transition: background var(--dur-micro), border-color var(--dur-micro), color var(--dur-micro);
+}
+.sm-arts__btn .sm-ico { order: 2; width: 18px; height: 18px; color: var(--brand); }
+.sm-arts__btn:hover { border-color: var(--brand); }
+.sm-arts__btn[aria-pressed="true"] { border-color: var(--dark); background: var(--dark); color: #FEFEFE; }
+.sm-arts__btn[aria-pressed="true"] .sm-ico { color: var(--c-light-blue); }
+
+.sm-arts__grid { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: clamp(16px, 1.6vw, 24px); margin: 0; padding: 0; list-style: none; }
+.sm-art {
+  position: relative; display: flex; flex-direction: column; padding: clamp(24px, 2.2vw, 36px);
+  border-radius: var(--radius); background: var(--bg-alt);
+  transition: translate var(--dur-micro) var(--ease-out), box-shadow var(--dur-micro) var(--ease-out);
+}
+.sm-art[hidden] { display: none; }
+.sm-art__title { margin-top: 14px; font-size: clamp(20px, 1.45vw, 24px); line-height: 1.3; color: var(--dark); }
+.sm-art__title a { color: inherit; text-decoration: none; }
+.sm-art__title a::after { content: ""; position: absolute; inset: 0; z-index: 1; border-radius: var(--radius); }
+.sm-art__text {
+  margin-top: 12px; font-size: 16px; line-height: 1.65; color: var(--text-muted);
+  display: -webkit-box; -webkit-line-clamp: 4; -webkit-box-orient: vertical; overflow: hidden;
+}
+.sm-art__more { display: inline-flex; align-items: center; gap: 6px; align-self: flex-start; margin-top: auto; padding-top: 20px; font-size: 16px; font-weight: var(--fw-medium); color: var(--brand-ink); }
+.sm-art__more .sm-ico { width: 18px; height: 18px; transition: translate var(--dur-micro) var(--ease-out); }
+.sm-art:focus-within { outline: 2px solid var(--brand); outline-offset: 3px; }
+.sm-art__title a:focus-visible { outline: none; }
+@media (hover: hover) and (pointer: fine) {
+  .sm-art:hover { translate: 0 -4px; box-shadow: 0 24px 48px -28px rgba(4, 62, 82, .35); }
+  .sm-art:hover .sm-art__more { text-decoration: underline; text-underline-offset: 4px; }
+  .sm-art:hover .sm-art__more .sm-ico { translate: -4px 0; }
+}
+.sm-arts__count:empty { display: none; }
+
+/* Video inside an article */
+.sm-prose__video { position: relative; aspect-ratio: 16 / 9; border-radius: var(--radius); overflow: hidden; background: var(--dark); }
+.sm-prose__video iframe { position: absolute; inset: 0; width: 100%; height: 100%; border: 0; }
+
+@media (prefers-reduced-motion: reduce) {
+  .sm-art, .sm-art__more .sm-ico { transition: none; }
+  .sm-art:hover { translate: none; }
+}
+
+/* ---------- Tablet ---------- */
+@media (max-width: 1024px) {
+  .sm-arts__grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+}
+
+/* ---------- Phones ---------- */
+@media (max-width: 767px) {
+  .sm-arts { padding-block: 56px 84px; }
+  .sm-arts__filter { flex-wrap: nowrap; overflow-x: auto; margin-inline: -20px; padding-inline: 20px; scrollbar-width: none; }
+  .sm-arts__filter::-webkit-scrollbar { display: none; }
+  .sm-arts__btn { flex: none; font-size: 15px; }
+  .sm-arts__grid { grid-template-columns: minmax(0, 1fr); gap: 16px; }
+  .sm-art { padding: 22px 20px; }
+  .sm-art__title { font-size: 20px; }
+}
