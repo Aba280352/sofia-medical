@@ -50,3 +50,42 @@
   .sm-svc .sm-card__title, .sm-svc .sm-card--wide .sm-card__title { font-size: 21px; }
   .sm-svc .sm-card--wide .sm-card__text { font-size: 16px; }
 }
+
+/* ---------- Rotating hero image: one image per treatment area ---------- */
+.sm-rot .sm-phero__frame { isolation: isolate; }
+.sm-rot__img {
+  position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover;
+  opacity: 0; scale: 1.06; transition: opacity .9s ease, scale 6s linear;
+}
+.sm-rot__img.is-on { opacity: 1; scale: 1; }
+.sm-rot__card { min-width: 280px; }
+.sm-rot__link {
+  display: flex; align-items: center; gap: 10px; font-size: 18px; font-weight: var(--fw-heading);
+  color: var(--dark); text-decoration: none; animation: sm-rot-in .5s ease both;
+}
+.sm-rot__link[hidden] { display: none; }
+.sm-rot__link > .sm-ico:first-child { order: 2; width: 26px; height: 26px; color: var(--brand); }
+.sm-rot__link span { order: 1; }
+.sm-rot__arrow { order: 3; width: 18px; height: 18px; margin-inline-start: auto; color: var(--brand-ink); transition: translate var(--dur-micro) var(--ease-out); }
+.sm-rot__link:hover span { text-decoration: underline; text-underline-offset: 4px; }
+@media (hover: hover) and (pointer: fine) { .sm-rot__link:hover .sm-rot__arrow { translate: -4px 0; } }
+@keyframes sm-rot-in { from { opacity: 0; translate: 0 6px; } }
+
+.sm-rot__ctrl { display: flex; align-items: center; justify-content: space-between; gap: 12px; margin-top: 14px; }
+.sm-rot__dots { display: flex; gap: 6px; }
+.sm-rot__dot { width: 22px; height: 24px; padding: 0; border: 0; background: none; cursor: pointer; position: relative; }
+.sm-rot__dot::before { content: ""; position: absolute; inset-inline: 0; top: 50%; height: 3px; margin-top: -1.5px; border-radius: 2px; background: #C9DDE6; transition: background var(--dur-micro); }
+.sm-rot__dot[aria-current]::before { background: var(--brand); }
+.sm-rot__pause { display: grid; place-items: center; width: 32px; height: 32px; padding: 0; border: 1px solid #C9DDE6; border-radius: 8px; background: none; color: var(--dark); cursor: pointer; }
+.sm-rot__pause .sm-ico { width: 16px; height: 16px; }
+.sm-rot__ico-play, .sm-rot.is-stopped .sm-rot__ico-pause { display: none; }
+.sm-rot.is-stopped .sm-rot__ico-play { display: block; }
+
+@media (prefers-reduced-motion: reduce) {
+  .sm-rot__img { transition: opacity .3s ease; scale: 1; }
+  .sm-rot__link { animation: none; }
+}
+@media (max-width: 767px) {
+  .sm-rot__card { min-width: 0; }
+  .sm-rot__link { font-size: 17px; }
+}

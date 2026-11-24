@@ -648,11 +648,18 @@ const servicesMain = () => `
       </div>
     </div>
     <div class="sm-phero__media">
-      <figure class="sm-phero__figure">
+      <figure class="sm-phero__figure sm-rot" data-rot>
         <div class="sm-phero__frame">
-          <img src="/assets/img/treat-rehab-900.webp" srcset="/assets/img/treat-rehab-600.webp 600w, /assets/img/treat-rehab-900.webp 900w"
-               sizes="(max-width: 1024px) 92vw, 46vw" width="900" height="675" alt="חדר טיפול ושיקום במרכז סופיה מדיקל" fetchpriority="high" decoding="async">
+          ${TREATMENTS.map((t, i) => `<img class="sm-rot__img${i ? "" : " is-on"}" src="/assets/img/${t.img}-900.webp" srcset="/assets/img/${t.img}-600.webp 600w, /assets/img/${t.img}-900.webp 900w"
+               sizes="(max-width: 1024px) 92vw, 46vw" width="900" height="675" alt="${esc(t.tab)} במרכז סופיה מדיקל"${i ? "" : ' fetchpriority="high"'} decoding="async">`).join("\n          ")}
         </div>
+        <figcaption class="sm-phero__card sm-rot__card">
+          ${TREATMENTS.map((t, i) => `<a class="sm-rot__link" href="${t.href}"${i ? " hidden" : ""}>${icon(t.icon, "sm-ico")}<span>${latin(t.tab)}</span>${icon("chevron-left", "sm-ico sm-rot__arrow")}</a>`).join("\n          ")}
+          <div class="sm-rot__ctrl">
+            <div class="sm-rot__dots">${TREATMENTS.map((t, i) => `<button type="button" class="sm-rot__dot" aria-label="${esc(t.tab)}"${i ? "" : ' aria-current="true"'}></button>`).join("")}</div>
+            <button type="button" class="sm-rot__pause" aria-pressed="false" aria-label="עצירת החלפת התמונות">${icon("pause", "sm-ico sm-rot__ico-pause")}${icon("play-line", "sm-ico sm-rot__ico-play")}</button>
+          </div>
+        </figcaption>
       </figure>
     </div>
   </div>
@@ -839,6 +846,7 @@ write("index.html", page({
 <meta property="og:image" content="${img}">
 <link rel="stylesheet" href="/assets/css/page-about.css">
 <link rel="stylesheet" href="/assets/css/page-services.css">
+<script src="/assets/js/hero-rotate.js" defer></script>
 <link rel="stylesheet" href="/assets/css/footer.css">
 <script type="application/ld+json">${JSON.stringify(ld)}</script>`,
     body: header("he", SERVICES_URL) + servicesMain() + footer(),
