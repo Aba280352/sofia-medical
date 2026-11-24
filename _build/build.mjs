@@ -10,6 +10,7 @@ import { TEAM, TEAM_PAGE } from "./data-team.mjs";
 import { REVIEWS } from "./data-reviews.mjs";
 import { FAQ } from "./data-faq.mjs";
 import { SERVICES_PAGE } from "./data-services.mjs";
+import { SERVICE_PAGES } from "./data-service-pages.mjs";
 
 const SITE = join(dirname(fileURLToPath(import.meta.url)), "..");
 const ICONS = join(SITE, "..", "design", "icons");
@@ -692,6 +693,112 @@ const servicesMain = () => `
 </section>
 </main>`;
 
+
+/* ---------- Single service pages (/שירותים/<slug>) ----------
+   Content of the current pages (data-service-pages.mjs, parsed from the live
+   site). H1 identical, lead = the current meta description. Extra H1s on the
+   old pages became H2, h4 section titles became H2/H3. Hero image only where
+   we have a real device photo or one of our GPT treatment images.
+   NEW UI copy for approval: "שירותים נוספים" (side box title). */
+const SVC_HERO = {
+  0: { src: "/assets/img/treat-rehab", w: [600, 900] },
+  1: { src: "/assets/img/treat-recoverix", w: [600, 900] },
+  2: { src: "/assets/img/services/pemf-device", w: [900, 1400], alt: "מכשיר טיפול PEMF במרכז סופיה מדיקל" },
+  3: { src: "/assets/img/treat-physio", w: [600, 900] },
+  4: { src: "/assets/img/treat-pain", w: [600, 900] },
+  5: { src: "/assets/img/treat-sleep", w: [600, 900] },
+  9: { src: "/assets/img/treat-pain", w: [600, 900] },
+  15: { person: "haitham-abu-nagma", name: 'ד"ר הייתם אבו נגמה', role: "אורולוג בכיר" },
+};
+// device photos inside the text, placed after the H2 that names them
+const SVC_FIGS = {
+  12: [
+    { after: "מכשיר CPAP: לטיפול בדום נשימה בשינה", src: "/assets/img/services/cpap-device-528.webp", w: 528, h: 441, alt: "מכשיר CPAP לטיפול בדום נשימה בשינה" },
+    { after: "מחולל חמצן נייד: IGO2", src: "/assets/img/services/oxygen-igo2-696.webp", w: 696, h: 613, alt: "מחולל חמצן נייד IGO2" },
+  ],
+};
+const svcShort = (i) => SERVICES_PAGE[i].title.split(":")[0];
+const svcItem = (s) => {
+  const m = s.length > 50 && s.match(/^([^:]{3,60}):\s(.+)$/);
+  return m ? `<strong>${latin(m[1])}</strong> ${latin(m[2])}` : latin(s);
+};
+const svcBlocks = (p, i) => {
+  const figs = SVC_FIGS[i] || [];
+  return p.blocks.map((b) => {
+    if (b.t === "h2") {
+      const f = figs.find((x) => x.after === b.x);
+      return `<h2 class="sm-prose__h2">${latin(b.x)}</h2>` + (f ? `<figure class="sm-prose__fig"><img src="${f.src}" width="${f.w}" height="${f.h}" alt="${esc(f.alt)}" loading="lazy" decoding="async"></figure>` : "");
+    }
+    if (b.t === "h3") return `<h3 class="sm-prose__h3">${latin(b.x)}</h3>`;
+    if (b.t === "p") return `<p>${latin(b.x)}</p>`;
+    if (b.t === "ul") return `<ul class="sm-prose__list" role="list">${b.x.map((x) => `<li>${svcItem(x)}</li>`).join("")}</ul>`;
+    if (b.t === "check") return `<ul class="sm-prose__check" role="list">${b.x.map((x) => `<li>${icon("check", "sm-ico")}<span>${svcItem(x)}</span></li>`).join("")}</ul>`;
+    return "";
+  }).join("\n        ");
+};
+const svcHero = (i) => {
+  const h = SVC_HERO[i];
+  if (!h) return "";
+  if (h.person) return `
+    <div class="sm-phero__media">
+      <figure class="sm-phero__figure sm-phero__figure--portrait">
+        <div class="sm-phero__frame"><img src="/assets/img/team/${h.person}.webp" width="480" height="600" alt="${esc(h.name)}, ${h.role}" fetchpriority="high" decoding="async"></div>
+        <figcaption class="sm-phero__card"><strong>${h.name}</strong><span>${h.role}</span></figcaption>
+      </figure>
+    </div>`;
+  const [a, b] = h.w;
+  return `
+    <div class="sm-phero__media">
+      <figure class="sm-phero__figure">
+        <div class="sm-phero__frame"><img src="${h.src}-${b}.webp" srcset="${h.src}-${a}.webp ${a}w, ${h.src}-${b}.webp ${b}w" sizes="(max-width: 1024px) 92vw, 46vw" width="${b}" height="${Math.round(b * 3 / 4)}" alt="${esc(h.alt || svcShort(i) + " במרכז סופיה מדיקל")}" fetchpriority="high" decoding="async"></div>
+      </figure>
+    </div>`;
+};
+const servicePageMain = (p, i) => `
+<main id="main" tabindex="-1">
+<section class="sm-phero${SVC_HERO[i] ? "" : " sm-phero--plain"}" aria-labelledby="svc-h1">
+  <div class="sm-wrap sm-phero__grid">
+    <div class="sm-phero__text">
+      <nav class="sm-crumbs" aria-label="פירורי לחם">
+        <ol role="list">
+          <li><a href="/">בית</a>${icon("chevron-left", "sm-ico")}</li>
+          <li><a href="${SERVICES_URL}">שירותים</a>${icon("chevron-left", "sm-ico")}</li>
+          <li><span aria-current="page">${latin(svcShort(i))}</span></li>
+        </ol>
+      </nav>
+      <h1 id="svc-h1" class="sm-phero__title sm-phero__title--svc">${latin(p.h1)}</h1>
+      <p class="sm-phero__lead">${latin(p.desc)}</p>
+      <div class="sm-phero__actions">
+        <a class="btn btn-cta" href="/צור-קשר">השארת פרטים ${icon("arrow-left", "sm-ico sm-ico--arrow")}</a>
+        <a class="btn btn-wa" href="https://wa.me/972504651970" target="_blank" rel="noopener">וואטסאפ<span class="sm-sr"> (נפתח בחלון חדש)</span> ${icon("whatsapp", "sm-ico sm-ico--fill")}</a>
+      </div>
+    </div>${svcHero(i)}
+  </div>
+</section>
+
+<section class="sm-svcpage">
+  <div class="sm-wrap sm-svcpage__grid">
+    <article class="sm-prose">
+        ${svcBlocks(p, i)}
+    </article>
+    <aside class="sm-svcpage__side" aria-label="יצירת קשר ושירותים נוספים">
+      <div class="sm-side__box sm-side__box--cta">
+        <p class="sm-side__title">השאירו פרטים <span class="hl">ונחזור אליכם</span></p>
+        <p class="sm-side__text">קיימים הסדרים עם כללית מושלם, <span dir="ltr">BWell</span> ומגדל לייעוץ רפואי בתחום השיקום וטיפול בכאב</p>
+        <a class="btn btn-cta" href="/צור-קשר">השארת פרטים ${icon("arrow-left", "sm-ico sm-ico--arrow")}</a>
+        <a class="btn btn-ghost" href="${CONTACT.mobile.href}"><span dir="ltr">${CONTACT.mobile.display}</span> ${icon("smartphone", "sm-ico")}</a>
+      </div>
+      <nav class="sm-side__box" aria-labelledby="svc-more">
+        <p class="sm-side__title" id="svc-more">שירותים נוספים</p>
+        <ul class="sm-side__links" role="list">
+          ${SERVICES_PAGE.filter((_, k) => k !== i).map((s) => `<li><a href="${s.href}"><span>${latin(s.title.split(":")[0])}</span>${icon("chevron-left", "sm-ico")}</a></li>`).join("\n          ")}
+        </ul>
+      </nav>
+    </aside>
+  </div>
+</section>
+</main>`;
+
 /* ---------- Write pages ---------- */
 // PREVIEW: the local build is also published on GitHub Pages for the client,
 // so every page is noindex and all site paths are relative (works on
@@ -851,6 +958,42 @@ write("index.html", page({
     body: header("he", SERVICES_URL) + servicesMain() + footer(),
   }));
 }
+
+// Single service pages: same URLs, titles and meta descriptions as the current site
+SERVICE_PAGES.forEach((p, i) => {
+  const url = SITE_URL + encodeURI(p.href);
+  const svcUrl = SITE_URL + encodeURI(SERVICES_URL);
+  const h = SVC_HERO[i];
+  const img = h && h.src ? SITE_URL + `${h.src}-${h.w[1]}.webp` : h && h.person ? SITE_URL + `/assets/img/team/${h.person}.webp` : SITE_URL + "/assets/img/treat-rehab-900.webp";
+  const clinicId = SITE_URL + "/#clinic";
+  const ld = { "@context": "https://schema.org", "@graph": [
+    { "@type": "MedicalWebPage", "@id": url + "#page", url, name: p.title, description: p.desc, inLanguage: "he-IL", primaryImageOfPage: img,
+      about: { "@id": url + "#service" }, breadcrumb: { "@id": url + "#crumbs" } },
+    { "@type": "MedicalClinic", "@id": clinicId, name: "סופיה מדיקל", url: SITE_URL + "/", telephone: "+972-50-465-1970", email: CONTACT.email,
+      address: { "@type": "PostalAddress", streetAddress: "יוחנן הסנדלר 6, קומה 5", addressLocality: "כפר סבא", addressCountry: "IL" } },
+    { "@type": "Service", "@id": url + "#service", name: p.h1, description: p.desc, url, image: img, provider: { "@id": clinicId }, areaServed: "IL" },
+    { "@type": "BreadcrumbList", "@id": url + "#crumbs", itemListElement: [
+      { "@type": "ListItem", position: 1, name: "בית", item: SITE_URL + "/" },
+      { "@type": "ListItem", position: 2, name: "שירותים", item: svcUrl },
+      { "@type": "ListItem", position: 3, name: svcShort(i), item: url } ] },
+  ] };
+  write(p.href.slice(1) + "/index.html", page({
+    lang: "he", title: p.title, description: p.desc, robots: "index, follow", canonical: url,
+    head: `
+<meta property="og:type" content="article">
+<meta property="og:locale" content="he_IL">
+<meta property="og:site_name" content="סופיה מדיקל">
+<meta property="og:title" content="${esc(p.title)}">
+<meta property="og:description" content="${esc(p.desc)}">
+<meta property="og:url" content="${url}">
+<meta property="og:image" content="${img}">
+<link rel="stylesheet" href="/assets/css/page-about.css">
+<link rel="stylesheet" href="/assets/css/page-service.css">
+<link rel="stylesheet" href="/assets/css/footer.css">
+<script type="application/ld+json">${JSON.stringify(ld)}</script>`,
+    body: header("he", SERVICES_URL) + servicePageMain(p, i) + footer(),
+  }));
+});
 
 // Other languages: one landing page each, noindex, no links to inner pages
 for (const k of ["en", "ru", "ar"]) {
