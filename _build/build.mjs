@@ -12,6 +12,7 @@ import { FAQ, FAQ_PAGE } from "./data-faq.mjs";
 import { SERVICES_PAGE } from "./data-services.mjs";
 import { SERVICE_PAGES } from "./data-service-pages.mjs";
 import { ARTICLES } from "./data-articles.mjs";
+import { AREAS } from "./data-areas.mjs";
 import { COVER_SLUGS } from "./make-article-covers.mjs";
 
 const SITE = join(dirname(fileURLToPath(import.meta.url)), "..");
@@ -1213,6 +1214,89 @@ ${plainHero("vit-h1", [["המלצות", REVIEWS_URL], ["המלצות וידאו"
 ${ctaBand()}
 </main>`;
 
+
+/* ---------- Treatment area pages (4, data-areas.mjs) ----------
+   Hero with the area image (vision: Dr. Ala's desk photo), the current text
+   as prose, side box with the lead CTA and the area's service pages, and the
+   "more articles" carousel of the same topic. NEW UI copy for approval:
+   "שירותים בתחום" (side box title). */
+const areaMain = (p) => {
+  const shortLead = p.text[0].length < 140;
+  const lead = shortLead ? p.text[0] : p.desc;
+  const body = shortLead ? p.text.slice(1) : p.text;
+  const rel = (p.topic ? ARTICLES.filter((x) => x.topic === p.topic) : ARTICLES).slice(0, 10);
+  const media = p.img === "about"
+    ? `<figure class="sm-phero__figure">
+        <div class="sm-phero__frame"><img src="/assets/img/about/dr-ala-mahamid-desk-960.webp" srcset="/assets/img/about/dr-ala-mahamid-desk-640.webp 640w, /assets/img/about/dr-ala-mahamid-desk-960.webp 960w, /assets/img/about/dr-ala-mahamid-desk-1400.webp 1400w" sizes="(max-width: 1024px) 92vw, 46vw" width="960" height="720" alt="ד&quot;ר עלא מחאמיד, מנהל מרכז סופיה מדיקל" fetchpriority="high" decoding="async"></div>
+        <figcaption class="sm-phero__card"><strong>ד"ר עלא מחאמיד</strong><span>${ALA_ROLE}</span></figcaption>
+      </figure>`
+    : `<figure class="sm-phero__figure">
+        <div class="sm-phero__frame"><img src="/assets/img/${p.img}-900.webp" srcset="/assets/img/${p.img}-600.webp 600w, /assets/img/${p.img}-900.webp 900w" sizes="(max-width: 1024px) 92vw, 46vw" width="900" height="675" alt="${esc(p.h1)}, סופיה מדיקל" fetchpriority="high" decoding="async"></div>
+      </figure>`;
+  return `
+<main id="main" tabindex="-1">
+<section class="sm-phero" aria-labelledby="area-h1">
+  <div class="sm-wrap sm-phero__grid">
+    <div class="sm-phero__text">
+      <nav class="sm-crumbs" aria-label="פירורי לחם">
+        <ol role="list">
+          <li><a href="/">בית</a>${icon("chevron-left", "sm-ico")}</li>
+          <li><span aria-current="page">${latin(p.h1.split(":")[0])}</span></li>
+        </ol>
+      </nav>
+      <h1 id="area-h1" class="sm-phero__title sm-phero__title--svc">${latin(p.h1)}</h1>
+      <p class="sm-phero__lead">${latin(lead)}</p>
+      <div class="sm-phero__actions">
+        <a class="btn btn-cta" href="/צור-קשר">השארת פרטים ${icon("arrow-left", "sm-ico sm-ico--arrow")}</a>
+        <a class="btn btn-wa" href="https://wa.me/972504651970" target="_blank" rel="noopener">וואטסאפ<span class="sm-sr"> (נפתח בחלון חדש)</span> ${icon("whatsapp", "sm-ico sm-ico--fill")}</a>
+      </div>
+    </div>
+    <div class="sm-phero__media">
+      ${media}
+    </div>
+  </div>
+</section>
+
+<section class="sm-svcpage">
+  <div class="sm-wrap sm-svcpage__grid">
+    <div class="sm-prose sm-prose--area">
+        ${body.map((t) => `<p>${latin(t)}</p>`).join("\n        ")}
+    </div>
+    <aside class="sm-svcpage__side" aria-label="יצירת קשר ושירותים בתחום">
+      <div class="sm-side__box sm-side__box--cta">
+        <p class="sm-side__title">השאירו פרטים <span class="hl">ונחזור אליכם</span></p>
+        <p class="sm-side__text">קיימים הסדרים עם כללית מושלם, <span dir="ltr">BWell</span> ומגדל לייעוץ רפואי בתחום השיקום וטיפול בכאב</p>
+        <a class="btn btn-cta" href="/צור-קשר">השארת פרטים ${icon("arrow-left", "sm-ico sm-ico--arrow")}</a>
+        <a class="btn btn-ghost" href="${CONTACT.mobile.href}"><span dir="ltr">${CONTACT.mobile.display}</span> ${icon("smartphone", "sm-ico")}</a>
+      </div>
+      <nav class="sm-side__box" aria-labelledby="area-svc">
+        <p class="sm-side__title" id="area-svc">שירותים בתחום</p>
+        <ul class="sm-side__links" role="list">
+          ${p.svc.map((k) => SERVICES_PAGE[k]).map((s) => `<li><a href="${s.href}"><span>${latin(s.title.split(":")[0])}</span>${icon("chevron-left", "sm-ico")}</a></li>`).join("\n          ")}
+        </ul>
+      </nav>
+    </aside>
+  </div>
+</section>
+
+<section class="sm-rel" aria-labelledby="rel-title" data-rel>
+  <div class="sm-wrap">
+    <div class="sm-rel__head">
+      <h2 class="sm-rel__h2" id="rel-title">מאמרים נוספים</h2>
+      <a class="sm-rel__all" href="${ARTICLES_URL}">לכל המאמרים${icon("chevron-left", "sm-ico")}</a>
+    </div>
+    <div class="sm-rel__viewport">
+      <button class="sm-rel__arrow sm-rel__arrow--prev" type="button" aria-label="המאמרים הקודמים" data-dir="-1">${icon("chevron-right", "sm-ico")}</button>
+      <ul class="sm-rel__track" role="list">
+        ${rel.map(artCard).join("\n        ")}
+      </ul>
+      <button class="sm-rel__arrow sm-rel__arrow--next" type="button" aria-label="המאמרים הבאים" data-dir="1">${icon("chevron-left", "sm-ico")}</button>
+    </div>
+  </div>
+</section>
+</main>`;
+};
+
 /* ---------- Write pages ---------- */
 // PREVIEW: the local build is also published on GitHub Pages for the client,
 // so every page is noindex and all site paths are relative (works on
@@ -1603,6 +1687,40 @@ ${extra}
       body: header("he", REVIEWS_URL) + videoItemMain(v, i) + footer() }));
   });
 }
+
+// Treatment area pages: same URLs, titles and meta descriptions as the current site
+AREAS.forEach((p) => {
+  const url = SITE_URL + encodeURI(p.href);
+  const clinicId = SITE_URL + "/#clinic";
+  const img = p.img === "about" ? SITE_URL + "/assets/img/about/dr-ala-mahamid-desk-1400.webp" : SITE_URL + `/assets/img/${p.img}-900.webp`;
+  const ld = { "@context": "https://schema.org", "@graph": [
+    { "@type": "MedicalWebPage", "@id": url + "#page", url, name: p.title, description: p.desc, inLanguage: "he-IL", primaryImageOfPage: img,
+      about: { "@id": clinicId }, breadcrumb: { "@id": url + "#crumbs" } },
+    { "@type": "MedicalClinic", "@id": clinicId, name: "סופיה מדיקל", url: SITE_URL + "/", telephone: "+972-50-465-1970",
+      address: { "@type": "PostalAddress", streetAddress: "יוחנן הסנדלר 6, קומה 5", addressLocality: "כפר סבא", addressCountry: "IL" } },
+    { "@type": "BreadcrumbList", "@id": url + "#crumbs", itemListElement: [
+      { "@type": "ListItem", position: 1, name: "בית", item: SITE_URL + "/" },
+      { "@type": "ListItem", position: 2, name: p.h1.split(":")[0], item: url } ] },
+  ] };
+  write(p.href.slice(1) + "/index.html", page({
+    lang: "he", title: p.title, description: p.desc, robots: "index, follow", canonical: url,
+    head: `
+<meta property="og:type" content="website">
+<meta property="og:locale" content="he_IL">
+<meta property="og:site_name" content="סופיה מדיקל">
+<meta property="og:title" content="${esc(p.title)}">
+<meta property="og:description" content="${esc(p.desc)}">
+<meta property="og:url" content="${url}">
+<meta property="og:image" content="${img}">
+<link rel="stylesheet" href="/assets/css/page-about.css">
+<link rel="stylesheet" href="/assets/css/page-service.css">
+<link rel="stylesheet" href="/assets/css/page-articles.css">
+<link rel="stylesheet" href="/assets/css/footer.css">
+<script src="/assets/js/article.js" defer></script>
+<script type="application/ld+json">${JSON.stringify(ld)}</script>`,
+    body: header("he", p.href) + areaMain(p) + footer(),
+  }));
+});
 
 // Other languages: one landing page each, noindex, no links to inner pages
 for (const k of ["en", "ru", "ar"]) {
