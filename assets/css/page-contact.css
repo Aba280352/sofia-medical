@@ -1,0 +1,85 @@
+/* =========================================================
+   Contact (/צור-קשר) and FAQ (/שאלות-נפוצות)
+   Contact: details on the right, dark form panel on the left (form
+   styles from faq.css), map below. FAQ: light accordion grouped by
+   topic with a topic nav, side CTA box from page-service.css.
+   Desktop in VW/%, mobile in PX.
+   ========================================================= */
+
+/* ---------- Contact ---------- */
+.sm-contact {
+  padding-block: clamp(40px, 4.5vw, 88px) clamp(48px, 5vw, 96px);
+  background: #E8F2F6 url("../img/bg-silk-1600.webp") center top / cover no-repeat;
+}
+.sm-contact__grid { display: grid; grid-template-columns: repeat(12, minmax(0, 1fr)); column-gap: 24px; align-items: start; }
+.sm-contact__info { grid-column: 1 / 7; min-width: 0; }
+.sm-contact__form { grid-column: 8 / 13; }
+
+.sm-contact__list { display: grid; gap: 18px; margin: 36px 0 0; padding: 0; list-style: none; }
+.sm-contact__list li { display: flex; align-items: flex-start; gap: 16px; }
+.sm-contact__list li > span:last-child { display: grid; gap: 2px; }
+.sm-contact__ico { order: 2; display: grid; place-items: center; flex: none; width: 48px; height: 48px; border-radius: var(--radius); background: var(--bg); color: var(--brand); }
+.sm-contact__ico .sm-ico { width: 24px; height: 24px; }
+.sm-contact__list strong { font-size: 15px; font-weight: var(--fw-medium); color: var(--text-muted); }
+.sm-contact__list a { justify-self: start; font-size: 19px; font-weight: var(--fw-medium); color: var(--dark); text-decoration: none; }
+.sm-contact__list a:hover { text-decoration: underline; text-underline-offset: 4px; }
+.sm-contact__hours { display: flex; gap: 12px; font-size: 18px; color: var(--dark); }
+.sm-contact__hours span:first-child { min-width: 7.5em; font-weight: var(--fw-medium); }
+.sm-contact__actions { display: flex; flex-wrap: wrap; gap: var(--gap-sm); margin-top: 36px; }
+
+/* the dark form panel (re-uses the home form styles) */
+.sm-contact__form.sm-faq { padding: clamp(28px, 3vw, 48px); border-radius: var(--radius); box-shadow: 0 40px 80px -30px rgba(4, 62, 82, .45); }
+.sm-contact__form-title { position: relative; font-size: clamp(28px, 2.4vw, 40px); font-weight: var(--fw-heading); line-height: 1.15; color: #FEFEFE; }
+.sm-contact__form-title .hl { color: var(--c-light-blue); }
+.sm-contact__form .sm-faq__lead { position: relative; font-size: 17px; }
+.sm-contact__form .sm-form { position: relative; margin-top: 28px; }
+
+.sm-map { padding-block: clamp(48px, 5vw, 96px); }
+.sm-map__frame { position: relative; aspect-ratio: 21 / 8; border-radius: var(--radius); overflow: hidden; background: var(--bg-alt); }
+.sm-map__frame iframe { position: absolute; inset: 0; width: 100%; height: 100%; border: 0; }
+
+/* ---------- FAQ page ---------- */
+.sm-faqpage__main { grid-column: 1 / 8; min-width: 0; }
+.sm-faqpage__nav ul { display: flex; flex-wrap: wrap; gap: 10px; margin: 0; padding: 0; list-style: none; }
+.sm-faqpage__nav a {
+  display: inline-flex; align-items: center; min-height: 44px; padding: 8px 18px; border: 1px solid var(--line); border-radius: 8px;
+  font-size: 16px; font-weight: var(--fw-medium); color: var(--dark); text-decoration: none; transition: border-color var(--dur-micro);
+}
+.sm-faqpage__nav a:hover { border-color: var(--brand); }
+.sm-faqpage__group { scroll-margin-top: 120px; }
+.sm-faqpage__group:first-of-type .sm-prose__h2 { margin-top: 48px !important; }
+.sm-faqpage .sm-prose__h2 + .sm-qa { margin-top: 20px; }
+
+.sm-qa { border-top: 1px solid var(--line); }
+.sm-qa details { border-bottom: 1px solid var(--line); }
+.sm-qa summary { display: flex; align-items: center; justify-content: space-between; gap: 20px; min-height: 72px; padding-block: 16px; cursor: pointer; list-style: none; }
+.sm-qa summary::-webkit-details-marker { display: none; }
+.sm-qa summary h3 { font-size: clamp(18px, 1.35vw, 21px); font-weight: var(--fw-heading); line-height: 1.4; color: var(--dark); }
+.sm-qa summary .sm-ico { flex: none; width: 24px; height: 24px; color: var(--brand); transition: rotate var(--dur-ui) var(--ease-out); }
+.sm-qa details[open] summary .sm-ico { rotate: 45deg; }
+.sm-qa summary:focus-visible { outline: 2px solid var(--brand); outline-offset: 2px; border-radius: 6px; }
+.sm-qa details p { padding-bottom: 22px; max-width: 46em; font-size: 17px; line-height: 1.75; color: var(--dark); }
+@media (prefers-reduced-motion: reduce) { .sm-qa summary .sm-ico { transition: none; } }
+
+/* ---------- Tablet ---------- */
+@media (max-width: 1024px) {
+  .sm-contact__grid { grid-template-columns: minmax(0, 1fr); row-gap: 48px; }
+  .sm-contact__info, .sm-contact__form, .sm-faqpage__main { grid-column: 1; }
+  .sm-map__frame { aspect-ratio: 16 / 9; }
+}
+
+/* ---------- Phones ---------- */
+@media (max-width: 767px) {
+  .sm-contact { padding-block: 28px 56px; }
+  .sm-contact .sm-phero__title { font-size: 44px; }
+  .sm-contact__list a { font-size: 18px; word-break: break-word; }
+  .sm-contact__hours { font-size: 17px; }
+  .sm-contact__actions .btn { flex: 1 1 100%; }
+  .sm-contact__form.sm-faq { padding: 28px 20px; }
+  .sm-map { padding-block: 0 56px; }
+  .sm-map__frame { aspect-ratio: 4 / 5; }
+  .sm-faqpage__nav ul { flex-wrap: nowrap; overflow-x: auto; margin-inline: -20px; padding-inline: 20px; scrollbar-width: none; }
+  .sm-faqpage__nav ul::-webkit-scrollbar { display: none; }
+  .sm-faqpage__nav a { flex: none; white-space: nowrap; font-size: 15px; }
+  .sm-qa summary { min-height: 64px; }
+}

@@ -8,7 +8,7 @@ import { fileURLToPath } from "node:url";
 import { TREATMENTS } from "./data-treatments.mjs";
 import { TEAM, TEAM_PAGE } from "./data-team.mjs";
 import { REVIEWS } from "./data-reviews.mjs";
-import { FAQ } from "./data-faq.mjs";
+import { FAQ, FAQ_PAGE } from "./data-faq.mjs";
 import { SERVICES_PAGE } from "./data-services.mjs";
 import { SERVICE_PAGES } from "./data-service-pages.mjs";
 import { ARTICLES } from "./data-articles.mjs";
@@ -925,6 +925,111 @@ const articleMain = (a, i) => {
 </main>`;
 };
 
+
+/* ---------- Contact (/צור-קשר) and FAQ (/שאלות-נפוצות) ----------
+   Contact: H1 "צור קשר", lead = current meta description, the current
+   contact details, opening hours from the current FAQ answer, the lead form
+   (same fields as the home form plus email, as on the current contact form),
+   Google map. Form not wired yet (WordPress stage).
+   FAQ: H1 "שאלות נפוצות", all 14 questions in the 5 current categories,
+   category names as H2, FAQPage schema. No new copy. */
+const CONTACT_URL = "/צור-קשר";
+const FAQ_URL = "/שאלות-נפוצות";
+const HOURS = [["ימים א' עד ה'", "09:00 עד 19:00"], ["יום ו'", "09:00 עד 13:00"]];
+const MAP_EMBED = "https://maps.google.com/maps?q=" + encodeURIComponent("יוחנן הסנדלר 6, כפר סבא") + "&z=16&output=embed";
+
+const leadForm = (id) => `
+      <form class="sm-form" action="#" method="post" aria-label="השארת פרטים">
+        <div class="sm-form__field"><label for="${id}-name">שם מלא</label><input id="${id}-name" name="name" type="text" autocomplete="name" required></div>
+        <div class="sm-form__field"><label for="${id}-phone">טלפון</label><input id="${id}-phone" name="phone" type="tel" inputmode="tel" autocomplete="tel" required dir="rtl"></div>
+        <div class="sm-form__field"><label for="${id}-email">כתובת הדואר האלקטרוני שלך</label><input id="${id}-email" name="email" type="email" autocomplete="email" dir="ltr"></div>
+        <div class="sm-form__field"><label for="${id}-topic">תחום הטיפול</label>
+          <select id="${id}-topic" name="topic"><option value="">בחירה</option>${SERVICES.map((x) => `<option>${x.name}</option>`).join("")}</select></div>
+        <button class="btn btn-cta" type="submit">השארת פרטים ${icon("arrow-left", "sm-ico sm-ico--arrow")}</button>
+        <p class="sm-form__note">בשליחת הטופס אני מאשר/ת את <a href="/privacy">מדיניות הפרטיות</a>.</p>
+      </form>`;
+
+const contactMain = () => `
+<main id="main" tabindex="-1">
+<section class="sm-contact" aria-labelledby="contact-h1">
+  <div class="sm-wrap sm-contact__grid">
+    <div class="sm-contact__info">
+      <nav class="sm-crumbs" aria-label="פירורי לחם">
+        <ol role="list">
+          <li><a href="/">בית</a>${icon("chevron-left", "sm-ico")}</li>
+          <li><span aria-current="page">צור קשר</span></li>
+        </ol>
+      </nav>
+      <h1 id="contact-h1" class="sm-phero__title">צור קשר</h1>
+      <p class="sm-phero__lead">פרטי התקשרות, טלפון וטופס פנייה לתיאום ייעוץ, בדיקות או טיפול בסופיה מדיקל עם מענה מהיר ושירות מסור למטופלים בכל הארץ.</p>
+      <ul class="sm-contact__list" role="list">
+        <li><span class="sm-contact__ico">${icon("map-pin", "sm-ico")}</span><span><strong>כתובת</strong><a href="${CONTACT.maps}" target="_blank" rel="noopener">${CONTACT.address}<span class="sm-sr"> (נפתח בחלון חדש)</span></a></span></li>
+        <li><span class="sm-contact__ico">${icon("smartphone", "sm-ico")}</span><span><strong>נייד</strong><a href="${CONTACT.mobile.href}" dir="ltr">${CONTACT.mobile.display}</a></span></li>
+        <li><span class="sm-contact__ico">${icon("phone", "sm-ico")}</span><span><strong>טלפון</strong><a href="${CONTACT.landline.href}" dir="ltr">${CONTACT.landline.display}</a></span></li>
+        <li><span class="sm-contact__ico">${icon("mail", "sm-ico")}</span><span><strong>דואר אלקטרוני</strong><a href="mailto:${CONTACT.email}" dir="ltr">${CONTACT.email}</a></span></li>
+        <li><span class="sm-contact__ico">${icon("clock", "sm-ico")}</span><span><strong>שעות פעילות</strong>${HOURS.map(([d, h]) => `<span class="sm-contact__hours"><span>${d}</span><span>${h}</span></span>`).join("")}</span></li>
+      </ul>
+      <div class="sm-contact__actions">
+        <a class="btn btn-wa" href="https://wa.me/972504651970" target="_blank" rel="noopener">וואטסאפ<span class="sm-sr"> (נפתח בחלון חדש)</span> ${icon("whatsapp", "sm-ico sm-ico--fill")}</a>
+        <a class="btn btn-ghost" href="${WAZE}" target="_blank" rel="noopener">ניווט עם Waze<span class="sm-sr"> (נפתח בחלון חדש)</span> ${icon("map-pin", "sm-ico")}</a>
+      </div>
+    </div>
+    <div class="sm-contact__form sm-faq">
+      <p class="sm-contact__form-title">השאירו פרטים <span class="hl">ונחזור אליכם</span></p>
+      <p class="sm-faq__lead">קיימים הסדרים עם כללית מושלם, <span dir="ltr">BWell</span> ומגדל לייעוץ רפואי בתחום השיקום וטיפול בכאב</p>
+      ${leadForm("contact")}
+    </div>
+  </div>
+</section>
+<section class="sm-map" aria-label="מפת הגעה">
+  <div class="sm-wrap">
+    <div class="sm-map__frame"><iframe src="${MAP_EMBED}" title="מפה: ${CONTACT.address}" loading="lazy" referrerpolicy="no-referrer-when-downgrade"></iframe></div>
+  </div>
+</section>
+</main>`;
+
+const faqMain = () => `
+<main id="main" tabindex="-1">
+<section class="sm-phero sm-phero--plain" aria-labelledby="faq-h1">
+  <div class="sm-wrap sm-phero__grid">
+    <div class="sm-phero__text">
+      <nav class="sm-crumbs" aria-label="פירורי לחם">
+        <ol role="list">
+          <li><a href="/">בית</a>${icon("chevron-left", "sm-ico")}</li>
+          <li><span aria-current="page">שאלות נפוצות</span></li>
+        </ol>
+      </nav>
+      <h1 id="faq-h1" class="sm-phero__title">שאלות נפוצות</h1>
+      <p class="sm-phero__lead">תשובות לשאלות נפוצות על טיפולי שיקום, כאב והפרעות שינה, אופן התיאום, ביטוחים ודרכי הגעה למרכז, עם ליווי מקצועי ומידע מקיף לכל מטופל.</p>
+    </div>
+  </div>
+</section>
+
+<section class="sm-svcpage sm-faqpage">
+  <div class="sm-wrap sm-svcpage__grid">
+    <div class="sm-faqpage__main">
+      <nav class="sm-faqpage__nav" aria-label="נושאי השאלות">
+        <ul role="list">${FAQ_PAGE.map((g, i) => `<li><a href="#faq-cat-${i + 1}">${g.cat}</a></li>`).join("")}</ul>
+      </nav>
+      ${FAQ_PAGE.map((g, i) => `<div class="sm-faqpage__group" id="faq-cat-${i + 1}">
+        <h2 class="sm-prose__h2">${g.cat}</h2>
+        <div class="sm-qa">
+          ${g.items.map((x) => `<details><summary><h3>${x.q}</h3>${icon("plus", "sm-ico")}</summary><p>${latin(x.a)}</p></details>`).join("\n          ")}
+        </div>
+      </div>`).join("\n      ")}
+    </div>
+    <aside class="sm-svcpage__side" aria-label="יצירת קשר">
+      <div class="sm-side__box sm-side__box--cta">
+        <p class="sm-side__title">השאירו פרטים <span class="hl">ונחזור אליכם</span></p>
+        <p class="sm-side__text">לא מצאתם תשובה? השאירו פרטים ונחזור אליכם.</p>
+        <a class="btn btn-cta" href="${CONTACT_URL}">השארת פרטים ${icon("arrow-left", "sm-ico sm-ico--arrow")}</a>
+        <a class="btn btn-ghost" href="${CONTACT.mobile.href}"><span dir="ltr">${CONTACT.mobile.display}</span> ${icon("smartphone", "sm-ico")}</a>
+      </div>
+    </aside>
+  </div>
+</section>
+</main>`;
+
 /* ---------- Write pages ---------- */
 // PREVIEW: the local build is also published on GitHub Pages for the client,
 // so every page is noindex and all site paths are relative (works on
@@ -1189,6 +1294,74 @@ ARTICLES.forEach((a, i) => {
     body: header("he", ARTICLES_URL) + articleMain(a, i) + footer(),
   }));
 });
+
+// Contact: same URL, title and meta description as the current page
+{
+  const url = SITE_URL + encodeURI(CONTACT_URL);
+  const title = "צור קשר עם הצוות המוביל לתיאום ייעוץ וטיפול | סופיה מדיקל";
+  const description = "פרטי התקשרות, טלפון וטופס פנייה לתיאום ייעוץ, בדיקות או טיפול בסופיה מדיקל עם מענה מהיר ושירות מסור למטופלים בכל הארץ.";
+  const clinicId = SITE_URL + "/#clinic";
+  const ld = { "@context": "https://schema.org", "@graph": [
+    { "@type": "ContactPage", "@id": url + "#page", url, name: title, description, inLanguage: "he-IL", about: { "@id": clinicId }, breadcrumb: { "@id": url + "#crumbs" } },
+    { "@type": "MedicalClinic", "@id": clinicId, name: "סופיה מדיקל", url: SITE_URL + "/", telephone: "+972-50-465-1970", email: CONTACT.email,
+      address: { "@type": "PostalAddress", streetAddress: "יוחנן הסנדלר 6, קומה 5", addressLocality: "כפר סבא", addressCountry: "IL" },
+      geo: { "@type": "GeoCoordinates", latitude: 32.1753704, longitude: 34.9276833 },
+      contactPoint: [{ "@type": "ContactPoint", telephone: "+972-50-465-1970", contactType: "customer service", availableLanguage: ["he", "ar", "ru", "en"] },
+        { "@type": "ContactPoint", telephone: "+972-9-740-0009", contactType: "customer service" }],
+      openingHoursSpecification: [
+        { "@type": "OpeningHoursSpecification", dayOfWeek: ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday"], opens: "09:00", closes: "19:00" },
+        { "@type": "OpeningHoursSpecification", dayOfWeek: "Friday", opens: "09:00", closes: "13:00" }] },
+    { "@type": "BreadcrumbList", "@id": url + "#crumbs", itemListElement: [
+      { "@type": "ListItem", position: 1, name: "בית", item: SITE_URL + "/" },
+      { "@type": "ListItem", position: 2, name: "צור קשר", item: url } ] },
+  ] };
+  write("צור-קשר/index.html", page({
+    lang: "he", title, description, robots: "index, follow", canonical: url,
+    head: `
+<meta property="og:type" content="website">
+<meta property="og:locale" content="he_IL">
+<meta property="og:site_name" content="סופיה מדיקל">
+<meta property="og:title" content="${esc(title)}">
+<meta property="og:description" content="${esc(description)}">
+<meta property="og:url" content="${url}">
+<link rel="stylesheet" href="/assets/css/page-about.css">
+<link rel="stylesheet" href="/assets/css/faq.css">
+<link rel="stylesheet" href="/assets/css/page-contact.css">
+<link rel="stylesheet" href="/assets/css/footer.css">
+<script type="application/ld+json">${JSON.stringify(ld)}</script>`,
+    body: header("he", CONTACT_URL) + contactMain() + footer(),
+  }));
+}
+
+// FAQ: same URL, title and meta description as the current page
+{
+  const url = SITE_URL + encodeURI(FAQ_URL);
+  const title = "שאלות נפוצות על טיפולים ושירותים | סופיה מדיקל";
+  const description = "תשובות לשאלות נפוצות על טיפולי שיקום, כאב והפרעות שינה, אופן התיאום, ביטוחים ודרכי הגעה למרכז, עם ליווי מקצועי ומידע מקיף לכל מטופל.";
+  const ld = { "@context": "https://schema.org", "@graph": [
+    { "@type": "FAQPage", "@id": url + "#page", url, name: title, description, inLanguage: "he-IL", breadcrumb: { "@id": url + "#crumbs" },
+      mainEntity: FAQ_PAGE.flatMap((g) => g.items).map((x) => ({ "@type": "Question", name: x.q, acceptedAnswer: { "@type": "Answer", text: x.a } })) },
+    { "@type": "BreadcrumbList", "@id": url + "#crumbs", itemListElement: [
+      { "@type": "ListItem", position: 1, name: "בית", item: SITE_URL + "/" },
+      { "@type": "ListItem", position: 2, name: "שאלות נפוצות", item: url } ] },
+  ] };
+  write("שאלות-נפוצות/index.html", page({
+    lang: "he", title, description, robots: "index, follow", canonical: url,
+    head: `
+<meta property="og:type" content="website">
+<meta property="og:locale" content="he_IL">
+<meta property="og:site_name" content="סופיה מדיקל">
+<meta property="og:title" content="${esc(title)}">
+<meta property="og:description" content="${esc(description)}">
+<meta property="og:url" content="${url}">
+<link rel="stylesheet" href="/assets/css/page-about.css">
+<link rel="stylesheet" href="/assets/css/page-service.css">
+<link rel="stylesheet" href="/assets/css/page-contact.css">
+<link rel="stylesheet" href="/assets/css/footer.css">
+<script type="application/ld+json">${JSON.stringify(ld)}</script>`,
+    body: header("he", FAQ_URL) + faqMain() + footer(),
+  }));
+}
 
 // Other languages: one landing page each, noindex, no links to inner pages
 for (const k of ["en", "ru", "ar"]) {
