@@ -1,0 +1,41 @@
+/* =========================================================
+   Short pages: arrangements (/הסדרים), multidisciplinary team (/צוות-רב-מקצועי)
+   Icon tiles on light blue, team photo mosaic in the hero.
+   Desktop in VW/%, mobile in PX.
+   ========================================================= */
+.sm-phero--plain .sm-phero__text { grid-column: 1 / 10; }
+
+.sm-tiles { padding-block: var(--section-y); }
+.sm-tiles__h2 { font-size: clamp(28px, 2.6vw, 42px); color: var(--dark); }
+.sm-tiles__grid { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: clamp(16px, 1.6vw, 24px); margin: 0; padding: 0; list-style: none; }
+.sm-tiles__h2 + .sm-tiles__grid { margin-top: var(--head-to-content); }
+.sm-tile { display: flex; flex-direction: column; gap: 14px; padding: clamp(24px, 2.2vw, 36px); border-radius: var(--radius); background: var(--bg-alt); }
+.sm-tile--row { flex-direction: row; align-items: center; justify-content: space-between; }
+.sm-tile--row .sm-tile__ico { order: 2; }
+.sm-tile__ico { display: grid; place-items: center; flex: none; width: 56px; height: 56px; border-radius: var(--radius); background: var(--bg); color: var(--brand); }
+.sm-tile__ico .sm-ico { width: 28px; height: 28px; }
+.sm-tile__title { font-size: clamp(20px, 1.5vw, 24px); line-height: 1.3; color: var(--dark); }
+.sm-tile__text { font-size: 17px; line-height: 1.6; color: var(--text-muted); }
+.sm-tiles__note { max-width: 46em; margin-top: clamp(32px, 3vw, 48px); font-size: clamp(19px, 1.4vw, 22px); font-weight: var(--fw-medium); line-height: 1.6; color: var(--dark); }
+.sm-tiles__more { margin-top: clamp(32px, 3vw, 48px); }
+
+/* team photo mosaic */
+.sm-mosaic { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 14px; margin: 0; padding: 0; list-style: none; }
+.sm-mosaic li { aspect-ratio: 4 / 5; border-radius: var(--radius); overflow: hidden; background: #DCE9EE; }
+.sm-mosaic li:nth-child(even) { translate: 0 28px; }
+.sm-mosaic img { width: 100%; height: 100%; object-fit: cover; object-position: 50% 20%; }
+
+@media (max-width: 1024px) {
+  .sm-phero--plain .sm-phero__text { grid-column: 1; }
+  .sm-tiles__grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .sm-mosaic { max-width: 520px; }
+}
+@media (max-width: 767px) {
+  .sm-tiles { padding-block: 56px; }
+  .sm-tiles__grid, .sm-tiles__grid--3 { grid-template-columns: minmax(0, 1fr); gap: 12px; }
+  .sm-tile { padding: 20px; }
+  .sm-tile__ico { width: 48px; height: 48px; }
+  .sm-tiles__more .btn { width: 100%; }
+  .sm-mosaic { gap: 10px; }
+  .sm-mosaic li:nth-child(even) { translate: 0 16px; }
+}

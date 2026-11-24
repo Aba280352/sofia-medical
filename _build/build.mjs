@@ -1297,6 +1297,71 @@ const areaMain = (p) => {
 </main>`;
 };
 
+
+/* ---------- Arrangements (/הסדרים) and multidisciplinary team (/צוות-רב-מקצועי) ----------
+   Both current pages are short: one sentence (arrangements) and an intro plus
+   a list of professions (team). Text kept as is; the professions and the
+   three arrangements are shown as cards with icons. The images on the current
+   pages are a logo and a stock photo with people, so neither is used. */
+const ARR_URL = "/הסדרים";
+const MDT_URL = "/צוות-רב-מקצועי";
+const PROFESSIONS = [
+  ["רופאי שיקום", "stethoscope"], ["רופאים יועצים בתחומים שונים", "users"], ["פיזיותרפיסטים", "person-standing"],
+  ["פסיכולוגים", "brain"], ["קלינאי תקשורת", "message-circle"], ["טכנאי שינה", "moon"],
+  ["מרפאים בעיסוק", "hand-heart"], ["מומחי סדים ופרוטזות", "footprints"], ["מטפלים ברפואה משלימה", "sparkles"],
+];
+
+const arrMain = () => `
+<main id="main" tabindex="-1">
+${plainHero("arr-h1", [["הסדרים"]], "הסדרים", `קיימים הסדרים עם כללית מושלם, <span dir="ltr">BWell</span> ומגדל לייעוץ רפואי בתחום השיקום וטיפול בכאב`)}
+<section class="sm-tiles" aria-label="הסדרים">
+  <div class="sm-wrap">
+    <ul class="sm-tiles__grid sm-tiles__grid--3" role="list">
+      ${["כללית מושלם", "BWell", "מגדל"].map((n) => `<li class="sm-tile"><span class="sm-tile__ico">${icon("shield-check", "sm-ico")}</span><h2 class="sm-tile__title">${latin(n)}</h2><p class="sm-tile__text">ייעוץ רפואי בתחום השיקום וטיפול בכאב</p></li>`).join("\n      ")}
+    </ul>
+    <p class="sm-tiles__more"><a class="btn btn-ghost" href="${FAQ_URL}">לכל השאלות</a></p>
+  </div>
+</section>
+${ctaBand()}
+</main>`;
+
+const mdtMain = () => `
+<main id="main" tabindex="-1">
+<section class="sm-phero" aria-labelledby="mdt-h1">
+  <div class="sm-wrap sm-phero__grid">
+    <div class="sm-phero__text">
+      <nav class="sm-crumbs" aria-label="פירורי לחם">
+        <ol role="list">
+          <li><a href="/">בית</a>${icon("chevron-left", "sm-ico")}</li>
+          <li><span aria-current="page">צוות רב מקצועי</span></li>
+        </ol>
+      </nav>
+      <h1 id="mdt-h1" class="sm-phero__title">צוות רב מקצועי</h1>
+      <p class="sm-phero__lead">הצוות פועל בשיתוף פעולה הדוק ובגישה רב תחומית, מתוך מטרה להעניק לכל מטופל טיפול אישי, מקצועי ומקיף, תחת קורת גג אחת.</p>
+      <div class="sm-phero__actions">
+        <a class="btn btn-cta" href="/צור-קשר">השארת פרטים ${icon("arrow-left", "sm-ico sm-ico--arrow")}</a>
+        <a class="btn btn-ghost" href="${TEAM_URL}">לעמוד הצוות המלא</a>
+      </div>
+    </div>
+    <div class="sm-phero__media">
+      <ul class="sm-mosaic" role="list">
+        ${TEAM_PAGE.slice(0, 4).map((m) => `<li><img src="/assets/img/team/${m.slug}.webp" width="480" height="600" alt="${esc(m.name)}, ${esc(m.role)}" decoding="async"></li>`).join("\n        ")}
+      </ul>
+    </div>
+  </div>
+</section>
+<section class="sm-tiles" aria-labelledby="mdt-list">
+  <div class="sm-wrap">
+    <h2 class="sm-tiles__h2" id="mdt-list">במרכז פועל צוות מגוון ומיומן הכולל:</h2>
+    <ul class="sm-tiles__grid" role="list">
+      ${PROFESSIONS.map(([n, ic]) => `<li class="sm-tile sm-tile--row"><span class="sm-tile__ico">${icon(ic, "sm-ico")}</span><h3 class="sm-tile__title">${n}</h3></li>`).join("\n      ")}
+    </ul>
+    <p class="sm-tiles__note">הצוות פועל בגישה אינטגרטיבית המשלבת גוף, נפש וטכנולוגיה רפואית מתקדמת, במטרה להעניק טיפול כוללני, אנושי ומותאם אישית לכל מטופל.</p>
+  </div>
+</section>
+${ctaBand()}
+</main>`;
+
 /* ---------- Write pages ---------- */
 // PREVIEW: the local build is also published on GitHub Pages for the client,
 // so every page is noindex and all site paths are relative (works on
@@ -1719,6 +1784,35 @@ AREAS.forEach((p) => {
 <script src="/assets/js/article.js" defer></script>
 <script type="application/ld+json">${JSON.stringify(ld)}</script>`,
     body: header("he", p.href) + areaMain(p) + footer(),
+  }));
+});
+
+// Arrangements + multidisciplinary team: same URLs, titles and meta descriptions as the current pages
+[
+  { url: ARR_URL, title: "הסדרים | סופיה מדיקל, שיקום, טיפול בכאב והפרעות שינה", desc: "הסדרים, סופיה מדיקל, שיקום, טיפול בכאב והפרעות שינה", name: "הסדרים", main: arrMain },
+  { url: MDT_URL, title: "צוות רב מקצועי עם מומחים ומטפלים מובילים | סופיה מדיקל", desc: "הצוות הרב מקצועי של סופיה מדיקל משלב רופאים, פיזיותרפיסטים ומטפלים משלימים לבניית תוכניות טיפול אישיות ומתואמות, עם תמיכה מסורה לכל אורך הדרך.", name: "צוות רב מקצועי", main: mdtMain },
+].forEach((p) => {
+  const url = SITE_URL + encodeURI(p.url);
+  const ld = { "@context": "https://schema.org", "@graph": [
+    { "@type": "WebPage", "@id": url + "#page", url, name: p.title, description: p.desc, inLanguage: "he-IL", about: { "@id": SITE_URL + "/#clinic" } },
+    { "@type": "BreadcrumbList", itemListElement: [
+      { "@type": "ListItem", position: 1, name: "בית", item: SITE_URL + "/" },
+      { "@type": "ListItem", position: 2, name: p.name, item: url } ] },
+  ] };
+  write(p.url.slice(1) + "/index.html", page({
+    lang: "he", title: p.title, description: p.desc, robots: "index, follow", canonical: url,
+    head: `
+<meta property="og:type" content="website">
+<meta property="og:locale" content="he_IL">
+<meta property="og:site_name" content="סופיה מדיקל">
+<meta property="og:title" content="${esc(p.title)}">
+<meta property="og:description" content="${esc(p.desc)}">
+<meta property="og:url" content="${url}">
+<link rel="stylesheet" href="/assets/css/page-about.css">
+<link rel="stylesheet" href="/assets/css/page-misc.css">
+<link rel="stylesheet" href="/assets/css/footer.css">
+<script type="application/ld+json">${JSON.stringify(ld)}</script>`,
+    body: header("he", p.url) + p.main() + footer(),
   }));
 });
 
