@@ -7,7 +7,7 @@ import { dirname, join } from "node:path";
 import { fileURLToPath } from "node:url";
 import { TREATMENTS } from "./data-treatments.mjs";
 import { TEAM, TEAM_PAGE } from "./data-team.mjs";
-import { REVIEWS } from "./data-reviews.mjs";
+import { REVIEWS, REVIEWS_PAGE, VIDEOS } from "./data-reviews.mjs";
 import { FAQ, FAQ_PAGE } from "./data-faq.mjs";
 import { SERVICES_PAGE } from "./data-services.mjs";
 import { SERVICE_PAGES } from "./data-service-pages.mjs";
@@ -1126,6 +1126,93 @@ const faqMain = () => `
 </section>
 </main>`;
 
+
+/* ---------- Reviews (/המלצות) and video reviews (/המלצות-וידאו + items) ----------
+   H1s as on the current pages ("המלצות", "המלצות וידאו"; the item pages have
+   an empty H1 there, so they get "המלצות וידאו" like their title tag). Leads =
+   the current meta descriptions, the video subtitle is the current H4 line,
+   "לגלריה המלאה" is the current item page link. No new copy. */
+const REVIEWS_URL = "/המלצות";
+const VIDEOS_URL = "/המלצות-וידאו";
+const videoCard = (v, i, big) => `<li class="sm-video${big ? " sm-video--big" : ""}">
+          <video src="/assets/video/testimonial-${v.id}.mp4" poster="/assets/video/testimonial-${v.id}.webp" preload="none" playsinline width="480" height="861" aria-label="המלצת וידאו ${i + 1}"></video>
+          <button class="sm-video__play" type="button" aria-label="הפעלת המלצת וידאו ${i + 1}">${icon("play", "sm-ico sm-ico--fill")}</button>
+        </li>`;
+const plainHero = (id, crumbs, h1, lead) => `
+<section class="sm-phero sm-phero--plain" aria-labelledby="${id}">
+  <div class="sm-wrap sm-phero__grid">
+    <div class="sm-phero__text">
+      <nav class="sm-crumbs" aria-label="פירורי לחם">
+        <ol role="list">
+          <li><a href="/">בית</a>${icon("chevron-left", "sm-ico")}</li>
+          ${crumbs.map(([t, h]) => h ? `<li><a href="${h}">${t}</a>${icon("chevron-left", "sm-ico")}</li>` : `<li><span aria-current="page">${t}</span></li>`).join("\n          ")}
+        </ol>
+      </nav>
+      <h1 id="${id}" class="sm-phero__title">${h1}</h1>
+      <p class="sm-phero__lead">${lead}</p>
+    </div>
+  </div>
+</section>`;
+
+const reviewsMain = () => `
+<main id="main" tabindex="-1">
+${plainHero("rev-h1", [["המלצות"]], "המלצות", "מטופלים מספרים על תהליכי טיפול, מקצועיות הצוות והתוצאות שהשיגו בסופיה מדיקל, עם דוגמאות לשיפור תפקוד והפחתת כאב וליווי אישי לאורך כל הדרך.")}
+<section class="sm-revpage" aria-label="המלצות מטופלים">
+  <div class="sm-wrap">
+    <ul class="sm-revgrid" role="list">
+      ${REVIEWS_PAGE.map((r) => `<li class="sm-revcard">
+        <figure>
+          <svg class="sm-review__mark" viewBox="0 0 28 28" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M11 8c-4 1.5-6 4.5-6 9v3h6v-6H7.5M23 8c-4 1.5-6 4.5-6 9v3h6v-6h-3.5"/></svg>
+          <blockquote class="sm-revcard__quote">${r.quote}</blockquote>
+          <figcaption class="sm-revcard__name">${r.name}</figcaption>
+        </figure>
+      </li>`).join("\n      ")}
+    </ul>
+  </div>
+</section>
+<section class="sm-revvid" aria-labelledby="revvid-title">
+  <div class="sm-wrap">
+    <div class="sm-revvid__head">
+      <h2 class="sm-revvid__title" id="revvid-title">המלצות וידאו</h2>
+      <p class="sm-videos__sub">כי אין כמו לשמוע ממי שכבר עבר את הדרך</p>
+    </div>
+    <ul class="sm-videos__list" role="list">
+        ${VIDEOS.map((v, i) => videoCard(v, i)).join("\n        ")}
+    </ul>
+    <div class="sm-revvid__more"><a class="btn btn-ghost" href="${VIDEOS_URL}">לכל המלצות הווידאו</a></div>
+  </div>
+</section>
+${ctaBand()}
+</main>`;
+
+const videosMain = () => `
+<main id="main" tabindex="-1">
+${plainHero("vid-h1", [["המלצות", REVIEWS_URL], ["המלצות וידאו"]], "המלצות וידאו", "כי אין כמו לשמוע ממי שכבר עבר את הדרך")}
+<section class="sm-revvid sm-revvid--page" aria-label="סרטוני המלצות">
+  <div class="sm-wrap">
+    <ul class="sm-videos__list" role="list">
+        ${VIDEOS.map((v, i) => videoCard(v, i, true)).join("\n        ")}
+    </ul>
+    <div class="sm-revvid__more"><a class="btn btn-ghost" href="${REVIEWS_URL}">לכל ההמלצות</a></div>
+  </div>
+</section>
+${ctaBand()}
+</main>`;
+
+const videoItemMain = (v, i) => `
+<main id="main" tabindex="-1">
+${plainHero("vit-h1", [["המלצות", REVIEWS_URL], ["המלצות וידאו", VIDEOS_URL], [`המלצת וידאו ${i + 1}`]], "המלצות וידאו", v.desc)}
+<section class="sm-revvid sm-revvid--page" aria-label="סרטון המלצה">
+  <div class="sm-wrap">
+    <ul class="sm-videos__list" role="list">
+        ${videoCard(v, i, true)}
+    </ul>
+    <div class="sm-revvid__more"><a class="btn btn-ghost" href="${VIDEOS_URL}">לגלריה המלאה</a></div>
+  </div>
+</section>
+${ctaBand()}
+</main>`;
+
 /* ---------- Write pages ---------- */
 // PREVIEW: the local build is also published on GitHub Pages for the client,
 // so every page is noindex and all site paths are relative (works on
@@ -1461,6 +1548,60 @@ ARTICLES.forEach((a, i) => {
 <script type="application/ld+json">${JSON.stringify(ld)}</script>`,
     body: header("he", FAQ_URL) + faqMain() + footer(),
   }));
+}
+
+// Reviews + video reviews: same URLs, titles and meta descriptions as the current pages
+{
+  const clinicId = SITE_URL + "/#clinic";
+  const crumbs = (items) => ({ "@type": "BreadcrumbList", itemListElement: [["בית", SITE_URL + "/"], ...items].map(([n, u], k) => ({ "@type": "ListItem", position: k + 1, name: n, item: u })) });
+  const videoLd = (v, i) => ({ "@type": "VideoObject", name: `המלצת וידאו ${i + 1}, סופיה מדיקל`, description: v.desc, thumbnailUrl: SITE_URL + `/assets/video/testimonial-${v.id}.webp`, contentUrl: SITE_URL + `/assets/video/testimonial-${v.id}.mp4`, publisher: { "@id": clinicId } });
+  const head = (title, description, url, extra, ld) => `
+<meta property="og:type" content="website">
+<meta property="og:locale" content="he_IL">
+<meta property="og:site_name" content="סופיה מדיקל">
+<meta property="og:title" content="${esc(title)}">
+<meta property="og:description" content="${esc(description)}">
+<meta property="og:url" content="${url}">
+${extra}
+<link rel="stylesheet" href="/assets/css/page-about.css">
+<link rel="stylesheet" href="/assets/css/reviews.css">
+<link rel="stylesheet" href="/assets/css/page-reviews.css">
+<link rel="stylesheet" href="/assets/css/footer.css">
+<script src="/assets/js/reviews.js" defer></script>
+<script type="application/ld+json">${JSON.stringify({ "@context": "https://schema.org", "@graph": ld })}</script>`;
+
+  {
+    const url = SITE_URL + encodeURI(REVIEWS_URL);
+    const title = "המלצות מטופלים על חוויית הטיפול במרכז סופיה מדיקל";
+    const description = "מטופלים מספרים על תהליכי טיפול, מקצועיות הצוות והתוצאות שהשיגו בסופיה מדיקל, עם דוגמאות לשיפור תפקוד והפחתת כאב וליווי אישי לאורך כל הדרך.";
+    const ld = [
+      { "@type": "WebPage", "@id": url + "#page", url, name: title, description, inLanguage: "he-IL", about: { "@id": clinicId } },
+      { "@type": "MedicalClinic", "@id": clinicId, name: "סופיה מדיקל", url: SITE_URL + "/",
+        review: REVIEWS_PAGE.map((r) => ({ "@type": "Review", reviewBody: r.quote, author: { "@type": "Person", name: r.name.split(",")[0] } })) },
+      crumbs([["המלצות", url]]),
+    ];
+    write("המלצות/index.html", page({ lang: "he", title, description, robots: "index, follow", canonical: url,
+      head: head(title, description, url, `<meta property="og:image" content="${SITE_URL}/assets/img/treat-rehab-900.webp">`, ld),
+      body: header("he", REVIEWS_URL) + reviewsMain() + footer() }));
+  }
+  {
+    const url = SITE_URL + encodeURI(VIDEOS_URL);
+    const title = "המלצות וידאו | סופיה מדיקל, שיקום וכאב";
+    const description = "צפו בהמלצות וידאו של מטופלים בסופיה מדיקל על שיקום, טיפול בכאב והפרעות שינה, עם חוויות ותוצאות אמיתיות.";
+    const ld = [{ "@type": "CollectionPage", "@id": url + "#page", url, name: title, description, inLanguage: "he-IL" }, ...VIDEOS.map(videoLd),
+      crumbs([["המלצות", SITE_URL + encodeURI(REVIEWS_URL)], ["המלצות וידאו", url]])];
+    write("המלצות-וידאו/index.html", page({ lang: "he", title, description, robots: "index, follow", canonical: url,
+      head: head(title, description, url, `<meta property="og:image" content="${SITE_URL}/assets/video/testimonial-${VIDEOS[0].id}.webp">`, ld),
+      body: header("he", REVIEWS_URL) + videosMain() + footer() }));
+  }
+  VIDEOS.forEach((v, i) => {
+    const url = SITE_URL + encodeURI(v.item);
+    const ld = [{ "@type": "WebPage", "@id": url + "#page", url, name: v.title, description: v.desc, inLanguage: "he-IL" }, videoLd(v, i),
+      crumbs([["המלצות", SITE_URL + encodeURI(REVIEWS_URL)], ["המלצות וידאו", SITE_URL + encodeURI(VIDEOS_URL)], [`המלצת וידאו ${i + 1}`, url]])];
+    write(v.item.slice(1) + "/index.html", page({ lang: "he", title: v.title, description: v.desc, robots: "index, follow", canonical: url,
+      head: head(v.title, v.desc, url, `<meta property="og:image" content="${SITE_URL}/assets/video/testimonial-${v.id}.webp">`, ld),
+      body: header("he", REVIEWS_URL) + videoItemMain(v, i) + footer() }));
+  });
 }
 
 // Other languages: one landing page each, noindex, no links to inner pages

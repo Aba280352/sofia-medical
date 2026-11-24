@@ -1,0 +1,33 @@
+/* =========================================================
+   Reviews (/המלצות) and video reviews (/המלצות-וידאו + items)
+   Masonry of review cards (CSS columns), video cards from reviews.css.
+   Desktop in VW/%, mobile in PX.
+   ========================================================= */
+.sm-revpage { padding-block: var(--section-y); }
+.sm-revgrid { columns: 3; column-gap: clamp(16px, 1.6vw, 24px); margin: 0; padding: 0; list-style: none; }
+.sm-revcard { break-inside: avoid; margin-bottom: clamp(16px, 1.6vw, 24px); }
+.sm-revcard figure { margin: 0; padding: clamp(24px, 2.2vw, 36px); border-radius: var(--radius); background: var(--bg-alt); }
+.sm-revcard .sm-review__mark { width: 30px; height: 30px; color: var(--brand); }
+.sm-revcard__quote { margin: 14px 0 0; font-size: 18px; line-height: 1.7; color: var(--dark); }
+.sm-revcard__name { margin-top: 18px; padding-top: 14px; border-top: 1px solid var(--line); font-size: 16px; font-weight: var(--fw-heading); color: var(--brand-ink); }
+
+.sm-revvid { padding-block: var(--section-y); background: var(--bg-alt); }
+.sm-revvid--page { background: none; }
+.sm-revvid__head { margin-bottom: var(--head-to-content); text-align: center; }
+.sm-revvid__title { font-size: clamp(32px, 3.3vw, 52px); color: var(--dark); }
+.sm-revvid__more { display: flex; justify-content: center; margin-top: clamp(32px, 3vw, 48px); }
+.sm-video--big { width: min(380px, 44vw); }
+
+@media (max-width: 1024px) {
+  .sm-revgrid { columns: 2; }
+}
+@media (max-width: 767px) {
+  .sm-revpage { padding-block: 56px; }
+  .sm-revgrid { columns: 1; }
+  .sm-revcard__quote { font-size: 17px; }
+  .sm-revvid { padding-block: 56px 72px; }
+  .sm-revvid__title { font-size: 30px; }
+  .sm-video--big { width: min(300px, 80vw); }
+  .sm-revvid--page .sm-videos__list { flex-direction: column; align-items: center; }
+  .sm-revvid__more .btn { width: 100%; }
+}
