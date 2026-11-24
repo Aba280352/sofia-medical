@@ -36,8 +36,6 @@
 .sm-hero__brand { display: block; color: var(--c-light-blue); }
 .sm-hero__lead { margin-top: 14px; max-width: 32em; font-size: var(--fs-lead); line-height: 1.55; color: rgba(254, 254, 254, .9); }
 .sm-hero__actions { display: flex; flex-wrap: wrap; gap: var(--gap-sm); margin-top: 26px; }
-.btn-wa { background: var(--wa); color: var(--dark); }
-.btn-wa:hover { background: var(--wa-hover); }
 .sm-hero .btn:focus-visible { outline-color: #FEFEFE; }
 
 /* Insurance: round seal image + the existing sentence */

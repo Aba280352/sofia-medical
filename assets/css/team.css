@@ -15,8 +15,6 @@
 .sm-team__title { font-size: var(--fs-h2); color: var(--dark); }
 .sm-team__intro { margin-top: 20px; font-size: 18px; line-height: 1.6; color: var(--text-muted); }
 .sm-team__all { margin-top: 28px; }
-.btn-ghost { background: transparent; color: var(--dark); box-shadow: inset 0 0 0 1px var(--dark); }
-.btn-ghost:hover { background: var(--dark); color: #FEFEFE; }
 
 /* Caption: three clipping windows */
 .sm-team__cap { min-height: 220px; border-top: 1px solid var(--line); padding-top: 28px; }

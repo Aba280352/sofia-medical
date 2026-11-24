@@ -40,6 +40,11 @@ ul[role="list"] { list-style: none; margin: 0; padding: 0; }
   [dir="rtl"] .btn-cta:hover .sm-ico--arrow { translate: -4px 0; }
   [dir="ltr"] .btn-cta:hover .sm-ico--arrow { translate: 4px 0; }
 }
+/* WhatsApp: WhatsApp green with dark text. Ghost: border only, no fill */
+.btn-wa { background: var(--wa); color: var(--dark); }
+.btn-wa:hover { background: var(--wa-hover); }
+.btn-ghost { background: transparent; color: var(--dark); box-shadow: inset 0 0 0 1px var(--dark); }
+.btn-ghost:hover { background: var(--dark); color: #FEFEFE; }
 .btn:active { transform: scale(0.97); }
 
 :focus-visible { outline: 2px solid var(--dark); outline-offset: 3px; }

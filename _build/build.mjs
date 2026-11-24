@@ -431,6 +431,135 @@ const footer = () => `
   </div>
 </footer>`;
 
+/* ---------- About page (/אודות-סופיה-מדיקל) ----------
+   All body copy is the existing text of the current about page (dashes
+   replaced). NEW copy that needs the client's approval: the four card
+   titles in the center section. Headings: H1 identical to the current page,
+   the existing H2 kept, the other section titles added as H2/H3. */
+const ABOUT_URL = "/אודות-סופיה-מדיקל";
+const SITE_URL = "https://www.sofia-medical.com";
+const ABOUT_CARDS = [
+  { title: "שיקום רפואי מותאם אישית", icon: "accessibility", href: "/רפואה-שיקומית-מתקדמת", more: "על רפואה שיקומית מתקדמת",
+    text: "המרכז שם דגש על שיקום רפואי מקצועי ומותאם אישית, הכולל ליווי רציף של הצוות הרב תחומי במטרה לשפר את התפקוד הגופני, הקוגניטיבי, התקשורתי והנפשי, להפחית כאב, לשפר יציבה וניידות ולהחזיר את המטופלים לחיים פעילים ועצמאיים." },
+  { title: "טכנולוגיה ומכשור מתקדם", icon: "cpu", href: "/מאמרים/שיקום-לאחר-אירוע-מוחי-עם-recoverix-טכנולוגיה-מתקדמת-לשיקום-נוירולוגי", more: "על שיקום נוירולוגי עם recoveriX",
+    text: "המרכז עושה שימוש בטכנולוגיה רפואית מתקדמת ובמכשור חדשני לצורך אבחון מדויק, בקרה טיפולית ושיקום יעיל. השילוב בין ידע קליני נרחב, עבודת צוות מתואמת וחדשנות טכנולוגית מאפשר מתן טיפול איכותי, מדויק ובטוח לכל מטופל." },
+  { title: "רפואת שינה", icon: "moon", href: "/אבחון-וטיפול-מקצועי-בהפרעות-שינה", more: "על אבחון וטיפול בהפרעות שינה",
+    text: "המרכז מתמחה גם בתחום רפואת השינה, ומציע אבחון מקיף, טיפול מותאם וליווי רפואי רציף לשיפור איכות השינה, הפחתת עייפות יומית, ויסות מחזורי שינה וערות והשגת שינה טבעית ובריאה יותר." },
+  { title: "מעבדת שינה ובדיקות ביתיות", icon: "activity", href: "/מאמרים/מעבדת-שינה", more: "על מעבדת השינה",
+    text: "בנוסף לשירותים בתחומי השיקום, במרכז מתבצעות כל סוגי בדיקות השינה, לרבות בדיקות שינה ביתיות בהתאמה אישית למטופל, וכן פועלת מעבדת שינה מתקדמת לביצוע בדיקות שינה במכון, הכוללות EEG וכל הפרמטרים הפיזיולוגיים של השינה לצורך אבחון מדויק ומקצועי של כלל הפרעות השינה." },
+];
+const CREDO = [
+  "לאורך שנות עבודתי כרופא שיקום וכמומחה לרפואת שינה, למדתי כי המפגש עם המטופל הוא הרבה מעבר לבדיקות ולמכשירים.",
+  "הרפואה בעיניי היא קודם כל הקשבה: לראות את האדם שמולי, להבין את סיפורו וללוות אותו במסע חזרה לחיים מלאים, פעילים ומשמעותיים.",
+  "אני מאמין כי שיקום אמיתי מתחיל באמונה באדם: ביכולת שלו להשתקם, לשוב לעצמאות ולגלות מחדש את כוחותיו.",
+  "כל אדם זכאי לטיפול מקצועי, מכבד ושוויוני ללא הבדל דת, גזע או מין, תוך הערכה אמיתית לערכו האנושי ולסיפור חייו.",
+  "במרכז סופיה מדיקל אנו משלבים רפואה מתקדמת עם אנושיות: צוות רב תחומי הפועל יחד, מתוך אחריות, שיתוף פעולה ומסירות.",
+  "המטרה שלנו איננה רק לשקם את הגוף או לשפר את השינה, אלא להשיב למטופל את הביטחון, התקווה והאמונה בעצמו.",
+];
+const ALA_ROLE = "מומחה ברפואה פיזיקלית ושיקום ומומחה להפרעות שינה";
+
+const aboutMain = () => `
+<main id="main" tabindex="-1">
+<section class="sm-phero" aria-labelledby="about-h1">
+  <div class="sm-wrap sm-phero__grid">
+    <div class="sm-phero__text">
+      <nav class="sm-crumbs" aria-label="פירורי לחם">
+        <ol role="list">
+          <li><a href="/">בית</a>${icon("chevron-left", "sm-ico")}</li>
+          <li><span aria-current="page">אודות סופיה מדיקל</span></li>
+        </ol>
+      </nav>
+      <h1 id="about-h1" class="sm-phero__title">אודות <span class="hl">סופיה מדיקל</span></h1>
+      <p class="sm-phero__lead">רפואה מתקדמת, צוות מומחים ופתרונות מותאמים אישית לשיפור תפקוד ובריאות המטופלים</p>
+      <div class="sm-phero__actions">
+        <a class="btn btn-cta" href="/צור-קשר">השארת פרטים ${icon("arrow-left", "sm-ico sm-ico--arrow")}</a>
+        <a class="btn btn-wa" href="https://wa.me/972504651970" target="_blank" rel="noopener">וואטסאפ<span class="sm-sr"> (נפתח בחלון חדש)</span> ${icon("whatsapp", "sm-ico sm-ico--fill")}</a>
+      </div>
+    </div>
+    <div class="sm-phero__media">
+      <figure class="sm-phero__figure">
+        <div class="sm-phero__frame">
+          <img src="/assets/img/about/dr-ala-mahamid-desk-960.webp"
+               srcset="/assets/img/about/dr-ala-mahamid-desk-640.webp 640w, /assets/img/about/dr-ala-mahamid-desk-960.webp 960w, /assets/img/about/dr-ala-mahamid-desk-1400.webp 1400w"
+               sizes="(max-width: 1024px) 92vw, 46vw" width="960" height="720"
+               alt="ד&quot;ר עלא מחאמיד, מנהל מרכז סופיה מדיקל בכפר סבא" fetchpriority="high" decoding="async">
+        </div>
+        <figcaption class="sm-phero__card"><strong>ד"ר עלא מחאמיד</strong><span>${ALA_ROLE}</span></figcaption>
+      </figure>
+    </div>
+  </div>
+</section>
+
+<section class="sm-intro" aria-labelledby="intro-title">
+  <div class="sm-wrap sm-intro__grid">
+    <h2 id="intro-title" class="sm-intro__title">סופיה מדיקל: <span class="hl">רפואה מתקדמת, שיקום, טיפול בכאב והפרעות שינה</span></h2>
+    <div class="sm-intro__body">
+      <p class="sm-intro__lead">סופיה מדיקל הוא <strong>מרכז רפואי פרטי ומתקדם</strong> המתמחה בשיקום אמבולטורי, בטיפול בכאב ובאבחון הפרעות שינה אצל מבוגרים וילדים, בהובלת ד"ר עלא מחאמיד, רופא בכיר, מומחה ברפואה פיזיקלית ושיקום ומנהל השירות ויחידת הפרעות השינה במרכז הרפואי לוינשטיין.</p>
+      <p>המרכז משלב רפואה מבוססת מדע, אבחון מתקדם וטכנולוגיות חדשניות לשיקום, להפחתת כאב, שיפור תפקוד והשבת איכות החיים.</p>
+      <p class="sm-intro__note">${icon("badge-check", "sm-ico")}<span>כל תוכנית טיפול נבנית באופן אישי בהתאם למצבו הרפואי של המטופל, למטרות השיקום וליעדיו התפקודיים.</span></p>
+      <nav class="sm-links" aria-label="תחומי הטיפול">
+        <ul role="list">
+          ${SERVICES.map((s) => `<li><a href="${s.href}"><span>${latin(s.name)}</span>${icon("chevron-left", "sm-ico")}</a></li>`).join("\n          ")}
+        </ul>
+      </nav>
+    </div>
+  </div>
+</section>
+
+<section class="sm-center" aria-labelledby="center-title">
+  <div class="sm-wrap">
+    <h2 id="center-title" class="sm-center__title">מרכז לרפואה מתקדמת, <span class="hl">שיקום והפרעות שינה</span></h2>
+    <ul class="sm-center__cards" role="list">
+      ${ABOUT_CARDS.map((c) => `<li class="sm-card">
+        <div class="sm-card__head"><h3 class="sm-card__title">${c.title}</h3><span class="sm-card__ico">${icon(c.icon, "sm-ico")}</span></div>
+        <p class="sm-card__text">${latin(c.text)}</p>
+        <a class="sm-card__more" href="${c.href}">למידע נוסף<span class="sm-sr"> ${latin(c.more)}</span>${icon("chevron-left", "sm-ico")}</a>
+      </li>`).join("\n      ")}
+    </ul>
+    <p class="sm-center__belief">בסופיה מדיקל אנו מאמינים כי השילוב בין <span class="hl">מומחיות רפואית, צוות רב תחומי וטכנולוגיה מתקדמת</span> הוא המפתח לשיקום מלא ולשינה מאוזנת, כדי שכל מטופל יוכל לשוב לחיים פעילים, רגועים ובריאים יותר.</p>
+  </div>
+</section>
+
+<section class="sm-credo" aria-labelledby="credo-title">
+  <div class="sm-wrap sm-credo__grid">
+    <div class="sm-credo__head">
+      <h2 id="credo-title" class="sm-credo__title">האני מאמין של <span class="hl">ד"ר עלא מחאמיד</span></h2>
+      <blockquote class="sm-credo__quote"><p>מאחורי כל ממצא רפואי עומד אדם, עם כאב, סיפור ותקווה. תפקידי כרופא הוא לא רק לטפל, אלא להבין, להקשיב ולהחזיר את האיזון בין הגוף לנפש.</p></blockquote>
+    </div>
+    <div class="sm-credo__media">
+      <figure class="sm-credo__figure">
+        <div class="sm-credo__frame">
+          <img src="/assets/img/about/dr-ala-mahamid-portrait-720.webp"
+               srcset="/assets/img/about/dr-ala-mahamid-portrait-440.webp 440w, /assets/img/about/dr-ala-mahamid-portrait-720.webp 720w"
+               sizes="(max-width: 1024px) 80vw, 34vw" width="720" height="900"
+               alt="ד&quot;ר עלא מחאמיד, ${ALA_ROLE}" loading="lazy" decoding="async">
+        </div>
+      </figure>
+    </div>
+    <div class="sm-credo__body">
+      ${CREDO.map((p) => `<p>${p}</p>`).join("\n      ")}
+      <blockquote class="sm-credo__close"><p>הרפואה האמיתית בעיניי אינה מסתכמת בריפוי הגוף, אלא ביכולת לראות את האדם השלם, להחזיר לו את הכוחות, ואת האמונה בחיים עצמם.</p></blockquote>
+      <p class="sm-credo__sign"><strong>ד"ר עלא מחאמיד</strong><span>${ALA_ROLE}</span></p>
+    </div>
+  </div>
+</section>
+
+<section class="sm-cta" aria-labelledby="cta-title">
+  <div class="sm-wrap">
+    <div class="sm-cta__box">
+      <div class="sm-cta__text">
+        <h2 id="cta-title" class="sm-cta__title">השאירו פרטים <span class="hl">ונחזור אליכם</span></h2>
+        <p>קיימים הסדרים עם כללית מושלם, <span dir="ltr">BWell</span> ומגדל לייעוץ רפואי בתחום השיקום וטיפול בכאב</p>
+      </div>
+      <div class="sm-cta__actions">
+        <a class="btn btn-cta" href="/צור-קשר">השארת פרטים ${icon("arrow-left", "sm-ico sm-ico--arrow")}</a>
+        <a class="btn btn-ghost" href="${CONTACT.mobile.href}"><span dir="ltr">${CONTACT.mobile.display}</span> ${icon("smartphone", "sm-ico")}</a>
+      </div>
+    </div>
+  </div>
+</section>
+</main>`;
+
 /* ---------- Write pages ---------- */
 // PREVIEW: the local build is also published on GitHub Pages for the client,
 // so every page is noindex and all site paths are relative (works on
@@ -444,6 +573,8 @@ const write = (rel, html) => {
     .replace(/([\s"',(])\/assets\//g, `$1${up}assets/`)
     .replace(/href="\/(en|ru|ar)\/"/g, `href="${up}$1/"`)
     .replace(/href="\/"/g, `href="${up || "./"}"`)
+    // inner site pages: /x/y -> ../x/y/ (folder per page on the preview)
+    .replace(/href="\/(?!\/)([^"#?]+?)\/?"/g, `href="${up}$1/"`)
     // cache busting: every build gets a new version on CSS and JS
     .replace(/(assets\/(?:css|js)\/[\w-]+\.(?:css|js))"/g, `$1?v=${VER}"`);
   if (PREVIEW) html = html.replace(/<meta name="robots" content="[^"]*">/, '<meta name="robots" content="noindex, nofollow">');
@@ -474,10 +605,46 @@ write("index.html", page({
 <script src="/assets/js/reviews.js" defer></script>
 <link rel="stylesheet" href="/assets/css/faq.css">
 <link rel="stylesheet" href="/assets/css/footer.css">
-<script type="application/ld+json">${JSON.stringify({ "@context": "https://schema.org", "@type": "MedicalClinic", name: "סופיה מדיקל", url: "https://www.sofia-medical.com/", logo: "https://www.sofia-medical.com/assets/img/logo-icon.png", telephone: "+972-50-465-1970", email: CONTACT.email, address: { "@type": "PostalAddress", streetAddress: "יוחנן הסנדלר 6, קומה 5", addressLocality: "כפר סבא", addressCountry: "IL" }, medicalSpecialty: ["PhysicalMedicineAndRehabilitation", "SleepMedicine", "PainManagement"], sameAs: ["https://www.facebook.com/profile.php?id=61583510784516", "https://www.instagram.com/sofiamedical12/"] })}</script>
+<script type="application/ld+json">${JSON.stringify({ "@context": "https://schema.org", "@type": "MedicalClinic", "@id": SITE_URL + "/#clinic", name: "סופיה מדיקל", url: "https://www.sofia-medical.com/", logo: "https://www.sofia-medical.com/assets/img/logo-icon.png", telephone: "+972-50-465-1970", email: CONTACT.email, address: { "@type": "PostalAddress", streetAddress: "יוחנן הסנדלר 6, קומה 5", addressLocality: "כפר סבא", addressCountry: "IL" }, medicalSpecialty: ["PhysicalMedicineAndRehabilitation", "SleepMedicine", "PainManagement"], sameAs: ["https://www.facebook.com/profile.php?id=61583510784516", "https://www.instagram.com/sofiamedical12/"] })}</script>
 <script type="application/ld+json">${JSON.stringify({ "@context": "https://schema.org", "@type": "FAQPage", mainEntity: FAQ.map((x) => ({ "@type": "Question", name: x.q, acceptedAnswer: { "@type": "Answer", text: x.a } })) })}</script>`,
   body: header("he", "/") + heroHome() + footer(),
 }));
+
+// About: same URL, title and meta description as the current page
+{
+  const url = SITE_URL + encodeURI(ABOUT_URL);
+  const title = "הסיפור שלנו והדרך לרפואה מותאמת אישית | סופיה מדיקל";
+  const description = "סיפור ההקמה והחזון של סופיה מדיקל, המרכז הרב תחומי בראשות ד״ר עלא מחאמיד שמחבר מומחים, טכנולוגיה ויחס אישי לטיפול משולב ושירות בפריסה ארצית.";
+  const img = SITE_URL + "/assets/img/about/dr-ala-mahamid-desk-1400.webp";
+  const clinic = { "@type": "MedicalClinic", "@id": SITE_URL + "/#clinic", name: "סופיה מדיקל", url: SITE_URL + "/", telephone: "+972-50-465-1970", email: CONTACT.email,
+    address: { "@type": "PostalAddress", streetAddress: "יוחנן הסנדלר 6, קומה 5", addressLocality: "כפר סבא", addressCountry: "IL" },
+    medicalSpecialty: ["PhysicalMedicineAndRehabilitation", "SleepMedicine", "PainManagement"] };
+  const ld = { "@context": "https://schema.org", "@graph": [
+    { "@type": "AboutPage", "@id": url + "#page", url, name: title, description, inLanguage: "he-IL", primaryImageOfPage: img,
+      about: { "@id": clinic["@id"] }, breadcrumb: { "@id": url + "#crumbs" } },
+    clinic,
+    { "@type": "Person", "@id": SITE_URL + "/#dr-ala-mahamid", name: 'ד"ר עלא מחאמיד', jobTitle: ALA_ROLE, image: img, worksFor: { "@id": clinic["@id"] } },
+    { "@type": "BreadcrumbList", "@id": url + "#crumbs", itemListElement: [
+      { "@type": "ListItem", position: 1, name: "בית", item: SITE_URL + "/" },
+      { "@type": "ListItem", position: 2, name: "אודות סופיה מדיקל", item: url } ] },
+  ] };
+  write("אודות-סופיה-מדיקל/index.html", page({
+    lang: "he", title, description, robots: "index, follow", canonical: url,
+    head: `
+<meta property="og:type" content="website">
+<meta property="og:locale" content="he_IL">
+<meta property="og:site_name" content="סופיה מדיקל">
+<meta property="og:title" content="${esc(title)}">
+<meta property="og:description" content="${esc(description)}">
+<meta property="og:url" content="${url}">
+<meta property="og:image" content="${img}">
+<link rel="preload" as="image" type="image/webp" imagesrcset="/assets/img/about/dr-ala-mahamid-desk-640.webp 640w, /assets/img/about/dr-ala-mahamid-desk-960.webp 960w, /assets/img/about/dr-ala-mahamid-desk-1400.webp 1400w" imagesizes="(max-width: 1024px) 92vw, 46vw" fetchpriority="high">
+<link rel="stylesheet" href="/assets/css/page-about.css">
+<link rel="stylesheet" href="/assets/css/footer.css">
+<script type="application/ld+json">${JSON.stringify(ld)}</script>`,
+    body: header("he", ABOUT_URL) + aboutMain() + footer(),
+  }));
+}
 
 // Other languages: one landing page each, noindex, no links to inner pages
 for (const k of ["en", "ru", "ar"]) {
