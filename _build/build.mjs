@@ -657,7 +657,6 @@ const servicesMain = () => `
           ${TREATMENTS.map((t, i) => `<a class="sm-rot__link" href="${t.href}"${i ? " hidden" : ""}>${icon(t.icon, "sm-ico")}<span>${latin(t.tab)}</span>${icon("chevron-left", "sm-ico sm-rot__arrow")}</a>`).join("\n          ")}
           <div class="sm-rot__ctrl">
             <div class="sm-rot__dots">${TREATMENTS.map((t, i) => `<button type="button" class="sm-rot__dot" aria-label="${esc(t.tab)}"${i ? "" : ' aria-current="true"'}></button>`).join("")}</div>
-            <button type="button" class="sm-rot__pause" aria-pressed="false" aria-label="עצירת החלפת התמונות">${icon("pause", "sm-ico sm-rot__ico-pause")}${icon("play-line", "sm-ico sm-rot__ico-play")}</button>
           </div>
         </figcaption>
       </figure>

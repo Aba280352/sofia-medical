@@ -71,15 +71,11 @@
 @media (hover: hover) and (pointer: fine) { .sm-rot__link:hover .sm-rot__arrow { translate: -4px 0; } }
 @keyframes sm-rot-in { from { opacity: 0; translate: 0 6px; } }
 
-.sm-rot__ctrl { display: flex; align-items: center; justify-content: space-between; gap: 12px; margin-top: 14px; }
+.sm-rot__ctrl { display: flex; align-items: center; margin-top: 14px; }
 .sm-rot__dots { display: flex; gap: 6px; }
 .sm-rot__dot { width: 22px; height: 24px; padding: 0; border: 0; background: none; cursor: pointer; position: relative; }
 .sm-rot__dot::before { content: ""; position: absolute; inset-inline: 0; top: 50%; height: 3px; margin-top: -1.5px; border-radius: 2px; background: #C9DDE6; transition: background var(--dur-micro); }
 .sm-rot__dot[aria-current]::before { background: var(--brand); }
-.sm-rot__pause { display: grid; place-items: center; width: 32px; height: 32px; padding: 0; border: 1px solid #C9DDE6; border-radius: 8px; background: none; color: var(--dark); cursor: pointer; }
-.sm-rot__pause .sm-ico { width: 16px; height: 16px; }
-.sm-rot__ico-play, .sm-rot.is-stopped .sm-rot__ico-pause { display: none; }
-.sm-rot.is-stopped .sm-rot__ico-play { display: block; }
 
 @media (prefers-reduced-motion: reduce) {
   .sm-rot__img { transition: opacity .3s ease; scale: 1; }
