@@ -14,6 +14,7 @@ import { SERVICES_PAGE } from "./data-services.mjs";
 import { SERVICE_PAGES } from "./data-service-pages.mjs";
 import { ARTICLES } from "./data-articles.mjs";
 import { AREAS } from "./data-areas.mjs";
+import { LEGAL } from "./data-legal.mjs";
 import { COVER_SLUGS } from "./make-article-covers.mjs";
 
 const SITE = join(dirname(fileURLToPath(import.meta.url)), "..");
@@ -1440,6 +1441,30 @@ const profileMain = (m) => {
 </main>`;
 };
 
+
+/* ---------- Legal pages (/terms, /privacy, /accessibility) ----------
+   Text of the current pages (data-legal.mjs), H1 as on the current pages.
+   Phone and email lines become links. The accessibility statement is the
+   client's current one (updated 29/11/2025); it must be reviewed against the
+   new site before go live. */
+const legalLink = (t) => {
+  const keep = [];
+  t = t.replace(/0\d{1,2}-\d{3}-\d{4}/g, (m) => { keep.push(`<a href="tel:+972${m.replace(/-/g, "").slice(1)}" dir="ltr">${m}</a>`); return `§${keep.length - 1}§`; })
+    .replace(/[\w.+-]+@[\w-]+\.[\w.]+/g, (m) => { keep.push(`<a href="mailto:${m}" dir="ltr">${m}</a>`); return `§${keep.length - 1}§`; });
+  return latin(t).replace(/§(\d+)§/g, (m, i) => keep[+i]);
+};
+const legalMain = (p) => `
+<main id="main" tabindex="-1">
+${plainHero("legal-h1", [[p.h1]], p.h1, "")}
+<section class="sm-svcpage sm-legal">
+  <div class="sm-wrap">
+    <article class="sm-prose">
+        ${p.blocks.map((b) => b.t === "h2" ? `<h2 class="sm-prose__h2">${latin(b.x)}</h2>` : b.t === "h3" ? `<h3 class="sm-prose__h3">${latin(b.x)}</h3>` : b.t === "ul" ? `<ul class="sm-prose__list" role="list">${b.x.map((x) => `<li>${legalLink(x)}</li>`).join("")}</ul>` : `<p>${legalLink(b.x)}</p>`).join("\n        ")}
+    </article>
+  </div>
+</section>
+</main>`;
+
 /* ---------- Write pages ---------- */
 // PREVIEW: the local build is also published on GitHub Pages for the client,
 // so every page is noindex and all site paths are relative (works on
@@ -1924,6 +1949,21 @@ TEAM_PAGE.forEach((m) => {
 <script src="/assets/js/article.js" defer></script>
 <script type="application/ld+json">${JSON.stringify(ld)}</script>`,
     body: header("he", TEAM_URL) + profileMain(m) + footer(),
+  }));
+});
+
+// Legal pages: same URLs and titles as the current pages (their meta
+// description is just the title; kept, worth rewriting later)
+LEGAL.forEach((p) => {
+  const url = SITE_URL + p.href;
+  write(p.href.slice(1) + "/index.html", page({
+    lang: "he", title: p.title, description: p.title, robots: "index, follow", canonical: url,
+    head: `
+<link rel="stylesheet" href="/assets/css/page-about.css">
+<link rel="stylesheet" href="/assets/css/page-service.css">
+<link rel="stylesheet" href="/assets/css/footer.css">
+<script type="application/ld+json">${JSON.stringify({ "@context": "https://schema.org", "@type": "WebPage", url, name: p.title, inLanguage: "he-IL", isPartOf: { "@id": SITE_URL + "/#clinic" } })}</script>`,
+    body: header("he", p.href) + legalMain(p) + footer(),
   }));
 });
 

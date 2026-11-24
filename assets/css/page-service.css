@@ -91,3 +91,8 @@
 /* Treatment area pages: short text, slightly larger reading size */
 .sm-prose--area { font-size: clamp(18px, 1.25vw, 20px); line-height: 1.8; }
 .sm-prose--area > p:first-child { font-size: clamp(20px, 1.45vw, 23px); font-weight: var(--fw-medium); line-height: 1.65; }
+
+/* Legal pages: one readable column, no side box */
+.sm-legal .sm-prose { max-width: 48em; }
+.sm-legal .sm-prose a { color: var(--brand-ink); }
+.sm-phero__lead:empty { display: none; }
