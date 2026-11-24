@@ -76,8 +76,9 @@ export const AREAS = [
   },
   {
     href: "/אודות-1",
-    title: "אודות | סופיה מדיקל, שיקום, טיפול בכאב והפרעות שינה",
-    desc: "אודות, סופיה מדיקל, שיקום, טיפול בכאב והפרעות שינה",
+    // NEW title + description (user approved replacing the generic old ones), client approval pending
+    title: "פיזיותרפיה מתקדמת בכפר סבא | סופיה מדיקל",
+    desc: "פיזיותרפיה מתקדמת בכפר סבא בסופיה מדיקל: כאבי גב וצוואר, רצפת אגן, שיווי משקל ופיזיותרפיה לימפטית, בשילוב טכנולוגיות מתקדמות ותכנית טיפול אישית.",
     h1: "פיזיותרפיה מתקדמת בכפר סבא: סופיה מדיקל",
     img: "treat-physio", topic: "rehab", svc: [3, 4, 2, 9, 11, 0],
     text: [
@@ -90,8 +91,9 @@ export const AREAS = [
   },
   {
     href: "/אודות-2",
-    title: "אודות | סופיה מדיקל, שיקום, טיפול בכאב והפרעות שינה",
-    desc: "אודות, סופיה מדיקל, שיקום, טיפול בכאב והפרעות שינה",
+    // NEW title + description (user approved replacing the generic old ones), client approval pending
+    title: "שיקום נוירולוגי עם RecoveriX | סופיה מדיקל",
+    desc: "שיקום נוירולוגי עם RecoveriX בסופיה מדיקל: ממשק מוח מחשב לשיפור תנועה ותפקוד אחרי שבץ, פגיעות ראש וטרשת נפוצה, כחלק מתכנית שיקום אישית.",
     h1: "שיקום נוירולוגי חדשני עם RecoveriX",
     img: "treat-recoverix", topic: "rehab", svc: [1, 0, 3, 2],
     text: [
