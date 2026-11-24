@@ -12,6 +12,7 @@ import { FAQ, FAQ_PAGE } from "./data-faq.mjs";
 import { SERVICES_PAGE } from "./data-services.mjs";
 import { SERVICE_PAGES } from "./data-service-pages.mjs";
 import { ARTICLES } from "./data-articles.mjs";
+import { COVER_SLUGS } from "./make-article-covers.mjs";
 
 const SITE = join(dirname(fileURLToPath(import.meta.url)), "..");
 const ICONS = join(SITE, "..", "design", "icons");
@@ -857,7 +858,8 @@ const articlesMain = () => `
       ${Object.entries(TOPICS).map(([k, t]) => `<button type="button" class="sm-arts__btn" aria-pressed="false" data-topic="${k}">${icon(t.icon, "sm-ico")}<span>${t.name}</span></button>`).join("\n      ")}
     </div>
     <ul class="sm-arts__grid" role="list">
-      ${ARTICLES.map((a) => `<li class="sm-art" data-topic="${a.topic}">
+      ${ARTICLES.map((a, i) => `<li class="sm-art" data-topic="${a.topic}">
+        <div class="sm-art__img"><img src="/assets/img/articles/${COVER_SLUGS[i]}-600.webp" width="600" height="338" alt="" loading="${i < 3 ? "eager" : "lazy"}" decoding="async"></div>
         ${topicTag(a.topic)}
         <h2 class="sm-art__title"><a href="${a.href}">${latin(a.h1)}</a></h2>
         <p class="sm-art__text">${latin(a.excerpt)}</p>
@@ -870,21 +872,82 @@ const articlesMain = () => `
 ${ctaBand()}
 </main>`;
 
-const artBlocks = (a) => a.blocks.map((b) => {
-  if (b.t === "h2") return `<h2 class="sm-prose__h2">${latin(b.x)}</h2>`;
-  if (b.t === "h3") return `<h3 class="sm-prose__h3">${latin(b.x)}</h3>`;
-  if (b.t === "p") return `<p>${latin(b.x)}</p>`;
-  if (b.t === "ul") return `<ul class="sm-prose__list" role="list">${b.x.map((x) => `<li>${svcItem(x)}</li>`).join("")}</ul>`;
-  if (b.t === "check") return `<ul class="sm-prose__check" role="list">${b.x.map((x) => `<li>${icon("check", "sm-ico")}<span>${svcItem(x)}</span></li>`).join("")}</ul>`;
-  if (b.t === "video") return `<div class="sm-prose__video"><iframe src="https://www.youtube-nocookie.com/embed/${b.x}" title="סרטון: ${esc(a.h1)}" loading="lazy" allow="accelerometer; encrypted-media; gyroscope; picture-in-picture; fullscreen" allowfullscreen></iframe></div>`;
-  return "";
-}).join("\n        ");
+/* Single article template: cover image, reading time, share buttons, table of
+   contents (sticky on desktop, collapsible on phones), a lead form inside the
+   text, author box, and a carousel of more articles with their covers.
+   NEW UI copy for approval: "תוכן עניינים", "זמן קריאה", "שתפו את המאמר",
+   "הקישור הועתק", "נכתב על ידי", "מאמרים נוספים". */
+const artWords = (a) => a.blocks.reduce((n, b) => n + (Array.isArray(b.x) ? b.x.join(" ") : b.t === "video" ? "" : b.x).split(/\s+/).filter(Boolean).length, 0);
+const readTime = (a) => { const m = Math.max(1, Math.round(artWords(a) / 200)); return m === 1 ? "דקה אחת" : `${m} דקות`; };
+const artToc = (a) => a.blocks.filter((b) => b.t === "h2").map((b, k) => ({ id: `sec-${k + 1}`, x: b.x }));
+
+const artBlocks = (a) => {
+  const h2s = a.blocks.filter((b) => b.t === "h2").length;
+  const formAt = h2s >= 3 ? Math.ceil(h2s / 2) + 1 : -1; // before this h2 (1 based)
+  let k = 0, out = [], formDone = false;
+  for (const b of a.blocks) {
+    if (b.t === "h2") {
+      k++;
+      if (k === formAt) { out.push(artForm()); formDone = true; }
+      out.push(`<h2 class="sm-prose__h2" id="sec-${k}">${latin(b.x)}</h2>`);
+      continue;
+    }
+    if (b.t === "h3") out.push(`<h3 class="sm-prose__h3">${latin(b.x)}</h3>`);
+    else if (b.t === "p") out.push(`<p>${latin(b.x)}</p>`);
+    else if (b.t === "ul") out.push(`<ul class="sm-prose__list" role="list">${b.x.map((x) => `<li>${svcItem(x)}</li>`).join("")}</ul>`);
+    else if (b.t === "check") out.push(`<ul class="sm-prose__check" role="list">${b.x.map((x) => `<li>${icon("check", "sm-ico")}<span>${svcItem(x)}</span></li>`).join("")}</ul>`);
+    else if (b.t === "video") out.push(`<div class="sm-prose__video"><iframe src="https://www.youtube-nocookie.com/embed/${b.x}" title="סרטון: ${esc(a.h1)}" loading="lazy" allow="accelerometer; encrypted-media; gyroscope; picture-in-picture; fullscreen" allowfullscreen></iframe></div>`);
+  }
+  if (!formDone) out.push(artForm());
+  return out.join("\n        ");
+};
+
+const artForm = () => `<aside class="sm-inform" aria-labelledby="inform-title">
+          <div class="sm-inform__text">
+            <p class="sm-inform__title" id="inform-title">השאירו פרטים <span class="hl">ונחזור אליכם</span></p>
+            <p class="sm-inform__sub">קיימים הסדרים עם כללית מושלם, <span dir="ltr">BWell</span> ומגדל לייעוץ רפואי בתחום השיקום וטיפול בכאב</p>
+          </div>
+          <form class="sm-inform__form" action="#" method="post" aria-label="השארת פרטים">
+            <div class="sm-inform__field"><label for="in-name">שם מלא</label><input id="in-name" name="name" type="text" autocomplete="name" required></div>
+            <div class="sm-inform__field"><label for="in-phone">טלפון</label><input id="in-phone" name="phone" type="tel" inputmode="tel" autocomplete="tel" required dir="rtl"></div>
+            <button class="btn btn-cta" type="submit">השארת פרטים ${icon("arrow-left", "sm-ico sm-ico--arrow")}</button>
+            <p class="sm-inform__note">בשליחת הטופס אני מאשר/ת את <a href="/privacy">מדיניות הפרטיות</a>.</p>
+          </form>
+        </aside>`;
+
+const artShare = (a, where) => {
+  const url = SITE_URL + encodeURI(a.href), t = encodeURIComponent(a.h1), u = encodeURIComponent(url);
+  const nw = `<span class="sm-sr"> (נפתח בחלון חדש)</span>`;
+  return `<div class="sm-share" role="group" aria-label="שתפו את המאמר">
+        <span class="sm-share__label">שתפו את המאמר</span>
+        <a class="sm-share__btn" href="https://wa.me/?text=${t}%20${u}" target="_blank" rel="noopener" aria-label="שיתוף בוואטסאפ">${icon("whatsapp", "sm-ico sm-ico--fill")}${nw}</a>
+        <a class="sm-share__btn" href="https://www.facebook.com/sharer/sharer.php?u=${u}" target="_blank" rel="noopener" aria-label="שיתוף בפייסבוק">${icon("facebook", "sm-ico sm-ico--fill")}${nw}</a>
+        <a class="sm-share__btn" href="https://www.linkedin.com/sharing/share-offsite/?url=${u}" target="_blank" rel="noopener" aria-label="שיתוף בלינקדאין">${icon("linkedin", "sm-ico sm-ico--fill")}${nw}</a>
+        <a class="sm-share__btn" href="https://t.me/share/url?url=${u}&amp;text=${t}" target="_blank" rel="noopener" aria-label="שיתוף בטלגרם">${icon("telegram", "sm-ico sm-ico--fill")}${nw}</a>
+        <a class="sm-share__btn" href="mailto:?subject=${t}&amp;body=${u}" aria-label="שליחה במייל">${icon("mail", "sm-ico")}</a>
+        <button class="sm-share__btn" type="button" data-copy="${url}" aria-label="העתקת קישור">${icon("link", "sm-ico")}</button>
+        <span class="sm-share__done" role="status" data-copied${where === "top" ? "" : "-b"}></span>
+      </div>`;
+};
+
+const artCard = (x) => {
+  const k = ARTICLES.indexOf(x);
+  return `<li class="sm-rel__item">
+          <a class="sm-rel__card" href="${x.href}">
+            <span class="sm-rel__img"><img src="/assets/img/articles/${COVER_SLUGS[k]}-600.webp" width="600" height="338" alt="" loading="lazy" decoding="async"><span class="sm-rel__tag">${TOPICS[x.topic].name}</span></span>
+            <span class="sm-rel__title">${latin(x.h1)}</span>
+            <span class="sm-rel__more" aria-hidden="true">קרא עוד${icon("chevron-left", "sm-ico")}</span>
+          </a>
+        </li>`;
+};
 
 const articleMain = (a, i) => {
-  const related = ARTICLES.filter((x, k) => k !== i && x.topic === a.topic).slice(0, 6);
+  const toc = artToc(a);
+  const related = [...ARTICLES.filter((x, k) => k !== i && x.topic === a.topic), ...ARTICLES.filter((x, k) => k !== i && x.topic !== a.topic)].slice(0, 10);
+  const tocList = toc.map((t) => `<li><a href="#${t.id}">${latin(t.x)}</a></li>`).join("");
   return `
 <main id="main" tabindex="-1">
-<section class="sm-phero sm-phero--plain" aria-labelledby="art-h1">
+<section class="sm-phero sm-phero--art" aria-labelledby="art-h1">
   <div class="sm-wrap sm-phero__grid">
     <div class="sm-phero__text">
       <nav class="sm-crumbs" aria-label="פירורי לחם">
@@ -897,29 +960,62 @@ const articleMain = (a, i) => {
       <p class="sm-phero__topic">${topicTag(a.topic)}</p>
       <h1 id="art-h1" class="sm-phero__title sm-phero__title--svc">${latin(a.h1)}</h1>
       <p class="sm-phero__lead">${latin(a.desc)}</p>
+      <p class="sm-artmeta">${icon("clock", "sm-ico")}<span>זמן קריאה: ${readTime(a)}</span></p>
+      ${artShare(a, "top")}
+    </div>
+    <div class="sm-phero__media">
+      <figure class="sm-phero__figure sm-phero__figure--wide">
+        <div class="sm-phero__frame"><img src="/assets/img/articles/${COVER_SLUGS[i]}-1200.webp" srcset="/assets/img/articles/${COVER_SLUGS[i]}-600.webp 600w, /assets/img/articles/${COVER_SLUGS[i]}-1200.webp 1200w" sizes="(max-width: 1024px) 92vw, 46vw" width="1200" height="675" alt="${esc(a.h1)}" fetchpriority="high" decoding="async"></div>
+      </figure>
     </div>
   </div>
 </section>
 
-<section class="sm-svcpage">
+<section class="sm-svcpage sm-artpage">
   <div class="sm-wrap sm-svcpage__grid">
-    <article class="sm-prose">
+    <div class="sm-artpage__main">
+      ${toc.length ? `<details class="sm-toc sm-toc--mobile"><summary>${icon("list", "sm-ico")}<span>תוכן עניינים</span>${icon("chevron-down", "sm-ico sm-toc__chev")}</summary><ol role="list">${tocList}</ol></details>` : ""}
+      <article class="sm-prose">
         ${artBlocks(a)}
-    </article>
-    <aside class="sm-svcpage__side" aria-label="יצירת קשר ומאמרים נוספים">
+      </article>
+      <div class="sm-artpage__end">
+        ${artShare(a, "bottom")}
+        <section class="sm-author" aria-labelledby="author-title">
+          <img class="sm-author__logo" src="/assets/img/logo-icon.png" width="240" height="293" alt="" loading="lazy">
+          <div class="sm-author__text">
+            <p class="sm-author__kicker">נכתב על ידי</p>
+            <p class="sm-author__name" id="author-title">סופיה מדיקל</p>
+            <p class="sm-author__role">מרכז לרפואה מתקדמת, שיקום והפרעות שינה</p>
+            <p class="sm-author__bio">סופיה מדיקל הוא מרכז רפואי פרטי ומתקדם המתמחה בשיקום אמבולטורי, בטיפול בכאב ובאבחון הפרעות שינה אצל מבוגרים וילדים, בהובלת ד"ר עלא מחאמיד, רופא בכיר, מומחה ברפואה פיזיקלית ושיקום ומנהל השירות ויחידת הפרעות השינה במרכז הרפואי לוינשטיין.</p>
+            <a class="sm-author__link" href="${ABOUT_URL}">לעמוד האודות${icon("chevron-left", "sm-ico")}</a>
+          </div>
+        </section>
+      </div>
+    </div>
+    <aside class="sm-svcpage__side" aria-label="תוכן עניינים ויצירת קשר">
+      ${toc.length ? `<nav class="sm-side__box sm-toc" aria-labelledby="toc-title"><p class="sm-side__title" id="toc-title">${icon("list", "sm-ico")}תוכן עניינים</p><ol role="list">${tocList}</ol></nav>` : ""}
       <div class="sm-side__box sm-side__box--cta">
         <p class="sm-side__title">השאירו פרטים <span class="hl">ונחזור אליכם</span></p>
-        <p class="sm-side__text">קיימים הסדרים עם כללית מושלם, <span dir="ltr">BWell</span> ומגדל לייעוץ רפואי בתחום השיקום וטיפול בכאב</p>
         <a class="btn btn-cta" href="/צור-קשר">השארת פרטים ${icon("arrow-left", "sm-ico sm-ico--arrow")}</a>
         <a class="btn btn-ghost" href="${CONTACT.mobile.href}"><span dir="ltr">${CONTACT.mobile.display}</span> ${icon("smartphone", "sm-ico")}</a>
       </div>
-      <nav class="sm-side__box" aria-labelledby="art-more">
-        <p class="sm-side__title" id="art-more">מאמרים נוספים</p>
-        <ul class="sm-side__links" role="list">
-          ${related.map((x) => `<li><a href="${x.href}"><span>${latin(x.h1)}</span>${icon("chevron-left", "sm-ico")}</a></li>`).join("\n          ")}
-        </ul>
-      </nav>
     </aside>
+  </div>
+</section>
+
+<section class="sm-rel" aria-labelledby="rel-title" data-rel>
+  <div class="sm-wrap">
+    <div class="sm-rel__head">
+      <h2 class="sm-rel__h2" id="rel-title">מאמרים נוספים</h2>
+      <a class="sm-rel__all" href="${ARTICLES_URL}">לכל המאמרים${icon("chevron-left", "sm-ico")}</a>
+    </div>
+    <div class="sm-rel__viewport">
+      <button class="sm-rel__arrow sm-rel__arrow--prev" type="button" aria-label="המאמרים הקודמים" data-dir="-1">${icon("chevron-right", "sm-ico")}</button>
+      <ul class="sm-rel__track" role="list">
+        ${related.map(artCard).join("\n        ")}
+      </ul>
+      <button class="sm-rel__arrow sm-rel__arrow--next" type="button" aria-label="המאמרים הבאים" data-dir="1">${icon("chevron-left", "sm-ico")}</button>
+    </div>
   </div>
 </section>
 </main>`;
@@ -1264,10 +1360,11 @@ ARTICLES.forEach((a, i) => {
   const url = SITE_URL + encodeURI(a.href);
   const listUrl = SITE_URL + encodeURI(ARTICLES_URL);
   const clinicId = SITE_URL + "/#clinic";
+  const img = SITE_URL + `/assets/img/articles/${COVER_SLUGS[i]}-1200.webp`;
   const graph = [
     { "@type": "MedicalWebPage", "@id": url + "#page", url, name: a.title, description: a.desc, inLanguage: "he-IL",
-      mainEntity: { "@id": url + "#article" }, breadcrumb: { "@id": url + "#crumbs" } },
-    { "@type": "Article", "@id": url + "#article", headline: a.h1, description: a.desc, inLanguage: "he-IL", mainEntityOfPage: url,
+      mainEntity: { "@id": url + "#article" }, primaryImageOfPage: img, breadcrumb: { "@id": url + "#crumbs" } },
+    { "@type": "Article", "@id": url + "#article", headline: a.h1, description: a.desc, image: img, wordCount: artWords(a), inLanguage: "he-IL", mainEntityOfPage: url,
       author: { "@id": clinicId }, publisher: { "@id": clinicId } },
     { "@type": "MedicalClinic", "@id": clinicId, name: "סופיה מדיקל", url: SITE_URL + "/", logo: SITE_URL + "/assets/img/logo-icon.png", telephone: "+972-50-465-1970",
       address: { "@type": "PostalAddress", streetAddress: "יוחנן הסנדלר 6, קומה 5", addressLocality: "כפר סבא", addressCountry: "IL" } },
@@ -1286,10 +1383,13 @@ ARTICLES.forEach((a, i) => {
 <meta property="og:title" content="${esc(a.title)}">
 <meta property="og:description" content="${esc(a.desc)}">
 <meta property="og:url" content="${url}">
+<meta property="og:image" content="${img}">
+<link rel="preload" as="image" type="image/webp" imagesrcset="/assets/img/articles/${COVER_SLUGS[i]}-600.webp 600w, /assets/img/articles/${COVER_SLUGS[i]}-1200.webp 1200w" imagesizes="(max-width: 1024px) 92vw, 46vw" fetchpriority="high">
 <link rel="stylesheet" href="/assets/css/page-about.css">
 <link rel="stylesheet" href="/assets/css/page-service.css">
 <link rel="stylesheet" href="/assets/css/page-articles.css">
 <link rel="stylesheet" href="/assets/css/footer.css">
+<script src="/assets/js/article.js" defer></script>
 <script type="application/ld+json">${JSON.stringify({ "@context": "https://schema.org", "@graph": graph })}</script>`,
     body: header("he", ARTICLES_URL) + articleMain(a, i) + footer(),
   }));
