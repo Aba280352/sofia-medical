@@ -36,6 +36,6 @@
   .sm-tile { padding: 20px; }
   .sm-tile__ico { width: 48px; height: 48px; }
   .sm-tiles__more .btn { width: 100%; }
-  .sm-mosaic { gap: 10px; }
-  .sm-mosaic li:nth-child(even) { translate: 0 16px; }
+  .sm-mosaic { grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 8px; }
+  .sm-mosaic li:nth-child(even) { translate: 0 12px; }
 }

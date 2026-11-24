@@ -16,6 +16,7 @@
     const w = cards[0].offsetWidth;
     return matchMedia("(max-width: 1024px)").matches ? 0.86 * w : 360;
   };
+  const phone = matchMedia("(max-width: 767px)");
   const wrap = (d) => ((d % N) + N * 1.5) % N - N / 2; // range -N/2 .. N/2
 
   function render() {
@@ -35,6 +36,8 @@
       c.toggleAttribute("inert", !isCenter);
       c.setAttribute("aria-hidden", String(!isCenter));
     });
+    // phones: the track follows the height of the card in the middle
+    if (phone.matches) track.style.height = cards[center].offsetHeight + "px";
   }
 
   function animateTo(target) {
@@ -104,12 +107,14 @@
   track.addEventListener("pointerup", end);
   track.addEventListener("pointercancel", end);
 
-  // every card gets the height of the tallest review, so no text overflows
+  // every card gets the height of the tallest review, so no text overflows.
+  // Phones: one card at a time, so each card keeps its own height (no empty
+  // gap under short reviews); the track still reserves the tallest height.
   function fit() {
     cards.forEach((c) => { c.style.height = "auto"; });
     const h = Math.max(...cards.map((c) => c.offsetHeight));
-    cards.forEach((c) => { c.style.height = h + "px"; });
-    track.style.height = h + "px";
+    if (!phone.matches) cards.forEach((c) => { c.style.height = h + "px"; });
+    if (!phone.matches) track.style.height = h + "px";
   }
   addEventListener("resize", () => { fit(); render(); });
   document.fonts?.ready.then(() => { fit(); render(); });

@@ -68,3 +68,10 @@
   .sm-reviews__head .btn { width: 100%; }
   .sm-reviews__head .btn + .btn { margin-inline-start: 0; }
 }
+
+/* Phones: each card keeps its own height (see fit() in reviews.js) */
+@media (max-width: 767px) {
+  .sm-carousel { --card-h: 0px; }
+  .sm-carousel__track { transition: height .35s var(--ease-out); }
+  .sm-review__name { margin-top: 0; padding-top: 16px; }
+}
