@@ -9,6 +9,7 @@ import { TREATMENTS } from "./data-treatments.mjs";
 import { TEAM, TEAM_PAGE } from "./data-team.mjs";
 import { REVIEWS } from "./data-reviews.mjs";
 import { FAQ } from "./data-faq.mjs";
+import { SERVICES_PAGE } from "./data-services.mjs";
 
 const SITE = join(dirname(fileURLToPath(import.meta.url)), "..");
 const ICONS = join(SITE, "..", "design", "icons");
@@ -619,6 +620,72 @@ const teamMain = () => `
 </section>
 </main>`;
 
+
+/* ---------- Services page (/שירותים) ----------
+   H1 identical to the current page ("שירותים"), lead = the current meta
+   description. 16 services with the existing titles and texts, each title an
+   H2 linking on to its service page. Rehab and sleep are wide dark cards.
+   Icons instead of the current images (most are Getty stock from SITE123). */
+const SERVICES_URL = "/שירותים";
+const SERVICES_DESC = "שירותי מרכז רפואי רב תחומי המשלבים פיזיותרפיה, אבחון מתקדם וטיפול טכנולוגי מותאם לכל שלבי ההחלמה בסופיה מדיקל, עם ליווי מקצועי ושירות מסור בפריסה ארצית.";
+const SERVICES_WIDE = new Set([0, 5]);
+const servicesMain = () => `
+<main id="main" tabindex="-1">
+<section class="sm-phero" aria-labelledby="services-h1">
+  <div class="sm-wrap sm-phero__grid">
+    <div class="sm-phero__text">
+      <nav class="sm-crumbs" aria-label="פירורי לחם">
+        <ol role="list">
+          <li><a href="/">בית</a>${icon("chevron-left", "sm-ico")}</li>
+          <li><span aria-current="page">שירותים</span></li>
+        </ol>
+      </nav>
+      <h1 id="services-h1" class="sm-phero__title">שירותים</h1>
+      <p class="sm-phero__lead">${SERVICES_DESC}</p>
+      <div class="sm-phero__actions">
+        <a class="btn btn-cta" href="/צור-קשר">השארת פרטים ${icon("arrow-left", "sm-ico sm-ico--arrow")}</a>
+        <a class="btn btn-wa" href="https://wa.me/972504651970" target="_blank" rel="noopener">וואטסאפ<span class="sm-sr"> (נפתח בחלון חדש)</span> ${icon("whatsapp", "sm-ico sm-ico--fill")}</a>
+      </div>
+    </div>
+    <div class="sm-phero__media">
+      <figure class="sm-phero__figure">
+        <div class="sm-phero__frame">
+          <img src="/assets/img/treat-rehab-900.webp" srcset="/assets/img/treat-rehab-600.webp 600w, /assets/img/treat-rehab-900.webp 900w"
+               sizes="(max-width: 1024px) 92vw, 46vw" width="900" height="675" alt="חדר טיפול ושיקום במרכז סופיה מדיקל" fetchpriority="high" decoding="async">
+        </div>
+      </figure>
+    </div>
+  </div>
+</section>
+
+<section class="sm-center sm-svc" aria-label="השירותים במרכז">
+  <div class="sm-wrap">
+    <ul class="sm-svc__grid" role="list">
+      ${SERVICES_PAGE.map((c, i) => `<li class="sm-card${SERVICES_WIDE.has(i) ? " sm-card--wide" : ""}">
+        <div class="sm-card__head"><h2 class="sm-card__title"><a href="${c.href}">${latin(c.title)}</a></h2><span class="sm-card__ico">${icon(c.icon, "sm-ico")}</span></div>
+        ${c.text.map((p) => `<p class="sm-card__text">${latin(p)}</p>`).join("")}
+        <span class="sm-card__more" aria-hidden="true">למידע נוסף${icon("chevron-left", "sm-ico")}</span>
+      </li>`).join("\n      ")}
+    </ul>
+  </div>
+</section>
+
+<section class="sm-cta" aria-labelledby="cta-title">
+  <div class="sm-wrap">
+    <div class="sm-cta__box">
+      <div class="sm-cta__text">
+        <h2 id="cta-title" class="sm-cta__title">השאירו פרטים <span class="hl">ונחזור אליכם</span></h2>
+        <p>קיימים הסדרים עם כללית מושלם, <span dir="ltr">BWell</span> ומגדל לייעוץ רפואי בתחום השיקום וטיפול בכאב</p>
+      </div>
+      <div class="sm-cta__actions">
+        <a class="btn btn-cta" href="/צור-קשר">השארת פרטים ${icon("arrow-left", "sm-ico sm-ico--arrow")}</a>
+        <a class="btn btn-ghost" href="${CONTACT.mobile.href}"><span dir="ltr">${CONTACT.mobile.display}</span> ${icon("smartphone", "sm-ico")}</a>
+      </div>
+    </div>
+  </div>
+</section>
+</main>`;
+
 /* ---------- Write pages ---------- */
 // PREVIEW: the local build is also published on GitHub Pages for the client,
 // so every page is noindex and all site paths are relative (works on
@@ -739,6 +806,42 @@ write("index.html", page({
 <link rel="stylesheet" href="/assets/css/footer.css">
 <script type="application/ld+json">${JSON.stringify(ld)}</script>`,
     body: header("he", TEAM_URL) + teamMain() + footer(),
+  }));
+}
+
+// Services: same URL, title and meta description as the current page
+{
+  const url = SITE_URL + encodeURI(SERVICES_URL);
+  const title = "שירותי מרכז שיקום רפואי רב תחומי | סופיה מדיקל";
+  const img = SITE_URL + "/assets/img/treat-rehab-900.webp";
+  const clinicId = SITE_URL + "/#clinic";
+  const ld = { "@context": "https://schema.org", "@graph": [
+    { "@type": "CollectionPage", "@id": url + "#page", url, name: title, description: SERVICES_DESC, inLanguage: "he-IL", primaryImageOfPage: img,
+      about: { "@id": clinicId }, breadcrumb: { "@id": url + "#crumbs" }, mainEntity: { "@id": url + "#services" } },
+    { "@type": "MedicalClinic", "@id": clinicId, name: "סופיה מדיקל", url: SITE_URL + "/", telephone: "+972-50-465-1970", email: CONTACT.email,
+      address: { "@type": "PostalAddress", streetAddress: "יוחנן הסנדלר 6, קומה 5", addressLocality: "כפר סבא", addressCountry: "IL" } },
+    { "@type": "ItemList", "@id": url + "#services", numberOfItems: SERVICES_PAGE.length, itemListElement: SERVICES_PAGE.map((c, i) => ({
+      "@type": "ListItem", position: i + 1, item: { "@type": "MedicalProcedure", name: c.title, description: c.text.join(" "), url: SITE_URL + encodeURI(c.href),
+        provider: { "@id": clinicId } } })) },
+    { "@type": "BreadcrumbList", "@id": url + "#crumbs", itemListElement: [
+      { "@type": "ListItem", position: 1, name: "בית", item: SITE_URL + "/" },
+      { "@type": "ListItem", position: 2, name: "שירותים", item: url } ] },
+  ] };
+  write("שירותים/index.html", page({
+    lang: "he", title, description: SERVICES_DESC, robots: "index, follow", canonical: url,
+    head: `
+<meta property="og:type" content="website">
+<meta property="og:locale" content="he_IL">
+<meta property="og:site_name" content="סופיה מדיקל">
+<meta property="og:title" content="${esc(title)}">
+<meta property="og:description" content="${esc(SERVICES_DESC)}">
+<meta property="og:url" content="${url}">
+<meta property="og:image" content="${img}">
+<link rel="stylesheet" href="/assets/css/page-about.css">
+<link rel="stylesheet" href="/assets/css/page-services.css">
+<link rel="stylesheet" href="/assets/css/footer.css">
+<script type="application/ld+json">${JSON.stringify(ld)}</script>`,
+    body: header("he", SERVICES_URL) + servicesMain() + footer(),
   }));
 }
 
