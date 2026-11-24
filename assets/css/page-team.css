@@ -58,3 +58,16 @@
   .sm-member__role, .sm-member--lead .sm-member__role { margin-top: 4px; font-size: 15px; }
   .sm-member__line, .sm-member--lead .sm-member__line { margin-top: 8px; font-size: 15px; }
 }
+
+/* cards link to the profile pages */
+.sm-member { position: relative; }
+.sm-member__name a { color: inherit; text-decoration: none; }
+.sm-member__name a::after { content: ""; position: absolute; inset: 0; z-index: 1; border-radius: var(--radius); }
+.sm-member__name a:focus-visible { outline: none; }
+.sm-member:focus-within { outline: 2px solid var(--brand); outline-offset: 4px; border-radius: var(--radius); }
+.sm-member__more { display: inline-flex; align-items: center; gap: 6px; margin-top: 12px; font-size: 15px; font-weight: var(--fw-medium); color: var(--brand-ink); }
+.sm-member__more .sm-ico { width: 16px; height: 16px; transition: translate var(--dur-micro) var(--ease-out); }
+@media (hover: hover) and (pointer: fine) {
+  .sm-member:hover .sm-member__more { text-decoration: underline; text-underline-offset: 4px; }
+  .sm-member:hover .sm-member__more .sm-ico { translate: -4px 0; }
+}

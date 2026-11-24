@@ -220,3 +220,10 @@
   .sm-rel__track { grid-auto-columns: 82%; gap: 14px; margin-inline: -20px; padding-inline: 20px; scroll-padding-inline: 20px; }
   .sm-rel__arrow { display: none; }
 }
+
+/* team carousel on profile pages */
+.sm-rel__img--portrait { aspect-ratio: 4 / 5; }
+.sm-rel__img--portrait img { object-position: 50% 20%; }
+.sm-rel__role { display: block; padding: 6px 20px 0; font-size: 14px; font-weight: var(--fw-medium); line-height: 1.45; color: var(--brand-ink); }
+.sm-prof__role { margin-top: 16px; font-size: clamp(19px, 1.4vw, 22px); font-weight: var(--fw-heading); color: var(--brand-ink); }
+.sm-prof__role + .sm-phero__lead { margin-top: 10px; }

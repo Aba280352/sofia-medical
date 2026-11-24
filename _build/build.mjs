@@ -7,6 +7,7 @@ import { dirname, join } from "node:path";
 import { fileURLToPath } from "node:url";
 import { TREATMENTS } from "./data-treatments.mjs";
 import { TEAM, TEAM_PAGE } from "./data-team.mjs";
+import { PROFILES } from "./data-team-profiles.mjs";
 import { REVIEWS, REVIEWS_PAGE, VIDEOS } from "./data-reviews.mjs";
 import { FAQ, FAQ_PAGE } from "./data-faq.mjs";
 import { SERVICES_PAGE } from "./data-services.mjs";
@@ -599,9 +600,10 @@ const teamMain = () => `
       ${TEAM_PAGE.map((m, i) => `<li class="sm-member${m.featured ? " sm-member--lead" : ""}">
         <div class="sm-member__photo"><img src="/assets/img/team/${m.slug}.webp" width="480" height="600" alt="${esc(m.name)}, ${esc(m.role)}" ${i < 2 ? 'fetchpriority="high"' : 'loading="lazy"'} decoding="async"></div>
         <div class="sm-member__text">
-          <h2 class="sm-member__name">${m.name}</h2>
+          <h2 class="sm-member__name"><a href="${PROFILES[m.slug].href}">${m.name}</a></h2>
           <p class="sm-member__role">${latin(m.role)}</p>
           <p class="sm-member__line">${m.line}</p>
+          <span class="sm-member__more" aria-hidden="true">קרא עוד${icon("chevron-left", "sm-ico")}</span>
         </div>
       </li>`).join("\n      ")}
     </ul>
@@ -1362,6 +1364,82 @@ const mdtMain = () => `
 ${ctaBand()}
 </main>`;
 
+
+/* ---------- Team profile pages (/הצוות/<slug>) ----------
+   Same URLs, titles, meta descriptions and H1 as the current profile pages;
+   role and short line from the team page, bio from the profile page
+   (data-team-profiles.mjs). The three removed doctors get no page (their
+   old URLs need a 301 to /הצוות in WordPress). No new copy. */
+const profileMain = (m) => {
+  const p = PROFILES[m.slug];
+  const others = TEAM_PAGE.filter((x) => x.slug !== m.slug);
+  return `
+<main id="main" tabindex="-1">
+<section class="sm-phero" aria-labelledby="prof-h1">
+  <div class="sm-wrap sm-phero__grid">
+    <div class="sm-phero__text">
+      <nav class="sm-crumbs" aria-label="פירורי לחם">
+        <ol role="list">
+          <li><a href="/">בית</a>${icon("chevron-left", "sm-ico")}</li>
+          <li><a href="${TEAM_URL}">הצוות</a>${icon("chevron-left", "sm-ico")}</li>
+          <li><span aria-current="page">${m.name}</span></li>
+        </ol>
+      </nav>
+      <h1 id="prof-h1" class="sm-phero__title sm-phero__title--svc">${m.name}</h1>
+      <p class="sm-prof__role">${latin(m.role)}</p>
+      <p class="sm-phero__lead">${latin(m.line)}</p>
+      <div class="sm-phero__actions">
+        <a class="btn btn-cta" href="/צור-קשר">השארת פרטים ${icon("arrow-left", "sm-ico sm-ico--arrow")}</a>
+        <a class="btn btn-wa" href="https://wa.me/972504651970" target="_blank" rel="noopener">וואטסאפ<span class="sm-sr"> (נפתח בחלון חדש)</span> ${icon("whatsapp", "sm-ico sm-ico--fill")}</a>
+      </div>
+    </div>
+    <div class="sm-phero__media">
+      <figure class="sm-phero__figure sm-phero__figure--portrait">
+        <div class="sm-phero__frame"><img src="/assets/img/team/${m.slug}.webp" width="480" height="600" alt="${esc(m.name)}, ${esc(m.role)}" fetchpriority="high" decoding="async"></div>
+      </figure>
+    </div>
+  </div>
+</section>
+
+<section class="sm-svcpage">
+  <div class="sm-wrap sm-svcpage__grid">
+    <article class="sm-prose sm-prose--area">
+        ${p.blocks.map((b) => b.t === "h2" ? `<h2 class="sm-prose__h2">${latin(b.x)}</h2>` : b.t === "ul" ? `<ul class="sm-prose__list" role="list">${b.x.map((x) => `<li>${svcItem(x)}</li>`).join("")}</ul>` : `<p>${latin(b.x)}</p>`).join("\n        ")}
+    </article>
+    <aside class="sm-svcpage__side" aria-label="יצירת קשר">
+      <div class="sm-side__box sm-side__box--cta">
+        <p class="sm-side__title">השאירו פרטים <span class="hl">ונחזור אליכם</span></p>
+        <p class="sm-side__text">קיימים הסדרים עם כללית מושלם, <span dir="ltr">BWell</span> ומגדל לייעוץ רפואי בתחום השיקום וטיפול בכאב</p>
+        <a class="btn btn-cta" href="/צור-קשר">השארת פרטים ${icon("arrow-left", "sm-ico sm-ico--arrow")}</a>
+        <a class="btn btn-ghost" href="${CONTACT.mobile.href}"><span dir="ltr">${CONTACT.mobile.display}</span> ${icon("smartphone", "sm-ico")}</a>
+      </div>
+    </aside>
+  </div>
+</section>
+
+<section class="sm-rel" aria-labelledby="rel-title" data-rel>
+  <div class="sm-wrap">
+    <div class="sm-rel__head">
+      <h2 class="sm-rel__h2" id="rel-title">הצוות</h2>
+      <a class="sm-rel__all" href="${TEAM_URL}">לעמוד הצוות המלא${icon("chevron-left", "sm-ico")}</a>
+    </div>
+    <div class="sm-rel__viewport">
+      <button class="sm-rel__arrow sm-rel__arrow--prev" type="button" aria-label="הקודמים" data-dir="-1">${icon("chevron-right", "sm-ico")}</button>
+      <ul class="sm-rel__track sm-rel__track--team" role="list">
+        ${others.map((x) => `<li class="sm-rel__item"><a class="sm-rel__card" href="${PROFILES[x.slug].href}">
+            <span class="sm-rel__img sm-rel__img--portrait"><img src="/assets/img/team/${x.slug}.webp" width="480" height="600" alt="" loading="lazy" decoding="async"></span>
+            <span class="sm-rel__title">${x.name}</span>
+            <span class="sm-rel__role">${latin(x.role)}</span>
+            <span class="sm-rel__more" aria-hidden="true">קרא עוד${icon("chevron-left", "sm-ico")}</span>
+          </a></li>`).join("\n        ")}
+      </ul>
+      <button class="sm-rel__arrow sm-rel__arrow--next" type="button" aria-label="הבאים" data-dir="1">${icon("chevron-left", "sm-ico")}</button>
+    </div>
+  </div>
+</section>
+</main>`;
+};
+
 /* ---------- Write pages ---------- */
 // PREVIEW: the local build is also published on GitHub Pages for the client,
 // so every page is noindex and all site paths are relative (works on
@@ -1813,6 +1891,39 @@ AREAS.forEach((p) => {
 <link rel="stylesheet" href="/assets/css/footer.css">
 <script type="application/ld+json">${JSON.stringify(ld)}</script>`,
     body: header("he", p.url) + p.main() + footer(),
+  }));
+});
+
+// Team profiles: same URLs, titles and meta descriptions as the current pages
+TEAM_PAGE.forEach((m) => {
+  const p = PROFILES[m.slug];
+  const url = SITE_URL + encodeURI(p.href);
+  const img = SITE_URL + `/assets/img/team/${m.slug}.webp`;
+  const ld = { "@context": "https://schema.org", "@graph": [
+    { "@type": "ProfilePage", "@id": url + "#page", url, name: p.title, description: p.desc, inLanguage: "he-IL", mainEntity: { "@id": SITE_URL + "/#" + m.slug } },
+    { "@type": "Person", "@id": SITE_URL + "/#" + m.slug, name: m.name, jobTitle: m.role, description: m.line, image: img, url, worksFor: { "@id": SITE_URL + "/#clinic" } },
+    { "@type": "BreadcrumbList", itemListElement: [
+      { "@type": "ListItem", position: 1, name: "בית", item: SITE_URL + "/" },
+      { "@type": "ListItem", position: 2, name: "הצוות", item: SITE_URL + encodeURI(TEAM_URL) },
+      { "@type": "ListItem", position: 3, name: m.name, item: url } ] },
+  ] };
+  write(p.href.slice(1) + "/index.html", page({
+    lang: "he", title: p.title, description: p.desc, robots: "index, follow", canonical: url,
+    head: `
+<meta property="og:type" content="profile">
+<meta property="og:locale" content="he_IL">
+<meta property="og:site_name" content="סופיה מדיקל">
+<meta property="og:title" content="${esc(p.title)}">
+<meta property="og:description" content="${esc(p.desc)}">
+<meta property="og:url" content="${url}">
+<meta property="og:image" content="${img}">
+<link rel="stylesheet" href="/assets/css/page-about.css">
+<link rel="stylesheet" href="/assets/css/page-service.css">
+<link rel="stylesheet" href="/assets/css/page-articles.css">
+<link rel="stylesheet" href="/assets/css/footer.css">
+<script src="/assets/js/article.js" defer></script>
+<script type="application/ld+json">${JSON.stringify(ld)}</script>`,
+    body: header("he", TEAM_URL) + profileMain(m) + footer(),
   }));
 });
 
