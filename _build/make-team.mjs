@@ -10,9 +10,15 @@ const TEAM = [
   ["vlada-guizman", "1200_690475153be57.png"],
   ["mursi-asli", "1200_6904749b90ee9.png"],
   ["hashem-khalifa", "1200_69047469aaae2.png"],
+  ["abdallah-watad", "1200_690a1a4aeed1a.png"],
+  ["moamen-khatib", "1200_6935c77ea35c6.jpg"],
+  ["afnan-mohanna", "1200_690a1aaa556e2.png"],
+  ["orna-ohana", "1200_690c4ba40616f.jpg"],
 ];
 mkdirSync("../assets/img/team", { recursive: true });
+import { existsSync } from "node:fs";
 for (const [slug, file] of TEAM) {
+  if (existsSync(`../assets/img/team/${slug}.webp`)) continue;
   const buf = Buffer.from(await (await fetch(BASE + file)).arrayBuffer());
   const { width: w, height: h } = await sharp(buf).metadata();
   // 4:5 crop, keep the face high in the frame

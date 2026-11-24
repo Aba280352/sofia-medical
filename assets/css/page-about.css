@@ -115,8 +115,8 @@
 
 .sm-credo__quote { position: relative; margin: 36px 0 0; padding-top: 44px; }
 .sm-credo__quote::before {
-  content: "\201D"; position: absolute; top: -18px; inset-inline-start: -4px;
-  font-size: 110px; line-height: 1; color: var(--c-light-blue);
+  content: ""; position: absolute; top: 0; inset-inline-start: 0; width: 40px; height: 40px;
+  background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 28 28' fill='none' stroke='%23ABCFDF' stroke-width='1.4' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M11 8c-4 1.5-6 4.5-6 9v3h6v-6H7.5M23 8c-4 1.5-6 4.5-6 9v3h6v-6h-3.5'/%3E%3C/svg%3E") no-repeat center / contain;
 }
 .sm-credo__quote p { font-size: clamp(22px, 2vw, 32px); font-weight: var(--fw-medium); line-height: 1.45; color: #FEFEFE; }
 .sm-credo__body > p + p { margin-top: 16px; }
@@ -190,7 +190,7 @@
 
   .sm-credo__title { font-size: 32px; }
   .sm-credo__quote { margin-top: 28px; padding-top: 36px; }
-  .sm-credo__quote::before { font-size: 88px; top: -14px; }
+  .sm-credo__quote::before { width: 32px; height: 32px; }
   .sm-credo__quote p { font-size: 21px; }
   .sm-credo__body { font-size: 17px; }
   .sm-credo__close p { font-size: 19px; }

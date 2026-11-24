@@ -6,7 +6,7 @@ import { readFileSync, writeFileSync, mkdirSync } from "node:fs";
 import { dirname, join } from "node:path";
 import { fileURLToPath } from "node:url";
 import { TREATMENTS } from "./data-treatments.mjs";
-import { TEAM } from "./data-team.mjs";
+import { TEAM, TEAM_PAGE } from "./data-team.mjs";
 import { REVIEWS } from "./data-reviews.mjs";
 import { FAQ } from "./data-faq.mjs";
 
@@ -560,6 +560,65 @@ const aboutMain = () => `
 </section>
 </main>`;
 
+
+/* ---------- Team page (/הצוות) ----------
+   H1 identical to the current page ("הצוות"). The lead is the existing team
+   intro from the home page. Each person is an H2 with the existing role and
+   line. Ala and Haitham are featured (wide cards). No new copy. */
+const TEAM_URL = "/הצוות";
+const TEAM_INTRO = "במרכז פועל צוות מגוון ומיומן הכולל: רופאי שיקום, רופאים יועצים בתחומים שונים, פיזיותרפיסטים, פסיכולוגים, קלינאי תקשורת, טכנאי שינה ומרפאים בעיסוק.";
+const teamMain = () => `
+<main id="main" tabindex="-1">
+<section class="sm-phero sm-phero--plain" aria-labelledby="team-h1">
+  <div class="sm-wrap sm-phero__grid">
+    <div class="sm-phero__text">
+      <nav class="sm-crumbs" aria-label="פירורי לחם">
+        <ol role="list">
+          <li><a href="/">בית</a>${icon("chevron-left", "sm-ico")}</li>
+          <li><span aria-current="page">הצוות</span></li>
+        </ol>
+      </nav>
+      <h1 id="team-h1" class="sm-phero__title">הצוות</h1>
+      <p class="sm-phero__lead">${TEAM_INTRO}</p>
+      <div class="sm-phero__actions">
+        <a class="btn btn-cta" href="/צור-קשר">השארת פרטים ${icon("arrow-left", "sm-ico sm-ico--arrow")}</a>
+        <a class="btn btn-wa" href="https://wa.me/972504651970" target="_blank" rel="noopener">וואטסאפ<span class="sm-sr"> (נפתח בחלון חדש)</span> ${icon("whatsapp", "sm-ico sm-ico--fill")}</a>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="sm-staff" aria-label="אנשי הצוות">
+  <div class="sm-wrap">
+    <ul class="sm-staff__grid" role="list">
+      ${TEAM_PAGE.map((m, i) => `<li class="sm-member${m.featured ? " sm-member--lead" : ""}">
+        <div class="sm-member__photo"><img src="/assets/img/team/${m.slug}.webp" width="480" height="600" alt="${esc(m.name)}, ${esc(m.role)}" ${i < 2 ? 'fetchpriority="high"' : 'loading="lazy"'} decoding="async"></div>
+        <div class="sm-member__text">
+          <h2 class="sm-member__name">${m.name}</h2>
+          <p class="sm-member__role">${latin(m.role)}</p>
+          <p class="sm-member__line">${m.line}</p>
+        </div>
+      </li>`).join("\n      ")}
+    </ul>
+  </div>
+</section>
+
+<section class="sm-cta" aria-labelledby="cta-title">
+  <div class="sm-wrap">
+    <div class="sm-cta__box">
+      <div class="sm-cta__text">
+        <h2 id="cta-title" class="sm-cta__title">השאירו פרטים <span class="hl">ונחזור אליכם</span></h2>
+        <p>קיימים הסדרים עם כללית מושלם, <span dir="ltr">BWell</span> ומגדל לייעוץ רפואי בתחום השיקום וטיפול בכאב</p>
+      </div>
+      <div class="sm-cta__actions">
+        <a class="btn btn-cta" href="/צור-קשר">השארת פרטים ${icon("arrow-left", "sm-ico sm-ico--arrow")}</a>
+        <a class="btn btn-ghost" href="${CONTACT.mobile.href}"><span dir="ltr">${CONTACT.mobile.display}</span> ${icon("smartphone", "sm-ico")}</a>
+      </div>
+    </div>
+  </div>
+</section>
+</main>`;
+
 /* ---------- Write pages ---------- */
 // PREVIEW: the local build is also published on GitHub Pages for the client,
 // so every page is noindex and all site paths are relative (works on
@@ -643,6 +702,43 @@ write("index.html", page({
 <link rel="stylesheet" href="/assets/css/footer.css">
 <script type="application/ld+json">${JSON.stringify(ld)}</script>`,
     body: header("he", ABOUT_URL) + aboutMain() + footer(),
+  }));
+}
+
+// Team: same URL, title and meta description as the current page
+{
+  const url = SITE_URL + encodeURI(TEAM_URL);
+  const title = "הכירו את הצוות הרב מקצועי והמומחים של המרכז | סופיה מדיקל";
+  const description = "צוות רב מקצועי של רופאים, פיזיותרפיסטים ומטפלים משלבים ניסיון קליני, טכנולוגיות מתקדמות ושירות אישי במרכז סופיה מדיקל לטיפול מקיף ותמיכה מלאה.";
+  const img = SITE_URL + "/assets/img/team/ala-mahamid.webp";
+  const clinicId = SITE_URL + "/#clinic";
+  const ld = { "@context": "https://schema.org", "@graph": [
+    { "@type": "CollectionPage", "@id": url + "#page", url, name: title, description, inLanguage: "he-IL",
+      about: { "@id": clinicId }, breadcrumb: { "@id": url + "#crumbs" }, mainEntity: { "@id": url + "#team" } },
+    { "@type": "MedicalClinic", "@id": clinicId, name: "סופיה מדיקל", url: SITE_URL + "/", telephone: "+972-50-465-1970", email: CONTACT.email,
+      address: { "@type": "PostalAddress", streetAddress: "יוחנן הסנדלר 6, קומה 5", addressLocality: "כפר סבא", addressCountry: "IL" } },
+    { "@type": "ItemList", "@id": url + "#team", numberOfItems: TEAM_PAGE.length, itemListElement: TEAM_PAGE.map((m, i) => ({
+      "@type": "ListItem", position: i + 1, item: { "@type": "Person", "@id": SITE_URL + "/#" + m.slug, name: m.name, jobTitle: m.role, description: m.line,
+        image: SITE_URL + "/assets/img/team/" + m.slug + ".webp", worksFor: { "@id": clinicId } } })) },
+    { "@type": "BreadcrumbList", "@id": url + "#crumbs", itemListElement: [
+      { "@type": "ListItem", position: 1, name: "בית", item: SITE_URL + "/" },
+      { "@type": "ListItem", position: 2, name: "הצוות", item: url } ] },
+  ] };
+  write("הצוות/index.html", page({
+    lang: "he", title, description, robots: "index, follow", canonical: url,
+    head: `
+<meta property="og:type" content="website">
+<meta property="og:locale" content="he_IL">
+<meta property="og:site_name" content="סופיה מדיקל">
+<meta property="og:title" content="${esc(title)}">
+<meta property="og:description" content="${esc(description)}">
+<meta property="og:url" content="${url}">
+<meta property="og:image" content="${img}">
+<link rel="stylesheet" href="/assets/css/page-about.css">
+<link rel="stylesheet" href="/assets/css/page-team.css">
+<link rel="stylesheet" href="/assets/css/footer.css">
+<script type="application/ld+json">${JSON.stringify(ld)}</script>`,
+    body: header("he", TEAM_URL) + teamMain() + footer(),
   }));
 }
 

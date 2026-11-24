@@ -1,0 +1,60 @@
+/* =========================================================
+   Team page (/הצוות)
+   Reuses the page hero, crumbs and CTA box from page-about.css.
+   Grid of real portraits: the two leads (Ala, Haitham) as wide
+   cards on a light blue panel, the rest 4 per row.
+   Desktop in VW/%, mobile in PX.
+   ========================================================= */
+.sm-phero--plain .sm-phero__text { grid-column: 1 / 10; }
+.sm-phero--plain .sm-phero__lead { max-width: 36em; }
+
+.sm-staff { padding-block: var(--section-y) 0; }
+.sm-staff__grid {
+  display: grid; grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: clamp(36px, 3.2vw, 56px) clamp(16px, 1.6vw, 28px);
+  margin: 0; padding: 0; list-style: none;
+}
+
+.sm-member { display: flex; flex-direction: column; min-width: 0; }
+.sm-member__photo { aspect-ratio: 4 / 5; border-radius: var(--radius); overflow: hidden; background: #DCE9EE; }
+.sm-member__photo img { width: 100%; height: 100%; object-fit: cover; object-position: 50% 20%; transition: transform .5s ease; }
+.sm-member:hover .sm-member__photo img { transform: scale(1.03); }
+.sm-member__text { margin-top: 18px; }
+.sm-member__name { font-size: clamp(20px, 1.45vw, 24px); line-height: 1.25; color: var(--dark); }
+.sm-member__role { margin-top: 6px; font-size: 16px; font-weight: var(--fw-medium); line-height: 1.45; color: var(--brand-ink); }
+.sm-member__line { margin-top: 10px; font-size: 15px; line-height: 1.6; color: var(--text-muted); }
+
+/* Leads: photo on the right, text beside it, light blue panel */
+.sm-member--lead {
+  grid-column: span 2; display: grid; grid-template-columns: 44% minmax(0, 1fr); align-items: center;
+  gap: clamp(20px, 2.2vw, 40px); padding: clamp(16px, 1.4vw, 24px); border-radius: var(--radius); background: var(--bg-alt);
+}
+.sm-member--lead .sm-member__text { margin-top: 0; }
+.sm-member--lead .sm-member__name { font-size: clamp(24px, 2vw, 32px); }
+.sm-member--lead .sm-member__role { font-size: 18px; }
+.sm-member--lead .sm-member__line { font-size: 16px; color: var(--dark); }
+
+@media (prefers-reduced-motion: reduce) {
+  .sm-member__photo img { transition: none; }
+  .sm-member:hover .sm-member__photo img { transform: none; }
+}
+
+/* ---------- Tablet ---------- */
+@media (max-width: 1024px) {
+  .sm-phero--plain .sm-phero__text { grid-column: 1; }
+  .sm-staff__grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+}
+
+/* ---------- Phones: every card is a row, photo on the right ---------- */
+@media (max-width: 767px) {
+  .sm-staff { padding-top: 56px; }
+  .sm-staff__grid { grid-template-columns: minmax(0, 1fr); gap: 28px; }
+  .sm-member, .sm-member--lead {
+    grid-column: auto; display: grid; grid-template-columns: 112px minmax(0, 1fr); align-items: start; gap: 16px;
+  }
+  .sm-member--lead { padding: 16px; }
+  .sm-member__text { margin-top: 0; }
+  .sm-member__name, .sm-member--lead .sm-member__name { font-size: 20px; }
+  .sm-member__role, .sm-member--lead .sm-member__role { margin-top: 4px; font-size: 15px; }
+  .sm-member__line, .sm-member--lead .sm-member__line { margin-top: 8px; font-size: 15px; }
+}
