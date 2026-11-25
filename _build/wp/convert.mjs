@@ -271,6 +271,37 @@ const convertContainer = (el) => {
     const last = kids[kids.length - 1];
     if (last && last.widgetType === "e-heading" && last.settings.title && !/\s$/.test(last.settings.title.value)) last.settings.title.value += " ";
   };
+  // Links and buttons are flex boxes in this design: their text nodes are separate flex items,
+  // so they are split node by node. Everywhere else consecutive inline content stays ONE span:
+  // Elementor puts line breaks between sibling elements, which would show as extra spaces in inline text.
+  const split = tag === "a" || tag === "button";
+  if (!split) {
+    let buf = [];
+    const flush = () => {
+      if (!buf.length) return;
+      const hasText = buf.some((x) => x.nodeType === 3 && x.rawText.trim());
+      if (hasText) { const r = run(buf); if (r) kids.push(r); }
+      else for (const x of buf) {
+        if (x.nodeType !== 1) continue;
+        const xt = x.rawTagName.toLowerCase();
+        const ltr = x.getAttribute("dir") === "ltr";
+        if (xt === "span") kids.push(textWidget("e-heading", "span", (ltr ? "⁦" : "") + inlineHtml(x.childNodes, "") + (ltr ? "⁩" : ""), x));
+        else if (xt === "a") kids.push(...convertContainer(x));
+        else if (["strong", "b", "em", "i", "small"].includes(xt)) { MAPPED.add(xt); kids.push(textWidget("e-heading", "span", inlineHtml(x.childNodes, ""), x, ["t-" + xt])); }
+        else if (xt !== "br") { const r = run([x]); if (r) kids.push(r); }
+      }
+      buf = [];
+    };
+    for (const n of el.childNodes) {
+      if (n.nodeType === 3) { buf.push(n); continue; }
+      if (n.nodeType !== 1) continue;
+      if (inlineOk(n, false) && !(n.rawTagName.toLowerCase() === "span" && classList(n).length)) { buf.push(n); continue; }
+      flush();
+      kids.push(...convert(n));
+    }
+    flush();
+    return [{ id: nid(), elType: "e-div-block", settings: st, elements: kids }];
+  }
   let prevEl = null;
   for (const n of el.childNodes) {
     if (n.nodeType === 3) {
