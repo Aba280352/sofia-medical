@@ -206,7 +206,8 @@ const SERVICES = [
   { name: "שיקום נוירולוגי עם recoveriX", href: "/מאמרים/שיקום-לאחר-אירוע-מוחי-עם-recoverix-טכנולוגיה-מתקדמת-לשיקום-נוירולוגי", icon: "brain" },
   { name: "שיקום מיני ואורולוגי", href: "/מאמרים/שיקום-מיני", icon: "heart-pulse" },
 ];
-const latin = (s) => s.replace(/([A-Za-z][A-Za-z0-9 ]*[A-Za-z0-9])/g, '<span dir="ltr">$1</span>');
+// Latin words, emails and phone numbers read left to right inside Hebrew text
+const latin = (s) => s.replace(/([\w.+-]+@[\w-]+(?:\.[\w-]+)+|\+?\d[\d-]{6,}\d|[A-Za-z][A-Za-z0-9 ]*[A-Za-z0-9])/g, '<span dir="ltr">$1</span>');
 
 /* ---------- Insurance arrangements (client notes, 2026-11-25) ----------
    Texts from the client's notes document, dashes replaced. Used by the
@@ -1354,13 +1355,19 @@ const PROFESSIONS = [
   ["מרפאים בעיסוק", "hand-heart"], ["מומחי סדים ופרוטזות", "footprints"], ["מטפלים ברפואה משלימה", "sparkles"],
 ];
 
+// Each arrangement with its own services, texts from the client's notes (2026-11-25, Ala asked)
+const ARR_TILES = [
+  ["כללית מושלם", INSURE[0].text],
+  ["BWell", INSURE[1].text],
+  ["מגדל", INSURE[1].text],
+];
 const arrMain = () => `
 <main id="main" tabindex="-1">
 ${plainHero("arr-h1", [["הסדרים"]], "הסדרים", `קיימים הסדרים עם כללית מושלם, <span dir="ltr">BWell</span> ומגדל לייעוץ רפואי בתחום השיקום וטיפול בכאב`)}
 <section class="sm-tiles" aria-label="הסדרים">
   <div class="sm-wrap">
     <ul class="sm-tiles__grid sm-tiles__grid--3" role="list">
-      ${["כללית מושלם", "BWell", "מגדל"].map((n) => `<li class="sm-tile"><span class="sm-tile__ico">${icon("shield-check", "sm-ico")}</span><h2 class="sm-tile__title">${latin(n)}</h2><p class="sm-tile__text">ייעוץ רפואי בתחום השיקום וטיפול בכאב</p></li>`).join("\n      ")}
+      ${ARR_TILES.map(([n, t]) => `<li class="sm-tile"><span class="sm-tile__ico">${icon("shield-check", "sm-ico")}</span><h2 class="sm-tile__title">${latin(n)}</h2><p class="sm-tile__text">${t}</p></li>`).join("\n      ")}
     </ul>
     <p class="sm-tiles__more"><a class="btn btn-ghost" href="${FAQ_URL}">לכל השאלות</a></p>
   </div>

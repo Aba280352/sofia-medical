@@ -11,7 +11,7 @@ const clean = (s, head) => {
   s = s.replace(/[\p{Extended_Pictographic}️‏‎]/gu, "").replace(/\s+/g, " ").trim();
   s = s.replace(/ \| /g, ", ");
   s = s.replace(new RegExp(`([${H}])[-־–]([${H}])`, "g"), "$1 $2").replace(new RegExp(`([${H}])[-־–]([${H}])`, "g"), "$1 $2");
-  s = s.replace(/(\d)\s*[–-]\s*(\d)/g, "$1 עד $2").replace(/כ־(\d)/g, "כ $1");
+  s = s.replace(/(\d)\s*[–-]\s*(\d)(?!\d{4})/g, "$1 עד $2").replace(/כ־(\d)/g, "כ $1");
   const sep = head && !/:/.test(s) ? ": " : ", ";
   s = s.replace(/ [–—-] /g, sep).replace(new RegExp(`([${H}A-Za-z)])[-–] `, "g"), sep === ": " ? "$1: " : "$1, ");
   s = s.replace(/([.:?!])([א-ת])/g, "$1 $2").replace(/\s+([,.:])/g, "$1").replace(/ ?[–—]$/, "").trim();

@@ -9,7 +9,7 @@ const clean = (s, head) => {
   s = s.replace(new RegExp(`([${H}])[-־]([${H}])`, "g"), "$1 $2").replace(new RegExp(`([${H}])[-־]([${H}])`, "g"), "$1 $2");
   s = s.replace(/ [–—-] /g, head ? ": " : ", ").replace(new RegExp(`([${H}A-Za-z)])[-–] `, "g"), head ? "$1: " : "$1, ");
   s = s.replace(/([.:?!])([א-ת])/g, "$1 $2").replace(/([A-Za-z)])([א-ת])/g, "$1: $2").replace(/::/g, ":");
-  s = s.replace(/(\d)\s*[–-]\s*(\d)/g, "$1 עד $2");
+  s = s.replace(/(\d)\s*[–-]\s*(\d)(?!\d{4})/g, "$1 עד $2"); // a long digit group after the dash is a phone number
   s = s.replace(/ ?[–—]$/, "").replace(/\s+([,.:])/g, "$1").trim();
   return s;
 };

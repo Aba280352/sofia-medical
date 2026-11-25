@@ -381,6 +381,13 @@ const convertForm = (form) => {
     classes: cls(classList(form)),
     "form-name": S(form.getAttribute("aria-label") || "השארת פרטים"),
     "actions-after-submit": { $$type: "string-array", value: [S("collect-submissions"), S("email")] },
+    // leads go to the clinic (user decision 2026-11-25)
+    email: { $$type: "emails", value: {
+      to: { $$type: "string-array", value: [S("Info@sofia-medical.com")] },
+      subject: S("פנייה חדשה מהאתר: " + (form.getAttribute("aria-label") || "השארת פרטים")),
+      "from-name": S("סופיה מדיקל"),
+      message: S("[all-fields]"),
+    } },
   };
   if (form.getAttribute("id")) st._cssid = S(form.getAttribute("id"));
   return { id: nid(), elType: "e-form", settings: st, elements: fieldWidgets(form) };

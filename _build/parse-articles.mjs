@@ -10,7 +10,7 @@ const H = "֐-׿";
 export const clean = (s, head) => {
   s = s.replace(/[\p{Extended_Pictographic}️‏‎]/gu, "").replace(/\s+/g, " ").trim();
   s = s.replace(new RegExp(`([${H}])[-־–]([${H}])`, "g"), "$1 $2").replace(new RegExp(`([${H}])[-־–]([${H}])`, "g"), "$1 $2");
-  s = s.replace(/(\d)\s*[–-]\s*(\d)/g, "$1 עד $2");
+  s = s.replace(/(\d)\s*[–-]\s*(\d)(?!\d{4})/g, "$1 עד $2"); // a long digit group after the dash is a phone number
   if (head) s = s.replace(/ \| /g, ", ");
   const sep = head && !/:/.test(s) ? ": " : ", ";
   s = s.replace(/ [–—-] /g, sep).replace(new RegExp(`([${H}A-Za-z)])[-–] `, "g"), sep === ": " ? "$1: " : "$1, ");
