@@ -15,8 +15,9 @@ export const TEAM = [
     line: "מומחה ברפואה פיזיקלית ושיקום, מנהל המחלקה לשיקום ילדים במרכז הרפואי צפון (פוריה)" },
 ];
 
-// Team page (/הצוות): everyone on the current team page except the four
-// people the client removed (Kotikov, Khalaila, Mahajna, Afnan Mohanna). Texts are the
+// Team page (/הצוות): everyone on the current team page except the three
+// people the client removed (Kotikov, Khalaila, Afnan Mohanna). Mahajna was
+// removed and brought back at the client's request (2026-11-25). Texts are the
 // existing ones, dashes and "|" replaced by commas. Ala and Haitham first
 // (featured), the rest in the current site's order.
 export const TEAM_PAGE = [
@@ -32,6 +33,8 @@ export const TEAM_PAGE = [
     line: "מומחה ברפואת משפחה ובטיפול רפואי בבית המטופל" },
   { slug: "yarona-shefer-yaakov", name: 'ד"ר ירונה שפר יעקב', role: "מומחית ברפואת כאב ורפואת משפחה",
     line: "רופאה בכירה ביחידה לשיקום כאב במרכז הרפואי לשיקום לוינשטיין, בעלת ניסיון רב ברפואת כאב ובהובלת תהליכי טיפול ושיקום למטופלים המתמודדים עם מצבי כאב מורכבים." },
+  { slug: "mohammad-mahajna", name: 'ד"ר מוחמד עומר מחאג\x27נה', role: "מומחה ברפואה פנימית ובראומטולוגיה",
+    line: "מומחה באבחון ובטיפול במחלות ראומטיות, דלקות מפרקים, פיברומיאלגיה וכאב כרוני, תוך שילוב גישות טיפוליות מתקדמות והתאמת תוכנית טיפול אישית לשיפור התפקוד ואיכות החיים." },
   { slug: "mursi-asli", name: "מורסי עסלי", role: "פיזיותרפיסט והידרותרפיסט בכיר, אח מוסמך",
     line: "פיזיותרפיסט ותיק ובעל ניסיון רב בשיקום נוירולוגי, אורתופדי ונשימתי, וכן בטיפול בפציעות ספורט, בשחרור פאשיה ובסחרחורת והפרעות שיווי משקל." },
   { slug: "vlada-guizman", name: "ולאדה גויזמן", role: "מומחית בתחום הפרעות שינה, מטפלת מוסמכת ב-CBT-I, טכנולוגית שינה בכירה",

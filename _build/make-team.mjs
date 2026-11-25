@@ -12,7 +12,7 @@ const TEAM = [
   ["hashem-khalifa", "1200_69047469aaae2.png"],
   ["abdallah-watad", "1200_690a1a4aeed1a.png"],
   ["moamen-khatib", "1200_6935c77ea35c6.jpg"],
-  ["afnan-mohanna", "1200_690a1aaa556e2.png"],
+  ["mohammad-mahajna", "1200_6ad786102d1f5.png"],
   ["orna-ohana", "1200_690c4ba40616f.jpg"],
 ];
 mkdirSync("../assets/img/team", { recursive: true });
