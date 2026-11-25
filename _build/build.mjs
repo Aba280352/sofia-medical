@@ -185,7 +185,9 @@ function page({ lang, title, description, robots, canonical, body, head = "" }) 
 <link rel="preload" href="/assets/fonts/Polin-Medium.woff2" as="font" type="font/woff2" crossorigin>
 <link rel="stylesheet" href="/assets/css/tokens.css">
 <link rel="stylesheet" href="/assets/css/base.css">
-<link rel="stylesheet" href="/assets/css/header.css">${head}
+<link rel="stylesheet" href="/assets/css/header.css">${lang === "he" ? `
+<link rel="stylesheet" href="/assets/css/insure.css">
+<script src="/assets/js/insure.js" defer></script>` : ""}${head}
 <script src="/assets/js/header.js" defer></script>
 </head>
 <body id="top">
@@ -206,6 +208,38 @@ const SERVICES = [
 ];
 const latin = (s) => s.replace(/([A-Za-z][A-Za-z0-9 ]*[A-Za-z0-9])/g, '<span dir="ltr">$1</span>');
 
+/* ---------- Insurance arrangements (client notes, 2026-11-25) ----------
+   Texts from the client's notes document, dashes replaced. Used by the
+   rotating seal in the home hero, the card on the relevant service pages
+   and the floating strip on every Hebrew page. */
+const INSURE = [
+  { key: "clalit", img: "badge-clalit-mushlam", alt: "כללית מושלם", name: "כללית מושלם",
+    text: 'ייעוץ רפואי אצל ד"ר עלא מחאמיד בתחומי השיקום ורפואת השינה, בהשתתפות עצמית של 150 ש"ח, בכפוף לזכאות ולתנאי ההסדר.' },
+  { key: "bwell", img: "badge-bwell", alt: "BWell מבית מגדל", name: '<span dir="ltr">BWell</span> ומגדל',
+    text: 'ייעוץ רפואי בתחום רפואת הכאב (ד"ר ירונה), ייעוץ אורולוגי (ד"ר הייתם) וטיפולי פיזיותרפיה, בהשתתפות עצמית ובהתאם לתנאי הפוליסה.' },
+];
+const seal = (x, w, cls, lazy = false) => `<img class="${cls}" src="/assets/img/hero/${x.img}-160.webp" srcset="/assets/img/hero/${x.img}-160.webp 1x, /assets/img/hero/${x.img}-320.webp 2x" width="${w}" height="${w}" alt="${esc(x.alt)}"${lazy ? ' loading="lazy"' : ""} decoding="async">`;
+/* Service page index -> arrangement shown on it */
+const SVC_INSURE = { 0: "clalit", 5: "clalit", 3: "bwell", 9: "bwell", 15: "bwell" };
+const svcInsure = (i) => {
+  const x = INSURE.find((y) => y.key === SVC_INSURE[i]);
+  if (!x) return "";
+  return `
+      <div class="sm-svc-insure">
+        ${seal(x, 72, "sm-svc-insure__seal")}
+        <p><strong>הסדר עם ${x.name}</strong>${x.text}</p>
+      </div>`;
+};
+const insureStrip = () => `
+<aside class="sm-istrip" data-istrip hidden aria-label="הסדרים עם קופות וחברות ביטוח">
+  <div class="sm-istrip__in">
+    <span class="sm-istrip__seals" aria-hidden="true">${INSURE.map((x) => `<img src="/assets/img/hero/${x.img}-160.webp" width="40" height="40" alt="" loading="lazy" decoding="async">`).join("")}</span>
+    <p class="sm-istrip__text"><strong>הסדרים עם כללית מושלם, <span dir="ltr">BWell</span> ומגדל</strong><span class="sm-istrip__sub"> ייעוץ רפואי בהשתתפות עצמית</span></p>
+    <a class="btn btn-cta sm-istrip__cta" href="/צור-קשר">השארת פרטים</a>
+    <button class="sm-istrip__close" type="button" aria-label="סגירת ההודעה">${icon("x", "sm-ico")}</button>
+  </div>
+</aside>`;
+
 const heroHome = () => `
 <main id="main" tabindex="-1">
 <section class="sm-hero" aria-labelledby="hero-title">
@@ -225,11 +259,16 @@ const heroHome = () => `
           <a class="btn btn-cta" href="/צור-קשר">השארת פרטים ${icon("arrow-left", "sm-ico sm-ico--arrow")}</a>
           <a class="btn btn-wa" href="https://wa.me/972504651970" target="_blank" rel="noopener">וואטסאפ<span class="sm-sr"> (נפתח בחלון חדש)</span> ${icon("whatsapp", "sm-ico sm-ico--fill")}</a>
         </div>
-        <div class="sm-hero__insure">
-          <img class="sm-hero__seal" src="/assets/img/hero/badge-clalit-mushlam-160.webp"
-               srcset="/assets/img/hero/badge-clalit-mushlam-160.webp 1x, /assets/img/hero/badge-clalit-mushlam-320.webp 2x"
-               width="100" height="100" alt="כללית מושלם" decoding="async">
-          <p><strong>קיימים הסדרים עם כללית מושלם, <span dir="ltr">BWell</span> ומגדל</strong>לייעוץ רפואי בתחום השיקום וטיפול בכאב</p>
+        <div class="sm-hero__insure" data-insure>
+          <div class="sm-insure__stage">
+            ${INSURE.map((x, k) => `<div class="sm-insure__slide${k ? "" : " is-on"}" data-insure-slide>
+              ${seal(x, 100, "sm-hero__seal")}
+              <p><strong>הסדר עם ${x.name}</strong>${x.text}</p>
+            </div>`).join("\n            ")}
+          </div>
+          <div class="sm-insure__nav" role="group" aria-label="בחירת הסדר">
+            ${INSURE.map((x, k) => `<button class="sm-insure__dot" type="button" aria-label="${esc(x.alt)}" aria-pressed="${k ? "false" : "true"}"></button>`).join("")}
+          </div>
         </div>
       </div>
     </div>
@@ -436,7 +475,7 @@ const footer = () => `
       <ul class="sm-footer__legal" role="list"><li><a href="/terms">תנאי שימוש</a></li><li><a href="/privacy">פרטיות</a></li><li><a href="/accessibility">נגישות</a></li></ul>
     </div>
   </div>
-</footer>`;
+</footer>${insureStrip()}`;
 
 /* ---------- About page (/אודות-סופיה-מדיקל) ----------
    All body copy is the existing text of the current about page (dashes
@@ -777,7 +816,7 @@ const servicePageMain = (p, i) => `
       <div class="sm-phero__actions">
         <a class="btn btn-cta" href="/צור-קשר">השארת פרטים ${icon("arrow-left", "sm-ico sm-ico--arrow")}</a>
         <a class="btn btn-wa" href="https://wa.me/972504651970" target="_blank" rel="noopener">וואטסאפ<span class="sm-sr"> (נפתח בחלון חדש)</span> ${icon("whatsapp", "sm-ico sm-ico--fill")}</a>
-      </div>
+      </div>${svcInsure(i)}
     </div>${svcHero(i)}
   </div>
 </section>

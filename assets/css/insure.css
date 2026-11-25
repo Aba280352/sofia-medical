@@ -1,0 +1,106 @@
+/* =========================================================
+   Insurance arrangements (Clalit Mushlam, BWell and Migdal)
+   1. Home hero: the round seal flips between the arrangements, text follows
+   2. Service pages: one card with the arrangement that fits the service
+   3. Floating strip at the bottom of every Hebrew page, lead form CTA only
+   ========================================================= */
+
+/* ---------- 1. Home hero rotator ---------- */
+.sm-hero__insure[data-insure] { display: block; }
+.sm-insure__stage { display: grid; }
+.sm-insure__slide {
+  grid-area: 1 / 1; display: flex; align-items: center; gap: 16px;
+  visibility: hidden; opacity: 0;
+  transition: opacity 420ms var(--ease-out), visibility 0s linear 420ms;
+}
+.sm-insure__slide.is-on { visibility: visible; opacity: 1; transition: opacity 420ms var(--ease-out) 120ms, visibility 0s; }
+.sm-insure__slide .sm-hero__seal {
+  transform: perspective(600px) rotateY(-90deg) scale(.9);
+  transition: transform 560ms var(--ease-out);
+  filter: drop-shadow(0 10px 22px rgba(0, 20, 30, .28));
+}
+.sm-insure__slide.is-on .sm-hero__seal { transform: perspective(600px) rotateY(0) scale(1); }
+.sm-insure__slide p { translate: 0 6px; transition: translate 520ms var(--ease-out) 120ms; }
+.sm-insure__slide.is-on p { translate: 0 0; }
+
+.sm-insure__nav { display: flex; gap: 4px; margin-top: 10px; padding-inline-start: 116px; }
+.sm-insure__dot {
+  display: grid; place-items: center; width: 34px; height: 24px; padding: 0;
+  border: 0; background: transparent; cursor: pointer;
+}
+.sm-insure__dot::before {
+  content: ""; width: 26px; height: 3px; border-radius: 2px;
+  background: rgba(254, 254, 254, .35); transition: background-color var(--dur-ui) var(--ease-soft);
+}
+.sm-insure__dot[aria-pressed="true"]::before { background: #FEFEFE; }
+.sm-insure__dot:focus-visible { outline-color: #FEFEFE; }
+
+/* ---------- 2. Service page card ---------- */
+.sm-svc-insure {
+  display: flex; align-items: center; gap: 16px; margin-top: 28px; max-width: 34em;
+  padding: 14px 18px 14px 14px; border-radius: var(--radius); background: #FEFEFE; box-shadow: 0 10px 30px rgba(4, 62, 82, .08);
+}
+.sm-svc-insure__seal { flex: none; width: 72px; height: 72px; border-radius: 50%; box-shadow: 0 6px 18px rgba(4, 62, 82, .14); }
+.sm-svc-insure p { font-size: 16px; line-height: 1.5; color: var(--text); }
+.sm-svc-insure strong { display: block; margin-bottom: 2px; font-weight: var(--fw-medium); font-size: 17px; color: var(--dark); }
+
+/* ---------- 3. Floating strip ---------- */
+.sm-istrip {
+  position: fixed; inset-inline: 0; bottom: 16px; z-index: 90;
+  display: flex; justify-content: center; padding-inline: 16px; pointer-events: none;
+  opacity: 0; translate: 0 calc(100% + 24px);
+  transition: opacity var(--dur-ui) var(--ease-out), translate 420ms var(--ease-out);
+}
+.sm-istrip[hidden] { display: none; }
+.sm-istrip.is-on { opacity: 1; translate: 0 0; }
+.sm-istrip__in {
+  pointer-events: auto; display: flex; align-items: center; gap: 14px;
+  width: min(100%, 760px); min-height: 64px; padding: 8px 8px 8px 8px; padding-inline-start: 12px;
+  border-radius: 14px; background: #FEFEFE; box-shadow: 0 14px 40px rgba(4, 62, 82, .18), 0 0 0 1px rgba(4, 62, 82, .06);
+}
+.sm-istrip__seals { display: flex; flex: none; }
+.sm-istrip__seals img { width: 40px; height: 40px; border-radius: 50%; box-shadow: 0 0 0 2px #FEFEFE, 0 2px 8px rgba(4, 62, 82, .16); }
+.sm-istrip__seals img + img { margin-inline-start: -10px; }
+.sm-istrip__text { flex: 1; min-width: 0; font-size: 15px; line-height: 1.35; color: var(--text); }
+.sm-istrip__text strong { display: block; font-weight: var(--fw-medium); font-size: 16px; color: var(--dark); }
+.sm-istrip__cta.btn { flex: none; min-height: 44px; padding: 10px 18px; font-size: 16px; }
+.sm-istrip__close {
+  display: grid; place-items: center; flex: none; width: 36px; height: 44px; padding: 0;
+  border: 0; border-radius: 8px; background: transparent; color: var(--text-muted); cursor: pointer;
+}
+.sm-istrip__close .sm-ico { width: 20px; height: 20px; }
+.sm-istrip__close:hover { color: var(--dark); }
+html.sm-istrip-on .sm-footer__bottom { padding-bottom: 96px; }
+
+@media (max-width: 1024px) {
+  .sm-insure__nav { padding-inline-start: 96px; }
+  .sm-svc-insure { margin-top: 24px; }
+}
+@media (max-width: 767px) {
+  .sm-insure__slide { gap: 12px; }
+  .sm-svc-insure { align-items: flex-start; gap: 12px; padding: 12px; }
+  .sm-svc-insure__seal { width: 60px; height: 60px; }
+  .sm-svc-insure p { font-size: 15px; }
+  .sm-istrip { bottom: 10px; padding-inline: 10px; }
+  .sm-istrip__in { gap: 10px; min-height: 56px; padding: 6px; padding-inline-start: 10px; border-radius: 12px; }
+  .sm-istrip__seals img { width: 32px; height: 32px; }
+  .sm-istrip__seals img + img { margin-inline-start: -8px; }
+  .sm-istrip__sub { display: none; }
+  .sm-istrip__text strong { font-size: 14px; }
+  .sm-istrip__cta.btn { padding: 8px 12px; font-size: 15px; }
+  .sm-istrip__close { width: 32px; }
+  html.sm-istrip-on .sm-footer__bottom { padding-bottom: 80px; }
+}
+@media (max-width: 380px) {
+  .sm-istrip__seals img + img { display: none; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .sm-insure__slide, .sm-insure__slide.is-on, .sm-insure__slide .sm-hero__seal, .sm-insure__slide p, .sm-istrip { transition: none; }
+}
+/* Small phones: the sentence needs the room, the seals step aside */
+@media (max-width: 480px) {
+  .sm-istrip__seals { display: none; }
+  .sm-istrip__in { padding-inline-start: 14px; }
+  .sm-istrip__text { line-height: 1.3; }
+}
