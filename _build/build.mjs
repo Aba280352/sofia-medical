@@ -1370,7 +1370,7 @@ ${ctaBand()}
 /* ---------- Team profile pages (/הצוות/<slug>) ----------
    Same URLs, titles, meta descriptions and H1 as the current profile pages;
    role and short line from the team page, bio from the profile page
-   (data-team-profiles.mjs). The three removed doctors get no page (their
+   (data-team-profiles.mjs). The removed team members get no page (their
    old URLs need a 301 to /הצוות in WordPress). No new copy. */
 const profileMain = (m) => {
   const p = PROFILES[m.slug];

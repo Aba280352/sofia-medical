@@ -15,8 +15,8 @@ export const TEAM = [
     line: "מומחה ברפואה פיזיקלית ושיקום, מנהל המחלקה לשיקום ילדים במרכז הרפואי צפון (פוריה)" },
 ];
 
-// Team page (/הצוות): everyone on the current team page except the three
-// people the client removed (Kotikov, Khalaila, Mahajna). Texts are the
+// Team page (/הצוות): everyone on the current team page except the four
+// people the client removed (Kotikov, Khalaila, Mahajna, Afnan Mohanna). Texts are the
 // existing ones, dashes and "|" replaced by commas. Ala and Haitham first
 // (featured), the rest in the current site's order.
 export const TEAM_PAGE = [
@@ -36,8 +36,6 @@ export const TEAM_PAGE = [
     line: "פיזיותרפיסט ותיק ובעל ניסיון רב בשיקום נוירולוגי, אורתופדי ונשימתי, וכן בטיפול בפציעות ספורט, בשחרור פאשיה ובסחרחורת והפרעות שיווי משקל." },
   { slug: "vlada-guizman", name: "ולאדה גויזמן", role: "מומחית בתחום הפרעות שינה, מטפלת מוסמכת ב-CBT-I, טכנולוגית שינה בכירה",
     line: "חברת צוות מרכז סופיה מדיקל: תחום רפואת שינה והתערבות קוגניטיבית התנהגותית" },
-  { slug: "afnan-mohanna", name: "אפנאן מוהנא", role: "מרפאה בעיסוק",
-    line: "ניסיון עשיר בשיקום נוירולוגי, אורתופדי ושיקום ילדים" },
   { slug: "orna-ohana", name: "אורנה אוחנה", role: "מומחית לרפואה סינית מסורתית ולדיקור רפואי",
     line: "בעלת ניסיון של כשלושים שנה בטיפול בכאב, משלבת בין ידע קליני מערבי לגישה הוליסטית של הרפואה הסינית." },
 ];
