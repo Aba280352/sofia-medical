@@ -128,8 +128,8 @@ const inlineHtml = (nodes, parentSel) => nodes.map((n) => {
       SUBST.set(c[0], parentSel);
       return `<b>${inner}</b>`;
     }
-    if (n.getAttribute("dir") === "ltr") return `⁦${inner}⁩`;
-    return inner;
+    if (n.getAttribute("dir") === "ltr") return `<span>⁦${inner}⁩</span>`;
+    return `<span>${inner}</span>`;
   }
   if (t === "a") {
     const href = linkOf(n.getAttribute("href") || "", n.getAttribute("target")).value.destination.value;
@@ -156,7 +156,7 @@ const textWidget = (type, tag, html, el, extraClasses = []) => {
 const run = (nodes) => {
   const html = inlineHtml(nodes, "").replace(/^\s+|\s+$/g, "");
   if (!html) return null;
-  return textWidget("e-heading", "span", html, null);
+  return textWidget("e-heading", "span", html, null, ["t-run"]);
 };
 
 const convert = (el) => {
@@ -263,36 +263,43 @@ const convertContainer = (el) => {
   if (a) st.attributes = a;
   if (el.getAttribute("id")) st._cssid = S(el.getAttribute("id"));
   if (tag === "a") st.link = linkOf(el.getAttribute("href") || "#", el.getAttribute("target"));
+  // Children keep the static structure: every text node becomes its own span (class t-run,
+  // invisible to span rules), every element stays its own element. In flex layouts the static
+  // text nodes are separate flex items too, so line breaks and gaps come out the same.
   const kids = [];
-  let buf = [];
-  // a run with real text stays one span; a run of elements only keeps each element separate
-  const flush = () => {
-    if (!buf.length) return;
-    const hasText = buf.some((x) => x.nodeType === 3 && x.rawText.trim());
-    if (hasText) { const r = run(buf); if (r) kids.push(r); }
-    else for (const x of buf) {
-      if (x.nodeType !== 1) continue;
-      const xt = x.rawTagName.toLowerCase();
-      const ltr = x.getAttribute("dir") === "ltr";
-      if (xt === "span") kids.push(textWidget("e-heading", "span", (ltr ? "⁦" : "") + inlineHtml(x.childNodes, "") + (ltr ? "⁩" : ""), x));
-      else if (xt === "a") kids.push(...convertContainer(x));
-      else if (xt !== "br") { const r = run([x]); if (r) kids.push(r); }
-    }
-    buf = [];
+  const appendSpace = () => {
+    const last = kids[kids.length - 1];
+    if (last && last.widgetType === "e-heading" && last.settings.title && !/\s$/.test(last.settings.title.value)) last.settings.title.value += " ";
   };
   let prevEl = null;
   for (const n of el.childNodes) {
     if (n.nodeType === 3) {
-      if (!n.rawText.trim() && prevEl && classList(prevEl).includes("sm-sr") && !buf.length && (tag === "a" || tag === "button")) { kids.push(textWidget("e-heading", "span", "​", null)); prevEl = null; continue; }
-      buf.push(n); continue;
+      const txt = n.rawText.replace(/\s+/g, " ");
+      if (!txt.trim()) {
+        // after a visually hidden span, Chrome keeps the whitespace as an empty flex item
+        if (prevEl && classList(prevEl).includes("sm-sr") && (tag === "a" || tag === "button")) kids.push(textWidget("e-heading", "span", "​", null, ["t-run"]));
+        else if (prevEl) appendSpace();
+        prevEl = null;
+        continue;
+      }
+      kids.push(textWidget("e-heading", "span", txt, null, ["t-run"]));
+      prevEl = null;
+      continue;
     }
-    prevEl = n;
     if (n.nodeType !== 1) continue;
-    if (inlineOk(n, false) && !(n.rawTagName.toLowerCase() === "span" && classList(n).length)) { buf.push(n); continue; }
-    flush();
+    prevEl = n;
+    const xt = n.rawTagName.toLowerCase();
+    if (inlineOk(n, false) && !(xt === "span" && classList(n).length)) {
+      const ltr = n.getAttribute("dir") === "ltr";
+      if (xt === "span") kids.push(textWidget("e-heading", "span", (ltr ? "⁦" : "") + inlineHtml(n.childNodes, "") + (ltr ? "⁩" : ""), n));
+      else if (xt === "a") kids.push(...convertContainer(n));
+      else if (["strong", "b", "em", "i", "small"].includes(xt)) { MAPPED.add(xt); kids.push(textWidget("e-heading", "span", inlineHtml(n.childNodes, ""), n, ["t-" + xt])); }
+      else if (xt === "br") kids.push(textWidget("e-heading", "span", "<br>", null, ["t-run"]));
+      else kids.push(textWidget("e-heading", "span", `<${xt}>${inlineHtml(n.childNodes, "")}</${xt}>`, null, ["t-run"]));
+      continue;
+    }
     kids.push(...convert(n));
   }
-  flush();
   return [{ id: nid(), elType: "e-div-block", settings: st, elements: kids }];
 };
 
@@ -415,7 +422,12 @@ while (order.length < first.length) {
 for (const l of lists) { const idx = l.map((x) => order.indexOf(x)); if (idx.some((v, i) => i && v < idx[i - 1])) W("css order differs " + l.join(",")); }
 const ROOTISH = (node) => node.children.toArray().some((x) => (x.type === "TypeSelector" && /^(html|body)$/i.test(x.name)) || (x.type === "PseudoClassSelector" && x.name === "root"))
   || node.children.toArray().every((x) => x.type === "AttributeSelector" && /^(dir|lang)$/.test(x.name.name));
-const TAGMAP = (name) => MAPPED.has(name) ? `:is(${name},.t-${name})` : null;
+// the class stand-in gets no specificity of its own, so the rule keeps the tag's specificity
+const STANDINS = ".t-run,.t-strong,.t-b,.t-em,.t-i,.t-small";
+const TAGMAP = (name) => {
+  if (name === "span") return `:is(span:not(:where(${STANDINS})),:where(.t-span))`;
+  return MAPPED.has(name) ? `:is(${name},:where(.t-${name}))` : null;
+};
 let css = "";
 // a CSS file the static build loads only on some pages applies only to those pages here too
 const loadCount = Object.fromEntries(order.map((c) => [c, lists.filter((l) => l.includes(c)).length]));
@@ -439,7 +451,7 @@ for (const c of order) {
         let gen = (list) => list.map((n) => {
           if (n.type === "TypeSelector" && TAGMAP(n.name.toLowerCase())) return TAGMAP(n.name.toLowerCase());
           if (n.type === "ClassSelector" && n.name === "hl") return ":is(.hl,em)";
-          if (n.type === "ClassSelector" && SUBST.has(n.name)) return `:is(.${n.name},${SUBST.get(n.name)} > b)`;
+          if (n.type === "ClassSelector" && SUBST.has(n.name)) return `:is(.${n.name},:where(${SUBST.get(n.name)} > b))`;
           return csstree.generate(n);
         }).join("");
         const comb = (p) => p.comb ? (p.comb.name === " " ? " " : ` ${p.comb.name} `) : "";
@@ -465,29 +477,35 @@ const RESET = `/* Sofia Medical: static design CSS converted for Elementor v4.
    Atomic containers act as plain HTML elements inside .sm-doc; the static rules below follow. */
 body[class*="elementor-kit-"]{font-family:var(--font-main);font-size:var(--fs-body);line-height:var(--lh-body);color:var(--text);background:var(--bg)}
 .elementor-location-header,.elementor.elementor-location-header>.sm-doc.e-con{display:contents}
-.elementor .sm-doc.e-con,.elementor .sm-doc .e-con{padding:0;margin:0;gap:normal;width:auto;min-width:auto;height:auto;min-height:auto;max-width:none;position:static;overflow:visible;z-index:auto;border-radius:0;transition:none;flex-direction:row;display:block;--display:block}
-.elementor .sm-doc .t-a,.elementor .sm-doc .t-span,.elementor .sm-doc .t-strong,.elementor .sm-doc .t-small,.elementor .sm-doc .t-label{display:inline}
-.elementor .sm-doc .t-button{display:inline-block;font:13.3333px Arial,sans-serif;line-height:normal;color:#000;text-align:center;background:none;border:0;padding:0;border-radius:0;cursor:default;text-transform:none;letter-spacing:normal}
-.elementor .sm-doc .t-li{display:list-item}
-.elementor .sm-doc .t-p{display:block;margin-block:1em}
-.elementor .sm-doc .t-ul{display:block;margin-block:1em;padding-inline-start:40px;list-style-type:disc}
-.elementor .sm-doc .t-ol{display:block;margin-block:1em;padding-inline-start:40px;list-style-type:decimal}
-.elementor .sm-doc .t-figure,.elementor .sm-doc .t-blockquote{display:block;margin:1em 40px}
-.elementor .sm-doc .t-figcaption,.elementor .sm-doc .t-details{display:block}
-.elementor .sm-doc [hidden]{display:none}
-.elementor .sm-doc .t-summary{display:block;cursor:pointer}
+/* Reset layer: specificity (0,2,1). It beats Elementor's own defaults (0,2,0) and loses to every
+   static rule (bare tags (0,2,1) come later, classes are (0,3,0)+), like browser defaults do. */
+.elementor .sm-doc.e-con{padding:0;margin:0;gap:normal;width:auto;min-width:auto;height:auto;min-height:auto;max-width:none;position:static;overflow:visible;z-index:auto;border-radius:0;transition:none;display:block;--display:block}
+.elementor .sm-doc div:where(.e-con),.elementor .sm-doc section:where(.e-con),.elementor .sm-doc header:where(.e-con),.elementor .sm-doc footer:where(.e-con),.elementor .sm-doc article:where(.e-con),.elementor .sm-doc aside:where(.e-con),.elementor .sm-doc nav:where(.e-con),.elementor .sm-doc main:where(.e-con),.elementor .sm-doc a:where(.e-con),.elementor .sm-doc button:where(.e-con),.elementor .sm-doc form:where(.e-con){padding:0;margin:0;gap:normal;width:auto;min-width:auto;height:auto;min-height:auto;max-width:none;position:static;overflow:visible;z-index:auto;border-radius:0;transition:none;flex-direction:row;display:block;--display:block}
+.elementor .sm-doc div:where(.e-con)::before,.elementor .sm-doc div:where(.e-con)::after,.elementor .sm-doc section:where(.e-con)::before,.elementor .sm-doc section:where(.e-con)::after,.elementor .sm-doc header:where(.e-con)::before,.elementor .sm-doc header:where(.e-con)::after,.elementor .sm-doc footer:where(.e-con)::before,.elementor .sm-doc footer:where(.e-con)::after,.elementor .sm-doc article:where(.e-con)::before,.elementor .sm-doc article:where(.e-con)::after,.elementor .sm-doc aside:where(.e-con)::before,.elementor .sm-doc aside:where(.e-con)::after,.elementor .sm-doc nav:where(.e-con)::before,.elementor .sm-doc nav:where(.e-con)::after,.elementor .sm-doc main:where(.e-con)::before,.elementor .sm-doc main:where(.e-con)::after,.elementor .sm-doc a:where(.e-con)::before,.elementor .sm-doc a:where(.e-con)::after,.elementor .sm-doc button:where(.e-con)::before,.elementor .sm-doc button:where(.e-con)::after,.elementor .sm-doc form:where(.e-con)::before,.elementor .sm-doc form:where(.e-con)::after{content:none;position:static;display:inline;width:auto;height:auto;top:auto;left:auto;right:auto;bottom:auto;border:0 none;border-radius:0;opacity:1;mix-blend-mode:normal;transition:none;background:none;z-index:auto}
+.elementor .sm-doc a:where(.e-con),.elementor .sm-doc div:where(.t-span),.elementor .sm-doc div:where(.t-label){display:inline}
+.elementor .sm-doc button:where(.e-con){display:inline-block;font:13.3333px Arial,sans-serif;line-height:normal;color:#000;text-align:center;background:none;border:0;padding:0;border-radius:0;cursor:default;text-transform:none;letter-spacing:normal}
+.elementor .sm-doc div:where(.t-li){display:list-item}
+.elementor .sm-doc div:where(.t-p){margin-block:1em}
+.elementor .sm-doc div:where(.t-ul){margin-block:1em;padding-inline-start:40px;list-style-type:disc}
+.elementor .sm-doc div:where(.t-ol){margin-block:1em;padding-inline-start:40px;list-style-type:decimal}
+.elementor .sm-doc div:where(.t-figure),.elementor .sm-doc div:where(.t-blockquote){margin:1em 40px}
+.elementor .sm-doc div:where(.t-summary){cursor:pointer}
+.elementor .sm-doc span:where(.t-strong,.t-b,.t-em,.t-i,.t-small){display:inline}
+.elementor .sm-doc span:where(.t-strong,.t-b){font-weight:bolder}
+.elementor .sm-doc span:where(.t-em,.t-i){font-style:italic}
+.elementor .sm-doc span:where(.t-small){font-size:smaller}
 .elementor .sm-doc .t-details:not([open])>:not(.t-summary){display:none!important}
-.elementor .sm-doc .e-heading-base,.elementor .sm-doc .e-paragraph-base{margin:0}
+.elementor .sm-doc [hidden]{display:none}
 .elementor .sm-doc a{text-decoration:revert}
-.elementor .sm-doc .e-form-input-base,.elementor .sm-doc .e-form-select-base,.elementor .sm-doc .e-form-textarea-base{height:auto;font-size:13.3333px;color:fieldtext;border-radius:0;border:2px inset light-dark(#767676,#858585);background-color:field}
-.elementor .sm-doc .e-form-label-base{font-size:inherit;color:inherit}
-.elementor .sm-doc .e-form-submit-button-base{color:buttontext;padding:1px 6px;border-radius:0;border:2px outset buttonborder;background-color:buttonface;display:inline-block}
+.elementor .sm-doc input:where(.e-form-input-base),.elementor .sm-doc select:where(.e-form-select-base),.elementor .sm-doc textarea:where(.e-form-textarea-base){height:auto;font-size:13.3333px;color:fieldtext;border-radius:0;border:2px inset light-dark(#767676,#858585);background-color:field}
+.elementor .sm-doc label:where(.e-form-label-base){font-size:inherit;color:inherit}
+.elementor .sm-doc button:where(.e-form-submit-button-base){color:buttontext;padding:1px 6px;border-radius:0;border:2px outset buttonborder;background-color:buttonface;display:inline-block}
 .elementor .sm-doc .e-svg-base{display:block}
 .elementor .sm-doc .e-svg-base svg{display:block}
 .elementor .sm-doc .e-svg-base svg[stroke="currentColor"][stroke-width]{fill:none}
 .elementor .sm-doc .t-picture img.t-src-m{display:none}
 @media (max-width:1024px){.elementor .sm-doc .t-picture img.t-src-m{display:block}.elementor .sm-doc .t-picture img.t-img-d{display:none}}
-.elementor .sm-doc .e-form-base{display:block;padding:0;gap:normal}
+.elementor .sm-doc form:where(.e-form-base){display:block;padding:0;gap:normal}
 .elementor .sm-doc .t-submit::after{content:"";width:24px;height:24px;flex:none;background:currentColor;-webkit-mask:url("${UP}/icons/arrow-left.svg") center/contain no-repeat;mask:url("${UP}/icons/arrow-left.svg") center/contain no-repeat}
 ${[...SUBST.entries()].map(([k, p]) => `.elementor .sm-doc ${p} > b{font-weight:inherit}`).join("\n")}
 `;
