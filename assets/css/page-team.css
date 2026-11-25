@@ -6,7 +6,7 @@
    Desktop in VW/%, mobile in PX.
    ========================================================= */
 .sm-phero--plain .sm-phero__text { grid-column: 1 / 10; }
-.sm-phero--plain .sm-phero__lead { max-width: 36em; }
+.sm-phero--plain[aria-labelledby="team-h1"] .sm-phero__lead { max-width: 36em; }
 
 .sm-staff { padding-block: var(--section-y) 0; }
 .sm-staff__grid {

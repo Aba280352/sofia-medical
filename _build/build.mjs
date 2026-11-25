@@ -1513,6 +1513,8 @@ ${plainHero("legal-h1", [[p.h1]], p.h1, "")}
 const PREVIEW = true;
 const VER = Date.now().toString(36);
 const write = (rel, html) => {
+  // WP_EXPORT=1: also keep the raw page (root-relative paths, real robots) for the WordPress converter
+  if (process.env.WP_EXPORT) { const r = join(SITE, "_build", "wp", "raw", rel); mkdirSync(dirname(r), { recursive: true }); writeFileSync(r, html, "utf8"); }
   const up = "../".repeat(rel.split("/").length - 1);
   html = html
     .replace(/([\s"',(])\/assets\//g, `$1${up}assets/`)
