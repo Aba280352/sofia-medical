@@ -118,20 +118,7 @@ add_action( 'template_redirect', function () {
 	exit;
 }, 0 );
 
-/* 301s: team members removed from the new site -> the team page */
-add_action( 'template_redirect', function () {
-	if ( ! is_404() ) { return; }
-	$path = '/' . trim( rawurldecode( (string) parse_url( $_SERVER['REQUEST_URI'] ?? '', PHP_URL_PATH ) ), '/' );
-	$map = [
-		'/הצוות/אפנאן-מוהנא' => '/הצוות/',
-		'/הצוות/ד-ר-מוסטפא-ח-לאילה' => '/הצוות/',
-		'/הצוות/d7-93-d7-a8-d7-a1-d7-a8-d7-92-d7-99-d7-99-d7-a7-d7-95-d7-98-d7-99-d7-a7-d7-95-d7-91' => '/הצוות/',
-	];
-	if ( isset( $map[ $path ] ) ) {
-		wp_safe_redirect( home_url( implode( '/', array_map( 'rawurlencode', explode( '/', $map[ $path ] ) ) ) ), 301 );
-		exit;
-	}
-} );
+/* 301s for removed pages (team members, /promo-4, /logo-footer) live in the Redirection plugin (Tools > Redirection) */
 
 /* language landing pages carry their own header and footer inside the page */
 add_filter( 'hello_elementor_header_footer', function ( $show ) {
