@@ -73,6 +73,8 @@ const svgMedia = (node) => {
 
 /* ---------- element factory ---------- */
 let idSeed = "", idN = 0;
+const SITE_HOME = "https://sofia-medical.com/";
+let pageLang = "he"; // set per page in the manifest loop, used by the form redirect
 const nid = () => sha(idSeed + ":" + idN++).slice(0, 7);
 const NATIVE = new Set(["div", "header", "section", "article", "aside", "footer", "a", "button", "main", "nav"]);
 const MAPPED = new Set(); // tags rendered as div + t-<tag>
@@ -380,7 +382,9 @@ const convertForm = (form) => {
   const st = {
     classes: cls(classList(form)),
     "form-name": S(form.getAttribute("aria-label") || "השארת פרטים"),
-    "actions-after-submit": { $$type: "string-array", value: [S("collect-submissions"), S("email")] },
+    // after sending: the thank you page in the page's language (client request 2026-11-26)
+    "actions-after-submit": { $$type: "string-array", value: [S("collect-submissions"), S("email"), S("redirect")] },
+    redirect_url: S(SITE_HOME + (pageLang === "he" ? "" : pageLang + "/") + "thank-you/"),
     // leads go to the clinic (user decision 2026-11-25)
     email: { $$type: "emails", value: {
       to: { $$type: "string-array", value: [S("Info@sofia-medical.com")] },
@@ -426,6 +430,7 @@ for (const f of files) {
   }
   const lang = root.querySelector("html").getAttribute("lang");
   const landing = lang !== "he";
+  pageLang = lang;
   if (!landing && !headerSrc && url === "/") headerSrc = before;
   if (!landing && !footerSrc && url === "/") footerSrc = after;
   const tree = doc("page:" + url, [main]);

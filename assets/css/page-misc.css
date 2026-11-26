@@ -39,3 +39,20 @@
   .sm-mosaic { grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 8px; }
   .sm-mosaic li:nth-child(even) { translate: 0 12px; }
 }
+
+/* thank you page (after a lead form is sent) */
+.sm-thanks { padding-block: clamp(56px, 7vw, 120px); }
+.sm-thanks__box { display: flex; flex-direction: column; align-items: center; gap: 20px; max-width: 760px; margin-inline: auto; padding: clamp(32px, 4vw, 64px); border-radius: var(--radius); background: var(--bg-alt); text-align: center; }
+.sm-thanks__ico { display: grid; place-items: center; width: 72px; height: 72px; border-radius: var(--radius); background: var(--bg); color: var(--accent); }
+.sm-thanks__ico .sm-ico { width: 36px; height: 36px; }
+.sm-thanks__title { font-size: clamp(30px, 3vw, 48px); font-weight: var(--fw-heading); line-height: var(--lh-tight); color: var(--dark); }
+.sm-thanks__text { max-width: 36em; font-size: clamp(18px, 1.3vw, 21px); line-height: var(--lh-body); color: var(--text-muted); }
+.sm-thanks__actions { display: flex; flex-wrap: wrap; justify-content: center; gap: 12px; margin-top: 8px; }
+@media (max-width: 767px) {
+  .sm-thanks { padding-block: 40px 56px; }
+  .sm-thanks__box { padding: 32px 20px; gap: 16px; }
+  .sm-thanks__ico { width: 60px; height: 60px; }
+  .sm-thanks__ico .sm-ico { width: 30px; height: 30px; }
+  .sm-thanks__actions { flex-direction: column; width: 100%; }
+  .sm-thanks__actions .btn { width: 100%; }
+}

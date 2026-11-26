@@ -1853,6 +1853,40 @@ ${plainHero("legal-h1", [[p.h1]], p.h1, "")}
 </section>
 </main>`;
 
+/* ---------- Thank you page (/thank-you, /en|ru|ar/thank-you) ----------
+   Every lead form redirects here after a successful submission (convert.mjs).
+   Hebrew copy is the client's own text (2026-11-26); en/ru/ar are its translation. noindex. */
+const THANKS_URL = "/thank-you";
+const THANKS = {
+  he: { title: "תודה על פנייתך | סופיה מדיקל", h1: "תודה על פנייתך לסופיה מדיקל", text: "פנייתך התקבלה בהצלחה, וצוות המרכז יחזור אליך בהקדם במהלך שעות הפעילות.", home: "חזרה לדף הבית", wa: "דברו איתנו בוואטסאפ" },
+  en: { title: "Thank you | Sofia Medical", h1: "Thank you for contacting Sofia Medical", text: "Your request has been received, and our team will get back to you as soon as possible during opening hours.", home: "Back to the home page", wa: "Talk to us on WhatsApp" },
+  ru: { title: "Спасибо | Sofia Medical", h1: "Спасибо, что обратились в Sofia Medical", text: "Ваша заявка успешно получена, и сотрудники центра свяжутся с вами в ближайшее время в часы работы.", home: "Вернуться на главную", wa: "Написать нам в WhatsApp" },
+  ar: { title: "شكرا لكم | صوفيا ميديكال", h1: "شكرا لتواصلكم مع صوفيا ميديكال", text: "تم استلام طلبكم بنجاح، وسيعود إليكم فريق المركز في أقرب وقت خلال ساعات العمل.", home: "العودة إلى الصفحة الرئيسية", wa: "تحدثوا معنا عبر واتساب" },
+};
+const thanksMain = (k) => {
+  const t = THANKS[k], dir = LANGS[k].dir;
+  const wa = k === "he" ? WA : waLink(I18N[k].waHello);
+  const nw = k === "he" ? " (נפתח בחלון חדש)" : I18N[k].newWin;
+  return `
+<main id="main" tabindex="-1">
+<section class="sm-thanks" aria-labelledby="thanks-h1">
+  <div class="sm-wrap">
+    <div class="sm-thanks__box">
+      <span class="sm-thanks__ico" aria-hidden="true">${icon("badge-check", "sm-ico")}</span>
+      <h1 id="thanks-h1" class="sm-thanks__title">${t.h1}</h1>
+      <p class="sm-thanks__text">${t.text}</p>
+      <div class="sm-thanks__actions">
+        <a class="btn btn-cta" href="${LANGS[k].href}">${ibd(dir, t.home, icon("house", "sm-ico"))}</a>
+        <a class="btn btn-wa" href="${wa}" target="_blank" rel="noopener">${ibd(dir, t.wa, icon("whatsapp", "sm-ico sm-ico--fill"))}<span class="sm-sr">${nw}</span></a>
+      </div>
+    </div>
+  </div>
+</section>
+</main>`;
+};
+// language landings link to anchors on their own page: from a sub page they go back to /xx/#anchor
+const landingLinks = (html, k) => html.replace(/href="#(?!main")([^"]*)"/g, (m, h) => h === "top" ? `href="/${k}/"` : `href="/${k}/#${h}"`);
+
 /* ---------- Write pages ---------- */
 // PREVIEW: the local build is also published on GitHub Pages for the client,
 // so every page is noindex and all site paths are relative (works on
@@ -2382,5 +2416,20 @@ for (const k of ["en", "ru", "ar"]) {
 <link rel="stylesheet" href="/assets/css/faq.css">
 <link rel="stylesheet" href="/assets/css/footer.css">` : "",
     body: header(k) + (T ? (LANGS[k].dir === "rtl" ? bidiHtml(homeLanding(k) + footerLanding(k)) : homeLanding(k) + footerLanding(k)) : placeholder(k)),
+  }));
+}
+
+// Thank you pages: where every lead form lands after sending (noindex, not in the sitemap)
+for (const k of ["he", "en", "ru", "ar"]) {
+  const he = k === "he";
+  const rel = (he ? "" : k + "/") + THANKS_URL.slice(1) + "/index.html";
+  let body = he ? header("he", THANKS_URL) + thanksMain(k) + footer() : landingLinks(headerLanding(k) + thanksMain(k) + footerLanding(k), k);
+  if (!he && LANGS[k].dir === "rtl") body = bidiHtml(body);
+  write(rel, page({
+    lang: k, title: THANKS[k].title, description: THANKS[k].h1, robots: "noindex, follow", canonical: "",
+    head: `
+<link rel="stylesheet" href="/assets/css/page-misc.css">
+<link rel="stylesheet" href="/assets/css/footer.css">`,
+    body,
   }));
 }
