@@ -109,6 +109,15 @@ add_filter( 'redirect_canonical', function ( $redirect ) {
 add_filter( 'hello_elementor_enqueue_style', '__return_false' );
 add_filter( 'hello_elementor_enqueue_theme_style', '__return_false' );
 
+/* 301: www and the old temporary address -> the main domain (front end only; REST, admin and login are untouched) */
+add_action( 'template_redirect', function () {
+	$main = parse_url( home_url(), PHP_URL_HOST );
+	$host = strtolower( (string) ( $_SERVER['HTTP_HOST'] ?? '' ) );
+	if ( ! $main || ! $host || $host === $main || is_preview() ) { return; }
+	wp_redirect( 'https://' . $main . ( $_SERVER['REQUEST_URI'] ?? '/' ), 301, 'Sofia Medical' );
+	exit;
+}, 0 );
+
 /* 301s: team members removed from the new site -> the team page */
 add_action( 'template_redirect', function () {
 	if ( ! is_404() ) { return; }
