@@ -36,6 +36,8 @@ const CONTACT = {
   maps: "https://maps.google.com/?q=%D7%99%D7%95%D7%97%D7%A0%D7%9F+%D7%94%D7%A1%D7%A0%D7%93%D7%9C%D7%A8+6%2C+%D7%A7%D7%95%D7%9E%D7%94+5%2C+%D7%9B%D7%A4%D7%A8+%D7%A1%D7%91%D7%90",
 };
 const WA = "https://wa.me/972504651970";
+// icon on the left of the text: before it in left to right languages, after it in right to left ones
+const ibd = (dir, text, ico) => (dir === "ltr" ? ico + text : text + ico);
 const waLink = (text) => `${WA}?text=${encodeURIComponent(text)}`;
 
 /* ---------- Main menu: same pages and URLs as the current site ---------- */
@@ -85,11 +87,11 @@ function topbar(cur) {
 <div class="sm-topbar" role="region" aria-label="${L.contactLabel}">
   <div class="sm-wrap sm-topbar__in">
     <ul class="sm-topbar__list" role="list">
-      <li><a href="${CONTACT.mobile.href}">${icon("smartphone", "sm-ico")}<span>${CONTACT.mobile.display}</span></a></li>
-      <li class="sm-hide-m"><a href="${CONTACT.landline.href}">${icon("phone", "sm-ico")}<span>${CONTACT.landline.display}</span></a></li>
-      <li><a href="mailto:${CONTACT.email}">${icon("mail", "sm-ico")}<span class="sm-hide-xs">${CONTACT.email}</span><span class="sm-sr sm-show-xs">${CONTACT.email}</span></a></li>
+      <li><a href="${CONTACT.mobile.href}">${ibd(L.dir, `<span dir="ltr">${CONTACT.mobile.display}</span>`, icon("smartphone", "sm-ico"))}</a></li>
+      <li class="sm-hide-m"><a href="${CONTACT.landline.href}">${ibd(L.dir, `<span dir="ltr">${CONTACT.landline.display}</span>`, icon("phone", "sm-ico"))}</a></li>
+      <li><a href="mailto:${CONTACT.email}">${ibd(L.dir, `<span class="sm-hide-xs">${CONTACT.email}</span><span class="sm-sr sm-show-xs">${CONTACT.email}</span>`, icon("mail", "sm-ico"))}</a></li>
     </ul>
-    <ul class="sm-topbar__list" role="list"><li class="sm-topbar__addr"><a href="${CONTACT.maps}" target="_blank" rel="noopener">${icon("map-pin", "sm-ico")}<span>${T.address}</span><span class="sm-sr">${T.newWin}</span></a></li></ul>
+    <ul class="sm-topbar__list" role="list"><li class="sm-topbar__addr"><a href="${CONTACT.maps}" target="_blank" rel="noopener">${ibd(L.dir, `<span>${T.address}</span>`, icon("map-pin", "sm-ico"))}<span class="sm-sr">${T.newWin}</span></a></li></ul>
   </div>
 </div>`;
   const address = cur === "he"
@@ -137,7 +139,7 @@ function navDrawer(currentHref) {
    the CTA opens WhatsApp. No links to the inner pages (they are in Hebrew). */
 function headerLanding(cur) {
   const L = LANGS[cur], T = I18N[cur];
-  const waCta = (cls) => `<a class="btn btn-wa ${cls}" href="${waLink(T.waHello)}" target="_blank" rel="noopener">${icon("whatsapp", "sm-ico sm-ico--fill")}${T.wa}<span class="sm-sr">${T.newWin}</span></a>`;
+  const waCta = (cls) => `<a class="btn btn-wa ${cls}" href="${waLink(T.waHello)}" target="_blank" rel="noopener">${ibd(L.dir, T.wa, icon("whatsapp", "sm-ico sm-ico--fill"))}<span class="sm-sr">${T.newWin}</span></a>`;
   return `<a class="sm-skip" href="#main">${L.skip}</a>
 ${topbar(cur)}
 <header class="sm-header" id="sm-header">
@@ -170,10 +172,10 @@ ${topbar(cur)}
     </nav>
     ${waCta("sm-drawer__cta")}
     <ul class="sm-drawer__contact" role="list">
-      <li><a href="${CONTACT.mobile.href}">${icon("smartphone", "sm-ico")}<span>${CONTACT.mobile.display}</span></a></li>
-      <li><a href="${CONTACT.landline.href}">${icon("phone", "sm-ico")}<span>${CONTACT.landline.display}</span></a></li>
-      <li><a href="mailto:${CONTACT.email}">${icon("mail", "sm-ico")}<span>${CONTACT.email}</span></a></li>
-      <li><a href="${CONTACT.maps}" target="_blank" rel="noopener">${icon("map-pin", "sm-ico")}<span>${T.address}</span><span class="sm-sr">${T.newWin}</span></a></li>
+      <li><a href="${CONTACT.mobile.href}">${ibd(L.dir, `<span dir="ltr">${CONTACT.mobile.display}</span>`, icon("smartphone", "sm-ico"))}</a></li>
+      <li><a href="${CONTACT.landline.href}">${ibd(L.dir, `<span dir="ltr">${CONTACT.landline.display}</span>`, icon("phone", "sm-ico"))}</a></li>
+      <li><a href="mailto:${CONTACT.email}">${ibd(L.dir, `<span>${CONTACT.email}</span>`, icon("mail", "sm-ico"))}</a></li>
+      <li><a href="${CONTACT.maps}" target="_blank" rel="noopener">${ibd(L.dir, `<span>${T.address}</span>`, icon("map-pin", "sm-ico"))}<span class="sm-sr">${T.newWin}</span></a></li>
     </ul>
     <ul class="sm-drawer__langs" role="list" aria-label="${L.langLabel}">
       ${Object.entries(LANGS).map(([k, l]) => `<li><a href="${l.href}" lang="${k}" hreflang="${k}"${k === cur ? ' aria-current="true"' : ""}>${l.name}</a></li>`).join("")}
@@ -548,6 +550,25 @@ const footer = () => `
    Every link stays on the page or goes to WhatsApp / the phone: the inner
    pages are in Hebrew. Left to right languages get their icons before the
    text (on the left); arrows still point forward. */
+// Right to left landing pages: Latin words, numbers and emails in the text
+// read left to right (same as latin() on the Hebrew pages). Text in tags
+// that cannot hold markup (option, svg, script) is left alone.
+const bidiHtml = (html) => {
+  let skip = null;
+  return html.split(/(<[^>]+>)/).map((p) => {
+    if (p.startsWith("<")) {
+      const m = p.match(/^<(\/?)([a-z0-9]+)/i);
+      if (m) {
+        const t = m[2].toLowerCase();
+        if (!skip && !m[1] && ["option", "svg", "script", "style", "title", "textarea"].includes(t) && !p.endsWith("/>")) skip = t;
+        else if (skip && m[1] && t === skip) skip = null;
+      }
+      return p;
+    }
+    return skip || !p.trim() ? p : latin(p);
+  }).join("");
+};
+
 function homeLanding(k) {
   const T = I18N[k];
   const ltr = LANGS[k].dir === "ltr";
@@ -753,8 +774,8 @@ function footerLanding(k) {
       <a class="sm-footer__logo" href="#top" aria-label="${F.home}"><img src="/assets/img/logo-icon.png" alt="" width="240" height="293" loading="lazy"><span class="sm-footer__name">${F.name}</span></a>
       <p class="sm-footer__tag">${F.tag}</p>
       <ul class="sm-footer__contact" role="list">
-        <li><a href="${CONTACT.mobile.href}">${ib(`<span>${CONTACT.mobile.display}</span>`, icon("smartphone", "sm-ico"))}</a></li>
-        <li><a href="${CONTACT.landline.href}">${ib(`<span>${CONTACT.landline.display}</span>`, icon("phone", "sm-ico"))}</a></li>
+        <li><a href="${CONTACT.mobile.href}">${ib(`<span dir="ltr">${CONTACT.mobile.display}</span>`, icon("smartphone", "sm-ico"))}</a></li>
+        <li><a href="${CONTACT.landline.href}">${ib(`<span dir="ltr">${CONTACT.landline.display}</span>`, icon("phone", "sm-ico"))}</a></li>
         <li><a href="mailto:${CONTACT.email}">${ib(`<span>${CONTACT.email}</span>`, icon("mail", "sm-ico"))}</a></li>
         <li><a href="${CONTACT.maps}" target="_blank" rel="noopener">${ib(`<span>${T.address}</span>`, icon("map-pin", "sm-ico"))}${nw}</a></li>
       </ul>
@@ -767,7 +788,7 @@ function footerLanding(k) {
     </div>
     <nav aria-labelledby="ft-nav"><p class="sm-footer__col-title" id="ft-nav">${F.onPage}</p><ul class="sm-footer__links" role="list">${T.nav.map(([t, h]) => li(h, t)).join("")}</ul></nav>
     <nav aria-labelledby="ft-svc"><p class="sm-footer__col-title" id="ft-svc">${F.areas}</p><ul class="sm-footer__links" role="list">${T.services.map((x) => li(waLink(T.waAbout(x.topic)), x.name, true)).join("")}</ul></nav>
-    <nav aria-labelledby="ft-art"><p class="sm-footer__col-title" id="ft-art">${F.contact}</p><ul class="sm-footer__links" role="list">${li(waLink(T.waHello), T.waLong, true)}${li(CONTACT.mobile.href, `${T.call}: ${CONTACT.mobile.display}`)}${li(CONTACT.landline.href, `${F.landline}: ${CONTACT.landline.display}`)}${li("mailto:" + CONTACT.email, `${F.email}: ${CONTACT.email}`)}</ul></nav>
+    <nav aria-labelledby="ft-art"><p class="sm-footer__col-title" id="ft-art">${F.contact}</p><ul class="sm-footer__links" role="list">${li(waLink(T.waHello), T.waLong, true)}${li(CONTACT.mobile.href, `${T.call}: <span dir="ltr">${CONTACT.mobile.display}</span>`)}${li(CONTACT.landline.href, `${F.landline}: <span dir="ltr">${CONTACT.landline.display}</span>`)}${li("mailto:" + CONTACT.email, `${F.email}: <span dir="ltr">${CONTACT.email}</span>`)}</ul></nav>
   </div>
   <div class="sm-footer__bottom">
     <div class="sm-wrap sm-footer__bar">
@@ -2349,6 +2370,6 @@ for (const k of ["en", "ru", "ar"]) {
 <script src="/assets/js/reviews.js" defer></script>
 <link rel="stylesheet" href="/assets/css/faq.css">
 <link rel="stylesheet" href="/assets/css/footer.css">` : "",
-    body: header(k) + (T ? homeLanding(k) + footerLanding(k) : placeholder(k)),
+    body: header(k) + (T ? (LANGS[k].dir === "rtl" ? bidiHtml(homeLanding(k) + footerLanding(k)) : homeLanding(k) + footerLanding(k)) : placeholder(k)),
   }));
 }

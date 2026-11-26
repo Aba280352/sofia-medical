@@ -152,8 +152,8 @@ html.sm-lock, html.sm-lock body { overflow: hidden; }
   .sm-header__cta .sm-ico--arrow { display: none; }
 }
 
-/* Arabic: Polin has no Arabic glyphs, so the Arabic pages use a system Arabic font */
-html[lang="ar"] { --font-main: Tahoma, "Noto Sans Arabic", Arial, sans-serif; }
+/* Arabic: Polin has no Arabic glyphs, so the Arabic page uses IBM Plex Sans Arabic for them */
+html[lang="ar"] { --font-main: "IBM Plex Sans Arabic", "Polin", Tahoma, Arial, sans-serif; }
 
 /* ---------- Mobile and tablet (up to 1024px) ---------- */
 @media (max-width: 1024px) {
@@ -188,3 +188,7 @@ html[lang="ar"] { --font-main: Tahoma, "Noto Sans Arabic", Arial, sans-serif; }
 
 /* Left to right languages: the underline grows from the left */
 [dir="ltr"] .sm-nav__link::after { transform-origin: left; }
+/* On the Arabic page itself the language name uses the page's Arabic font */
+html[lang="ar"] a[lang="ar"] { font-family: inherit; font-size: inherit; }
+/* Arabic letters are taller (dots above and below): headings get more line height */
+html[lang="ar"] :is(h1, h2, h3) { line-height: 1.3; }

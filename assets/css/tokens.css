@@ -9,6 +9,11 @@
 @font-face { font-family: "Polin"; src: url("../fonts/Polin-Medium.woff2") format("woff2");   font-weight: 500; font-style: normal; font-display: swap; }
 @font-face { font-family: "Polin"; src: url("../fonts/Polin-Semibold.woff2") format("woff2"); font-weight: 600; font-style: normal; font-display: swap; }
 @font-face { font-family: "Polin"; src: url("../fonts/Polin-Bold.woff2") format("woff2");     font-weight: 700; font-style: normal; font-display: swap; }
+/* Arabic pages: IBM Plex Sans Arabic (OFL, Google Fonts), Arabic letters only; Latin and digits stay in Polin. size-adjust matches its visual size to Polin */
+@font-face { font-family: "IBM Plex Sans Arabic"; src: url("../fonts/IBMPlexSansArabic-Regular.woff2") format("woff2"); font-weight: 400; font-style: normal; font-display: swap; size-adjust: 112%; unicode-range: U+0600-06FF, U+0750-077F, U+0870-08FF, U+200C-200E, U+FB50-FDFF, U+FE70-FEFC; }
+@font-face { font-family: "IBM Plex Sans Arabic"; src: url("../fonts/IBMPlexSansArabic-Medium.woff2") format("woff2"); font-weight: 500; font-style: normal; font-display: swap; size-adjust: 112%; unicode-range: U+0600-06FF, U+0750-077F, U+0870-08FF, U+200C-200E, U+FB50-FDFF, U+FE70-FEFC; }
+@font-face { font-family: "IBM Plex Sans Arabic"; src: url("../fonts/IBMPlexSansArabic-SemiBold.woff2") format("woff2"); font-weight: 600; font-style: normal; font-display: swap; size-adjust: 112%; unicode-range: U+0600-06FF, U+0750-077F, U+0870-08FF, U+200C-200E, U+FB50-FDFF, U+FE70-FEFC; }
+@font-face { font-family: "IBM Plex Sans Arabic"; src: url("../fonts/IBMPlexSansArabic-Bold.woff2") format("woff2"); font-weight: 700; font-style: normal; font-display: swap; size-adjust: 112%; unicode-range: U+0600-06FF, U+0750-077F, U+0870-08FF, U+200C-200E, U+FB50-FDFF, U+FE70-FEFC; }
 
 :root {
   /* ---------- Palette (raw) ---------- */

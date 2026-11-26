@@ -10,7 +10,7 @@ body {
   background: var(--bg);
   -webkit-font-smoothing: antialiased;
 }
-:lang(ar) body, body:lang(ar) { font-family: "Polin", "Noto Sans Arabic", Tahoma, Arial, sans-serif; }
+:lang(ar) body, body:lang(ar) { font-family: var(--font-main); }
 img, svg { display: block; max-width: 100%; }
 a { color: inherit; }
 h1, h2, h3, h4, h5 { margin: 0; line-height: var(--lh-heading); font-weight: var(--fw-heading); text-wrap: balance; }

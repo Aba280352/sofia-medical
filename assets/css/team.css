@@ -75,3 +75,13 @@
 
 /* Left to right languages: English names are longer, the label may take two lines */
 [dir="ltr"] .sm-person__tag { white-space: normal; text-overflow: clip; }
+
+/* Arabic: taller letters, the caption windows (which clip for the slide) get more line height */
+html[lang="ar"] .sm-team__win { line-height: 1.6; }
+html[lang="ar"] .sm-team__win--name { height: 1.7em; }
+html[lang="ar"] .sm-team__win--role { height: 1.8em; }
+html[lang="ar"] .sm-team__win--line { line-height: 1.6; min-height: calc(4 * 1.6em); }
+@media (max-width: 1024px) {
+  html[lang="ar"] .sm-team__win--line { min-height: calc(3 * 1.6em); }
+  html[lang="ar"] .sm-team__cap.is-idle .sm-team__win--line { min-height: 0; }
+}

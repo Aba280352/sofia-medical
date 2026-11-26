@@ -126,3 +126,5 @@
   html[lang="ru"] .sm-service { padding-inline: 12px; }
   html[lang="ru"] .sm-service__name { font-size: 15px; }
 }
+/* Arabic: the hero title steps down a size, like the left to right pages */
+html[lang="ar"] .sm-hero__title { font-size: clamp(32px, 3.6vw, 52px); }
