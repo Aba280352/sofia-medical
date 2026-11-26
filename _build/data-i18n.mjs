@@ -138,7 +138,7 @@ export const I18N = {
       title: "Common questions",
       lead: "Didn't find an answer? Leave your details and we'll get back to you.",
       form: "Leave your details", name: "Full name", phone: "Phone", topic: "Treatment area", choose: "Choose", send: "Send",
-      note: 'By sending this form I agree to the <a href="/privacy" hreflang="he">privacy policy</a> (in Hebrew).',
+      note: 'By sending this form I agree to the <a href="/privacy">privacy policy</a> (in Hebrew).',
       items: [
         ["What is a sleep test and how is it done?", "A sleep test examines the sleep stages, breathing, brain activity, body movements and blood oxygen saturation during the night. The test can be done at the center's sleep institute or at the patient's home, depending on the medical condition and need."],
         ["Can a sleep test be done at home?", "Absolutely. The center provides advanced systems for home sleep tests, including full guidance and the support of a medical technician. The home test takes place in the patient's natural environment, for reliable results and maximum comfort."],
