@@ -66,6 +66,7 @@
   .sm-treat__tabs {
     display: flex; gap: 8px; overflow-x: auto; scroll-snap-type: x mandatory; padding-bottom: 4px;
     margin-inline: calc(-1 * var(--side)); padding-inline: var(--side); scrollbar-width: none;
+    scroll-padding-inline: var(--side); /* snapping keeps the gutter before the first tab */
   }
   .sm-treat__tabs::-webkit-scrollbar { display: none; }
   .sm-tab { width: auto; flex: none; min-height: 52px; padding: 10px 16px; font-size: 16px; scroll-snap-align: start;
@@ -79,3 +80,6 @@
   .sm-panel__body { padding: 24px 20px 28px; }
   .sm-panel__actions .btn { flex: 1 1 100%; }
 }
+
+/* Left to right languages: icon first, then the text, both on the left */
+[dir="ltr"] .sm-tab { justify-content: flex-start; }

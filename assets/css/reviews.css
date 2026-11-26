@@ -75,3 +75,7 @@
   .sm-carousel__track { transition: height .35s var(--ease-out); }
   .sm-review__name { margin-top: 0; padding-top: 16px; }
 }
+
+/* Left to right languages: next points right, previous points left */
+[dir="ltr"] .sm-carousel__btn[data-prev] .sm-ico { transform: none; }
+[dir="ltr"] .sm-carousel__btn[data-next] .sm-ico { transform: scaleX(-1); }

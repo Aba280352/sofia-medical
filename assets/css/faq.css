@@ -51,3 +51,6 @@
 }
 
 @media (max-width: 767px) { .sm-faq__all { width: 100%; } }
+
+/* Left to right languages: the select arrow sits on the right */
+[dir="ltr"] .sm-form select { background-position: right 16px center; }

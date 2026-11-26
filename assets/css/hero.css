@@ -115,3 +115,9 @@
 
 /* WhatsApp icon: Iconoir is drawn for a 1.5 stroke; thinner looks broken at this size */
 .btn-wa .sm-ico { width: 26px; height: 26px; }
+
+/* Left to right languages: the text sits on the left, so the photo is mirrored
+   (no signs or text in it) to keep the empty teal area behind the text */
+[dir="ltr"] .sm-hero__bg img { transform: scaleX(-1); }
+/* Left to right languages: English words are longer, the title steps down a size */
+[dir="ltr"] .sm-hero__title { font-size: clamp(32px, 3.6vw, 52px); }

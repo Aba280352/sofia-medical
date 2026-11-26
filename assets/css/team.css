@@ -72,3 +72,6 @@
   .sm-team__list > li:nth-child(even) { margin-top: 32px; }
   .sm-person { aspect-ratio: 4 / 5; }
 }
+
+/* Left to right languages: English names are longer, the label may take two lines */
+[dir="ltr"] .sm-person__tag { white-space: normal; text-overflow: clip; }

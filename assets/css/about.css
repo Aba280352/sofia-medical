@@ -87,3 +87,12 @@
   .sm-about__media { order: 2; margin: 28px 0 calc(28px + 16px); }
   .sm-about__text > .sm-about__lead { margin-top: 0; }
 }
+
+/* Left to right languages: mirror the ticker and the block behind the photo */
+@keyframes sm-ticker-ltr { from { transform: translateX(0); } to { transform: translateX(-50%); } }
+[dir="ltr"] .sm-ticker__track { animation-name: sm-ticker-ltr; }
+[dir="ltr"] .sm-ticker__list li { box-shadow: inset 1px 0 0 var(--line-on-dark); }
+[dir="ltr"] .sm-about__figure::before { inset: 28px -28px -28px 28px; }
+@media (max-width: 1024px) {
+  [dir="ltr"] .sm-about__figure::before { inset: 16px -16px -16px 16px; }
+}

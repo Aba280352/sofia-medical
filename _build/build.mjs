@@ -16,6 +16,7 @@ import { ARTICLES } from "./data-articles.mjs";
 import { AREAS } from "./data-areas.mjs";
 import { LEGAL } from "./data-legal.mjs";
 import { COVER_SLUGS } from "./make-article-covers.mjs";
+import { I18N } from "./data-i18n.mjs";
 
 const SITE = join(dirname(fileURLToPath(import.meta.url)), "..");
 const ICONS = join(SITE, "..", "design", "icons");
@@ -34,6 +35,8 @@ const CONTACT = {
   address: "יוחנן הסנדלר 6, קומה 5, כפר סבא",
   maps: "https://maps.google.com/?q=%D7%99%D7%95%D7%97%D7%A0%D7%9F+%D7%94%D7%A1%D7%A0%D7%93%D7%9C%D7%A8+6%2C+%D7%A7%D7%95%D7%9E%D7%94+5%2C+%D7%9B%D7%A4%D7%A8+%D7%A1%D7%91%D7%90",
 };
+const WA = "https://wa.me/972504651970";
+const waLink = (text) => `${WA}?text=${encodeURIComponent(text)}`;
 
 /* ---------- Main menu: same pages and URLs as the current site ---------- */
 const MENU = [
@@ -76,7 +79,19 @@ function langSwitcher(cur, id) {
 }
 
 function topbar(cur) {
-  const L = LANGS[cur];
+  const L = LANGS[cur], T = I18N[cur];
+  // translated landing pages: icon on the left of the text, English address
+  if (T) return `
+<div class="sm-topbar" role="region" aria-label="${L.contactLabel}">
+  <div class="sm-wrap sm-topbar__in">
+    <ul class="sm-topbar__list" role="list">
+      <li><a href="${CONTACT.mobile.href}">${icon("smartphone", "sm-ico")}<span>${CONTACT.mobile.display}</span></a></li>
+      <li class="sm-hide-m"><a href="${CONTACT.landline.href}">${icon("phone", "sm-ico")}<span>${CONTACT.landline.display}</span></a></li>
+      <li><a href="mailto:${CONTACT.email}">${icon("mail", "sm-ico")}<span class="sm-hide-xs">${CONTACT.email}</span><span class="sm-sr sm-show-xs">${CONTACT.email}</span></a></li>
+    </ul>
+    <ul class="sm-topbar__list" role="list"><li class="sm-topbar__addr"><a href="${CONTACT.maps}" target="_blank" rel="noopener">${icon("map-pin", "sm-ico")}<span>${T.address}</span><span class="sm-sr">${T.newWin}</span></a></li></ul>
+  </div>
+</div>`;
   const address = cur === "he"
     ? `<li class="sm-topbar__addr"><a href="${CONTACT.maps}" target="_blank" rel="noopener"><span>${CONTACT.address}</span><span class="sm-sr"> (נפתח בחלון חדש)</span>${icon("map-pin", "sm-ico")}</a></li>`
     : "";
@@ -118,7 +133,57 @@ function navDrawer(currentHref) {
   }).join("\n          ");
 }
 
+/* Translated landing page header: the menu jumps to sections of the page and
+   the CTA opens WhatsApp. No links to the inner pages (they are in Hebrew). */
+function headerLanding(cur) {
+  const L = LANGS[cur], T = I18N[cur];
+  const waCta = (cls) => `<a class="btn btn-wa ${cls}" href="${waLink(T.waHello)}" target="_blank" rel="noopener">${icon("whatsapp", "sm-ico sm-ico--fill")}${T.wa}<span class="sm-sr">${T.newWin}</span></a>`;
+  return `<a class="sm-skip" href="#main">${L.skip}</a>
+${topbar(cur)}
+<header class="sm-header" id="sm-header">
+  <div class="sm-wrap sm-header__in">
+    <a class="sm-logo" href="#top" aria-label="${L.home}">
+      <img src="/assets/img/logo-icon.png" alt="" width="240" height="293" fetchpriority="high">
+    </a>
+    <nav class="sm-nav" aria-label="${T.navLabel}">
+      <ul class="sm-nav__list" role="list">
+        ${T.nav.map(([t, h]) => `<li><a class="sm-nav__link" href="${h}">${t}</a></li>`).join("\n        ")}
+      </ul>
+    </nav>
+    <div class="sm-header__actions">${langSwitcher(cur, `sm-lang-${cur}`)}
+      ${waCta("sm-header__cta")}
+      <button class="sm-burger" type="button" aria-expanded="false" aria-controls="sm-drawer" aria-label="${T.menu}">${icon("menu", "sm-ico")}</button>
+    </div>
+  </div>
+</header>
+<div class="sm-drawer" id="sm-drawer" role="dialog" aria-modal="true" aria-label="${T.menu}" hidden>
+  <div class="sm-drawer__scrim" data-close></div>
+  <div class="sm-drawer__panel">
+    <div class="sm-drawer__head">
+      <a class="sm-logo" href="#top" data-close aria-label="${L.home}"><img src="/assets/img/logo-icon.png" alt="" width="240" height="293"></a>
+      <button class="sm-drawer__close" type="button" data-close aria-label="${T.close}">${icon("x", "sm-ico")}</button>
+    </div>
+    <nav aria-label="${T.navLabel}">
+      <ul class="sm-drawer__nav" role="list">
+          ${T.nav.map(([t, h]) => `<li><a href="${h}" data-close>${t}</a></li>`).join("\n          ")}
+      </ul>
+    </nav>
+    ${waCta("sm-drawer__cta")}
+    <ul class="sm-drawer__contact" role="list">
+      <li><a href="${CONTACT.mobile.href}">${icon("smartphone", "sm-ico")}<span>${CONTACT.mobile.display}</span></a></li>
+      <li><a href="${CONTACT.landline.href}">${icon("phone", "sm-ico")}<span>${CONTACT.landline.display}</span></a></li>
+      <li><a href="mailto:${CONTACT.email}">${icon("mail", "sm-ico")}<span>${CONTACT.email}</span></a></li>
+      <li><a href="${CONTACT.maps}" target="_blank" rel="noopener">${icon("map-pin", "sm-ico")}<span>${T.address}</span><span class="sm-sr">${T.newWin}</span></a></li>
+    </ul>
+    <ul class="sm-drawer__langs" role="list" aria-label="${L.langLabel}">
+      ${Object.entries(LANGS).map(([k, l]) => `<li><a href="${l.href}" lang="${k}" hreflang="${k}"${k === cur ? ' aria-current="true"' : ""}>${l.name}</a></li>`).join("")}
+    </ul>
+  </div>
+</div>`;
+}
+
 function header(cur, currentHref = "/") {
+  if (I18N[cur]) return headerLanding(cur);
   const L = LANGS[cur];
   const landing = cur !== "he";
   const logoHref = landing ? "#top" : "/";
@@ -185,7 +250,7 @@ function page({ lang, title, description, robots, canonical, body, head = "" }) 
 <link rel="preload" href="/assets/fonts/Polin-Medium.woff2" as="font" type="font/woff2" crossorigin>
 <link rel="stylesheet" href="/assets/css/tokens.css">
 <link rel="stylesheet" href="/assets/css/base.css">
-<link rel="stylesheet" href="/assets/css/header.css">${lang === "he" ? `
+<link rel="stylesheet" href="/assets/css/header.css">${lang === "he" || I18N[lang] ? `
 <link rel="stylesheet" href="/assets/css/insure.css">
 <script src="/assets/js/insure.js" defer></script>` : ""}${head}
 <script src="/assets/js/header.js" defer></script>
@@ -477,6 +542,250 @@ const footer = () => `
     </div>
   </div>
 </footer>${insureStrip()}`;
+
+/* ---------- Translated landing pages (/en/ ...) ----------
+   The Hebrew homepage, translated (data-i18n.mjs), same sections and classes.
+   Every link stays on the page or goes to WhatsApp / the phone: the inner
+   pages are in Hebrew. Left to right languages get their icons before the
+   text (on the left); arrows still point forward. */
+function homeLanding(k) {
+  const T = I18N[k];
+  const ltr = LANGS[k].dir === "ltr";
+  const ib = (text, ico) => (ltr ? ico + text : text + ico); // icon on the left of the text
+  const nw = `<span class="sm-sr">${T.newWin}</span>`;
+  const waA = (cls, text, msg) => `<a class="${cls}" href="${waLink(msg)}" target="_blank" rel="noopener">${ib(text, icon("whatsapp", "sm-ico sm-ico--fill"))}${nw}</a>`;
+  const callA = (cls) => `<a class="${cls}" href="${CONTACT.mobile.href}">${ib(T.call, icon("phone", "sm-ico"))}</a>`;
+  const chev = ltr ? "chevron-right" : "chevron-left";
+  const ins = INSURE.map((x) => ({ ...x, ...T.insure[x.key] }));
+  const team = TEAM.map((m) => ({ slug: m.slug, ...T.team.people[m.slug] }));
+  const ticker = T.about.ticker.map((t) => `<li>${ib(`<span>${t}</span>`, icon("check", "sm-ico"))}</li>`).join("");
+  return `
+<main id="main" tabindex="-1">
+<section class="sm-hero" aria-labelledby="hero-title">
+  <div class="sm-hero__stage">
+    <picture class="sm-hero__bg">
+      <source media="(max-width: 1024px)" type="image/webp"
+              srcset="/assets/img/hero/hero-clinic-m-480.webp 480w, /assets/img/hero/hero-clinic-m-768.webp 768w, /assets/img/hero/hero-clinic-m-1080.webp 1080w" sizes="100vw">
+      <img src="/assets/img/hero/hero-clinic-1920.webp"
+           srcset="/assets/img/hero/hero-clinic-1280.webp 1280w, /assets/img/hero/hero-clinic-1920.webp 1920w, /assets/img/hero/hero-clinic-2560.webp 2560w"
+           sizes="100vw" width="1920" height="1086" alt="" fetchpriority="high" decoding="async">
+    </picture>
+    <div class="sm-wrap sm-hero__grid">
+      <div class="sm-hero__content">
+        <h1 id="hero-title" class="sm-hero__title"><span class="sm-hero__brand">${T.hero.brand}</span> ${T.hero.h1}</h1>
+        <p class="sm-hero__lead">${T.hero.lead}</p>
+        <div class="sm-hero__actions">
+          ${callA("btn btn-cta")}
+          ${waA("btn btn-wa", T.wa, T.waHello)}
+        </div>
+        <div class="sm-hero__insure" data-insure>
+          <div class="sm-insure__stage">
+            ${ins.map((x, i) => `<div class="sm-insure__slide${i ? "" : " is-on"}" data-insure-slide>
+              ${seal(x, 100, "sm-hero__seal")}
+              <p><strong>${T.insureWith} ${x.name}</strong>${x.text}</p>
+            </div>`).join("\n            ")}
+          </div>
+          <div class="sm-insure__nav" role="group" aria-label="${T.insureNav}">
+            ${ins.map((x, i) => `<button class="sm-insure__dot" type="button" aria-label="${esc(x.alt)}" aria-pressed="${i ? "false" : "true"}"></button>`).join("")}
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+</section>
+<div class="sm-flow">
+  <div class="sm-wrap sm-hero__services">
+    <nav class="sm-services" aria-labelledby="services-strip-title">
+      <h2 id="services-strip-title" class="sm-sr">${T.servicesTitle}</h2>
+      <ul class="sm-services__list" role="list">
+        ${SERVICES.map((s, i) => `<li><a class="sm-service" href="${waLink(T.waAbout(T.services[i].topic))}" target="_blank" rel="noopener"><span class="sm-service__ico">${icon(s.icon, "sm-ico")}</span><span class="sm-service__name">${T.services[i].name}</span><span class="sm-service__more" aria-hidden="true">${T.ask} ${icon(chev, "sm-ico")}</span>${nw}</a></li>`).join("\n        ")}
+      </ul>
+    </nav>
+  </div>
+
+
+<section class="sm-about" aria-labelledby="about-title">
+  <div class="sm-wrap sm-about__grid">
+    <div class="sm-about__text">
+      <h2 id="about-title" class="sm-about__title">${T.about.title}</h2>
+      <p class="sm-about__lead">${T.about.lead}</p>
+      <p class="sm-about__body">${T.about.body}</p>
+      <div class="sm-ticker" role="region" aria-label="${T.about.tickerLabel}">
+        <div class="sm-ticker__track">
+          <ul class="sm-ticker__list" role="list">${ticker}</ul>
+          <ul class="sm-ticker__list" role="list" aria-hidden="true">${ticker}</ul>
+        </div>
+      </div>
+      <div class="sm-about__actions">
+        ${callA("btn btn-cta")}
+        ${waA("btn btn-ghost", T.waLong, T.waHello)}
+      </div>
+    </div>
+    <div class="sm-about__media">
+      <figure class="sm-about__figure">
+        <div class="sm-about__frame">
+          <img src="/assets/img/hero/dr-ala-mahamid-720.webp"
+               srcset="/assets/img/hero/dr-ala-mahamid-440.webp 440w, /assets/img/hero/dr-ala-mahamid-720.webp 720w"
+               sizes="(max-width: 1024px) 90vw, 460px" width="720" height="840"
+               alt="${esc(T.about.alt)}" loading="lazy" decoding="async">
+        </div>
+        <figcaption class="sm-about__card"><strong>${T.about.name}</strong><span>${T.about.role}</span></figcaption>
+      </figure>
+    </div>
+  </div>
+</section>
+</div>
+
+<section class="sm-treat" aria-labelledby="treat-title">
+  <div class="sm-wrap">
+    <div class="sm-treat__head"><h2 id="treat-title" class="sm-treat__title">${T.treat.title}</h2></div>
+    <div class="sm-treat__grid" data-tabs>
+      <div class="sm-treat__tabs" role="tablist" aria-label="${T.treat.tabsLabel}" aria-orientation="vertical">
+        ${TREATMENTS.map((t, i) => `<button class="sm-tab" type="button" role="tab" id="tab-${t.id}" aria-controls="panel-${t.id}" aria-selected="${i === 0}" tabindex="${i === 0 ? 0 : -1}">${ib(`<span>${T.treat.items[t.id].tab}</span>`, icon(t.icon, "sm-ico"))}</button>`).join("\n        ")}
+      </div>
+      <div class="sm-treat__panels">
+        ${TREATMENTS.map((t, i) => { const x = T.treat.items[t.id]; return `<div class="sm-panel" role="tabpanel" id="panel-${t.id}" aria-labelledby="tab-${t.id}" tabindex="0"${i === 0 ? "" : " hidden"}>
+          <div class="sm-panel__body">
+            <h3 class="sm-panel__title">${x.title}</h3>
+            ${x.paras.slice(0, 2).map((p) => `<p>${p}</p>`).join("")}
+            <details class="sm-panel__more">
+              <summary><span class="sm-more-open">${T.treat.more}</span><span class="sm-more-close">${T.treat.less}</span>${icon("chevron-down", "sm-ico")}</summary>
+              ${x.paras.slice(2).map((p) => `<p>${p}</p>`).join("")}
+            </details>
+            <div class="sm-panel__actions">
+              ${callA("btn btn-cta")}
+              ${waA("btn btn-ghost", T.ask, T.waAbout(x.topic))}
+            </div>
+          </div>
+          <div class="sm-panel__media"><img src="/assets/img/${t.img}-600.webp" srcset="/assets/img/${t.img}-600.webp 600w, /assets/img/${t.img}-900.webp 900w" sizes="(max-width: 1024px) 100vw, 360px" width="600" height="800" alt="" loading="lazy" decoding="async"></div>
+        </div>`; }).join("\n        ")}
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="sm-team" aria-labelledby="team-title" data-team>
+  <div class="sm-wrap sm-team__grid">
+    <div class="sm-team__text">
+      <div class="sm-team__head">
+        <h2 id="team-title" class="sm-team__title">${T.team.title}</h2>
+        <p class="sm-team__intro">${T.team.intro}</p>
+      </div>
+      <div class="sm-team__cap is-idle" aria-live="polite" data-idle="${esc(T.team.idle)}">
+        <div class="sm-team__win sm-team__win--name"></div>
+        <div class="sm-team__win sm-team__win--role"></div>
+        <div class="sm-team__win sm-team__win--line"></div>
+      </div>
+    </div>
+    <ul class="sm-team__list" role="list">
+      ${team.map((m) => `<li><button class="sm-person" type="button" aria-pressed="false" aria-label="${esc(m.name)}, ${esc(m.role)}" data-name="${esc(m.name)}" data-role="${esc(m.role)}" data-line="${esc(m.line)}"><img src="/assets/img/team/${m.slug}.webp" width="480" height="600" alt="" loading="lazy" decoding="async"><span class="sm-person__tag" aria-hidden="true">${m.name}</span></button></li>`).join("\n      ")}
+    </ul>
+  </div>
+</section>
+
+<section class="sm-reviews" aria-labelledby="reviews-title">
+  <div class="sm-wrap">
+    <div class="sm-reviews__head">
+      <h2 id="reviews-title" class="sm-reviews__title">${T.reviews.title}</h2>
+    </div>
+    <div class="sm-carousel" data-carousel data-live="${esc(T.reviews.live)}" aria-roledescription="${T.reviews.carousel}" aria-label="${T.reviews.label}">
+      <div class="sm-carousel__track">
+        ${T.reviews.items.map(([q, n], i) => `<figure class="sm-review" role="group" aria-roledescription="${T.reviews.item}" aria-label="${T.reviews.of(i + 1, T.reviews.items.length)}"><svg class="sm-review__mark" viewBox="0 0 28 28" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M11 8c-4 1.5-6 4.5-6 9v3h6v-6H7.5M23 8c-4 1.5-6 4.5-6 9v3h6v-6h-3.5"/></svg><blockquote class="sm-review__quote">${q}</blockquote><figcaption class="sm-review__name">${n}</figcaption></figure>`).join("\n        ")}
+      </div>
+      <div class="sm-carousel__controls">
+        <button class="sm-carousel__btn" type="button" data-prev aria-label="${T.reviews.prev}">${icon("arrow-left", "sm-ico")}</button>
+        <button class="sm-carousel__btn" type="button" data-next aria-label="${T.reviews.next}">${icon("arrow-left", "sm-ico")}</button>
+      </div>
+      <p class="sm-sr sm-carousel__live" aria-live="off"></p>
+    </div>
+
+    <div class="sm-videos">
+      <div class="sm-reviews__head">
+        <h2 class="sm-reviews__title">${T.reviews.videosTitle}</h2>
+        <p class="sm-videos__sub">${T.reviews.videosSub}</p>
+      </div>
+      <ul class="sm-videos__list" role="list">
+        ${["6989c89a73668", "6989c89d594af"].map((id, i) => `<li class="sm-video">
+          <video src="/assets/video/testimonial-${id}.mp4" poster="/assets/video/testimonial-${id}.webp" preload="none" playsinline width="480" height="861" aria-label="${T.reviews.video(i + 1)}" lang="he"></video>
+          <button class="sm-video__play" type="button" aria-label="${T.reviews.play(i + 1)}">${icon("play", "sm-ico sm-ico--fill")}</button>
+        </li>`).join("\n        ")}
+      </ul>
+    </div>
+  </div>
+</section>
+
+<section class="sm-faq" aria-labelledby="faq-title">
+  <div class="sm-wrap sm-faq__grid">
+    <div class="sm-faq__side">
+      <h2 id="faq-title" class="sm-faq__title">${T.faq.title}</h2>
+      <p class="sm-faq__lead">${T.faq.lead}</p>
+      <form class="sm-form" action="#" method="post" aria-label="${T.faq.form}">
+        <div class="sm-form__field"><label for="lead-name">${T.faq.name}</label><input id="lead-name" name="name" type="text" autocomplete="name" required></div>
+        <div class="sm-form__field"><label for="lead-phone">${T.faq.phone}</label><input id="lead-phone" name="phone" type="tel" inputmode="tel" autocomplete="tel" required></div>
+        <div class="sm-form__field"><label for="lead-topic">${T.faq.topic}</label>
+          <select id="lead-topic" name="topic"><option value="">${T.faq.choose}</option>${T.services.map((x) => `<option>${x.name}</option>`).join("")}</select></div>
+        <button class="btn btn-cta" type="submit">${T.faq.send} ${icon("arrow-left", "sm-ico sm-ico--arrow")}</button>
+        <p class="sm-form__note">${T.faq.note}</p>
+      </form>
+    </div>
+    <div class="sm-faq__list">
+      <div class="sm-acc">
+        ${T.faq.items.map(([q, a], i) => `<details name="faq"${i === 0 ? " open" : ""}><summary><span>${q}</span>${icon("plus", "sm-ico")}</summary><p>${a}</p></details>`).join("\n        ")}
+      </div>
+    </div>
+  </div>
+</section>
+</main>`;
+}
+
+function footerLanding(k) {
+  const T = I18N[k], F = T.footer;
+  const ltr = LANGS[k].dir === "ltr";
+  const ib = (text, ico) => (ltr ? ico + text : text + ico);
+  const nw = `<span class="sm-sr">${T.newWin}</span>`;
+  const li = (h, t, ext) => `<li><a href="${h}"${ext ? ' target="_blank" rel="noopener"' : ""}>${t}${ext ? nw : ""}</a></li>`;
+  const ins = INSURE.map((x) => ({ ...x, ...T.insure[x.key] }));
+  return `
+<footer class="sm-footer">
+  <div class="sm-wrap sm-footer__grid">
+    <div class="sm-footer__brand">
+      <a class="sm-footer__logo" href="#top" aria-label="${F.home}"><img src="/assets/img/logo-icon.png" alt="" width="240" height="293" loading="lazy"><span class="sm-footer__name">${F.name}</span></a>
+      <p class="sm-footer__tag">${F.tag}</p>
+      <ul class="sm-footer__contact" role="list">
+        <li><a href="${CONTACT.mobile.href}">${ib(`<span>${CONTACT.mobile.display}</span>`, icon("smartphone", "sm-ico"))}</a></li>
+        <li><a href="${CONTACT.landline.href}">${ib(`<span>${CONTACT.landline.display}</span>`, icon("phone", "sm-ico"))}</a></li>
+        <li><a href="mailto:${CONTACT.email}">${ib(`<span>${CONTACT.email}</span>`, icon("mail", "sm-ico"))}</a></li>
+        <li><a href="${CONTACT.maps}" target="_blank" rel="noopener">${ib(`<span>${T.address}</span>`, icon("map-pin", "sm-ico"))}${nw}</a></li>
+      </ul>
+      <div class="sm-footer__maps">
+        <a href="${CONTACT.maps}" target="_blank" rel="noopener">Google Maps${nw}</a>
+        <a href="${WAZE}" target="_blank" rel="noopener">Waze${nw}</a>
+        <a href="https://www.facebook.com/profile.php?id=61583510784516" target="_blank" rel="noopener">Facebook${nw}</a>
+        <a href="https://www.instagram.com/sofiamedical12/" target="_blank" rel="noopener">Instagram${nw}</a>
+      </div>
+    </div>
+    <nav aria-labelledby="ft-nav"><p class="sm-footer__col-title" id="ft-nav">${F.onPage}</p><ul class="sm-footer__links" role="list">${T.nav.map(([t, h]) => li(h, t)).join("")}</ul></nav>
+    <nav aria-labelledby="ft-svc"><p class="sm-footer__col-title" id="ft-svc">${F.areas}</p><ul class="sm-footer__links" role="list">${T.services.map((x) => li(waLink(T.waAbout(x.topic)), x.name, true)).join("")}</ul></nav>
+    <nav aria-labelledby="ft-art"><p class="sm-footer__col-title" id="ft-art">${F.contact}</p><ul class="sm-footer__links" role="list">${li(waLink(T.waHello), T.waLong, true)}${li(CONTACT.mobile.href, `${T.call}: ${CONTACT.mobile.display}`)}${li(CONTACT.landline.href, `${F.landline}: ${CONTACT.landline.display}`)}${li("mailto:" + CONTACT.email, `${F.email}: ${CONTACT.email}`)}</ul></nav>
+  </div>
+  <div class="sm-footer__bottom">
+    <div class="sm-wrap sm-footer__bar">
+      <p>${F.rights(new Date().getFullYear())}</p>
+      <p class="sm-footer__credit"><a href="https://tzd-seo.org.il/" target="_blank" rel="noopener">${F.credit}${nw}</a></p>
+      <ul class="sm-footer__legal" role="list">${F.legal.map(([t, h]) => `<li><a href="${h}" hreflang="he">${t}<span class="sm-sr">${T.he}</span></a></li>`).join("")}</ul>
+    </div>
+  </div>
+</footer>
+<aside class="sm-istrip" data-istrip hidden aria-label="${T.strip.label}">
+  <div class="sm-istrip__in">
+    <span class="sm-istrip__seals" aria-hidden="true">${ins.map((x) => `<img src="/assets/img/hero/${x.img}-160.webp" width="40" height="40" alt="" loading="lazy" decoding="async">`).join("")}</span>
+    <p class="sm-istrip__text"><strong>${T.strip.title}</strong><span class="sm-istrip__sub">${T.strip.sub}</span></p>
+    <a class="btn btn-wa sm-istrip__cta" href="${waLink(T.waHello)}" target="_blank" rel="noopener">${ib(T.wa, icon("whatsapp", "sm-ico sm-ico--fill"))}${nw}</a>
+    <button class="sm-istrip__close" type="button" aria-label="${T.strip.close}">${icon("x", "sm-ico")}</button>
+  </div>
+</aside>`;
+}
 
 /* ---------- About page (/אודות-סופיה-מדיקל) ----------
    All body copy is the existing text of the current about page (dashes
@@ -2016,14 +2325,30 @@ LEGAL.forEach((p) => {
   }));
 });
 
-// Other languages: one landing page each, noindex, no links to inner pages
+// Other languages: one landing page each, noindex, no links to inner pages.
+// Translated ones (I18N) are the homepage in that language; the rest are
+// still placeholders.
 for (const k of ["en", "ru", "ar"]) {
+  const T = I18N[k];
   write(`${k}/index.html`, page({
     lang: k,
-    title: "Sofia Medical",
-    description: "Sofia Medical, Kfar Saba",
+    title: T ? T.title : "Sofia Medical",
+    description: T ? T.description : "Sofia Medical, Kfar Saba",
     robots: "noindex, follow",
     canonical: "",
-    body: header(k) + placeholder(k),
+    head: T ? `
+<link rel="preload" as="image" type="image/webp" media="(min-width: 1025px)" imagesrcset="/assets/img/hero/hero-clinic-1280.webp 1280w, /assets/img/hero/hero-clinic-1920.webp 1920w, /assets/img/hero/hero-clinic-2560.webp 2560w" imagesizes="100vw" fetchpriority="high">
+<link rel="preload" as="image" type="image/webp" media="(max-width: 1024px)" imagesrcset="/assets/img/hero/hero-clinic-m-480.webp 480w, /assets/img/hero/hero-clinic-m-768.webp 768w, /assets/img/hero/hero-clinic-m-1080.webp 1080w" imagesizes="100vw" fetchpriority="high">
+<link rel="stylesheet" href="/assets/css/hero.css">
+<link rel="stylesheet" href="/assets/css/about.css">
+<link rel="stylesheet" href="/assets/css/treatments.css">
+<script src="/assets/js/tabs.js" defer></script>
+<link rel="stylesheet" href="/assets/css/team.css">
+<script src="/assets/js/team.js" defer></script>
+<link rel="stylesheet" href="/assets/css/reviews.css">
+<script src="/assets/js/reviews.js" defer></script>
+<link rel="stylesheet" href="/assets/css/faq.css">
+<link rel="stylesheet" href="/assets/css/footer.css">` : "",
+    body: header(k) + (T ? homeLanding(k) + footerLanding(k) : placeholder(k)),
   }));
 }

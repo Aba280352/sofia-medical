@@ -8,6 +8,8 @@
   const N = cards.length;
   const live = root.querySelector(".sm-carousel__live");
   const reduce = matchMedia("(prefers-reduced-motion: reduce)").matches;
+  // RTL: the next card is on the left; LTR: on the right
+  const side = getComputedStyle(root).direction === "rtl" ? -1 : 1;
   const EASE = (t) => { // cubic-bezier(.22,1,.36,1) approximated by easeOutQuint-like curve
     const p = 1 - t; return 1 - p * p * p * p * p; };
   let f = 0, anim = null, playing = !reduce, hover = false, focusIn = false, dragging = false, timer = null;
@@ -25,7 +27,7 @@
     cards.forEach((c, i) => {
       const d = wrap(i - f);
       const ad = Math.abs(d), a = Math.min(ad, 1);
-      const x = d * -s;                       // RTL: the next card is on the left
+      const x = d * s * side;
       const scale = reduce ? 1 : 1 - 0.2 * a;
       const op = ad <= 1 ? 1 - 0.55 * a : Math.max(0, 0.45 * (1.5 - ad) / 0.5);
       c.style.transform = reduce ? "none" : `translateX(${x}px) scale(${scale})`;
@@ -56,7 +58,7 @@
   }
   function announce() {
     const n = ((Math.round(f) % N) + N) % N + 1;
-    if (live) live.textContent = `ביקורת ${n} מתוך ${N}`;
+    if (live) live.textContent = (root.dataset.live || "ביקורת {n} מתוך {N}").replace("{n}", n).replace("{N}", N);
   }
   const next = () => animateTo(Math.round(f) + 1);
   const prev = () => animateTo(Math.round(f) - 1);
@@ -73,8 +75,8 @@
   root.querySelector("[data-next]").addEventListener("click", () => { next(); schedule(); });
   root.querySelector("[data-prev]").addEventListener("click", () => { prev(); schedule(); });
   root.addEventListener("keydown", (e) => {
-    if (e.key === "ArrowLeft") { e.preventDefault(); next(); }
-    if (e.key === "ArrowRight") { e.preventDefault(); prev(); }
+    if (e.key === "ArrowLeft") { e.preventDefault(); side < 0 ? next() : prev(); }
+    if (e.key === "ArrowRight") { e.preventDefault(); side < 0 ? prev() : next(); }
   });
 
   /* drag */
@@ -90,15 +92,15 @@
     if (Math.abs(dx) > 6) { moved = true; track.classList.add("is-dragging"); }
     samples.push({ x: e.clientX, t: performance.now() });
     samples = samples.filter((s) => performance.now() - s.t < 100);
-    if (moved && !reduce) { f = f0 + dx / slot(); render(); }
+    if (moved && !reduce) { f = f0 - side * dx / slot(); render(); }
   });
   const end = (e) => {
     if (!dragging) return;
     dragging = false; track.classList.remove("is-dragging");
     const dx = e.clientX - startX;
     const first = samples[0] || { x: e.clientX, t: performance.now() };
-    const v = (e.clientX - first.x) / Math.max(1, performance.now() - first.t);
-    const delta = dx / slot();
+    const v = -side * (e.clientX - first.x) / Math.max(1, performance.now() - first.t);
+    const delta = -side * dx / slot();
     let stepN = Math.trunc(delta + Math.sign(delta) * 0.75);
     if (stepN === 0 && Math.abs(v) > 0.5) stepN = Math.sign(v);
     animateTo(f0 + (moved ? stepN : 0));
