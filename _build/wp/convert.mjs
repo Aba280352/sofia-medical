@@ -517,6 +517,8 @@ body[class*="elementor-kit-"]{font-family:var(--font-main);font-size:var(--fs-bo
 .elementor-location-header,.elementor.elementor-location-header>.sm-doc.e-con{display:contents}
 /* language landing pages: the header sits in its own .sm-doc inside the page; let it stick to the whole page */
 .elementor>.sm-doc.e-con:has(>.sm-header){display:contents}
+/* highlighted words (span.hl) become <em>: colour only, never slanted (Latin and Cyrillic would get a fake italic) */
+.elementor .sm-doc em{font-style:normal}
 /* Reset layer: specificity (0,2,1). It beats Elementor's own defaults (0,2,0) and loses to every
    static rule (bare tags (0,2,1) come later, classes are (0,3,0)+), like browser defaults do. */
 .elementor .sm-doc.e-con{padding:0;margin:0;gap:normal;width:auto;min-width:auto;height:auto;min-height:auto;max-width:none;position:static;overflow:visible;z-index:auto;border-radius:0;transition:none;display:block;--display:block}
