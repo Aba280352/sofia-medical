@@ -69,11 +69,17 @@
   .sm-reviews__head .btn + .btn { margin-inline-start: 0; }
 }
 
-/* Phones: each card keeps its own height (see fit() in reviews.js) */
+/* Phones: all cards share the height of the tallest review (fit() in reviews.js);
+   the name stays pinned to the bottom so short and long reviews line up */
 @media (max-width: 767px) {
   .sm-carousel { --card-h: 0px; }
-  .sm-carousel__track { transition: height .35s var(--ease-out); }
-  .sm-review__name { margin-top: 0; padding-top: 16px; }
+  /* short reviews sit in the middle of the card instead of leaving a gap above the name */
+  .sm-review__quote { flex: 1 1 auto; display: flex; align-items: center; }
+  .sm-review__name { margin-top: 0; }
+}
+@media (max-width: 480px) {
+  .sm-review { padding: 20px; }
+  .sm-review__quote { font-size: 17px; line-height: 1.5; margin-top: 12px; }
 }
 
 /* Left to right languages: next points right, previous points left */
