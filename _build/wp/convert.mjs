@@ -545,6 +545,7 @@ body[class*="elementor-kit-"]{font-family:var(--font-main);font-size:var(--fs-bo
 @media (max-width:1024px){.elementor .sm-doc .t-picture img.t-src-m{display:block}.elementor .sm-doc .t-picture img.t-img-d{display:none}}
 .elementor .sm-doc form:where(.e-form-base){display:block;padding:0;gap:normal}
 .elementor .sm-doc .t-submit::after{content:"";width:24px;height:24px;flex:none;background:currentColor;-webkit-mask:url("${UP}/icons/arrow-left.svg") center/contain no-repeat;mask:url("${UP}/icons/arrow-left.svg") center/contain no-repeat}
+[dir="ltr"] .elementor .sm-doc .t-submit::after{transform:scaleX(-1)}
 ${[...SUBST.entries()].map(([k, p]) => `.elementor .sm-doc ${p} > b{font-weight:inherit}`).join("\n")}
 `;
 fs.writeFileSync(path.join(OUT, "site.css"), RESET + css);
