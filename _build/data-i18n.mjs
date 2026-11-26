@@ -137,7 +137,7 @@ export const I18N = {
     faq: {
       title: "Common questions",
       lead: "Didn't find an answer? Leave your details and we'll get back to you.",
-      form: "Leave your details", name: "Full name", phone: "Phone", topic: "Treatment area", choose: "Choose", send: "Send",
+      form: "Leave your details", name: "Full name", phone: "Phone", topic: "Treatment area", choose: "Choose", other: "Other", otherLabel: "Please describe the problem", send: "Send",
       note: 'By sending this form I agree to the <a href="/privacy">privacy policy</a> (in Hebrew).',
       items: [
         ["What is a sleep test and how is it done?", "A sleep test examines the sleep stages, breathing, brain activity, body movements and blood oxygen saturation during the night. The test can be done at the center's sleep institute or at the patient's home, depending on the medical condition and need."],
@@ -295,7 +295,7 @@ export const I18N = {
     faq: {
       title: "Частые вопросы",
       lead: "Не нашли ответ? Оставьте свои данные, и мы с вами свяжемся.",
-      form: "Оставить заявку", name: "Имя и фамилия", phone: "Телефон", topic: "Направление лечения", choose: "Выберите", send: "Отправить",
+      form: "Оставить заявку", name: "Имя и фамилия", phone: "Телефон", topic: "Направление лечения", choose: "Выберите", other: "Другое", otherLabel: "Опишите, пожалуйста, проблему", send: "Отправить",
       note: 'Отправляя форму, я соглашаюсь с <a href="/privacy">политикой конфиденциальности</a> (на иврите).',
       items: [
         ["Что такое исследование сна и как оно проводится?", "Исследование сна оценивает стадии сна, дыхание, активность мозга, движения тела и насыщение крови кислородом в течение ночи. Его можно пройти в институте сна нашего центра или дома, в зависимости от состояния здоровья и потребностей."],
@@ -452,7 +452,7 @@ export const I18N = {
     faq: {
       title: "أسئلة شائعة",
       lead: "لم تجدوا إجابة؟ اتركوا تفاصيلكم وسنعود إليكم.",
-      form: "ترك التفاصيل", name: "الاسم الكامل", phone: "الهاتف", topic: "مجال العلاج", choose: "اختيار", send: "إرسال",
+      form: "ترك التفاصيل", name: "الاسم الكامل", phone: "الهاتف", topic: "مجال العلاج", choose: "اختيار", other: "أخرى", otherLabel: "يرجى وصف المشكلة", send: "إرسال",
       note: 'بإرسال النموذج أوافق على <a href="/privacy">سياسة الخصوصية</a> (بالعبرية).',
       items: [
         ["ما هو فحص النوم وكيف يُجرى؟", "يفحص فحص النوم مراحل النوم، والتنفس، ونشاط الدماغ، وحركات الجسم، ونسبة تشبع الدم بالأكسجين خلال الليل. يمكن إجراء الفحص في معهد النوم التابع للمركز أو في منزل المريض، وفقًا للحالة الطبية والحاجة."],

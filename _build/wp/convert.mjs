@@ -555,7 +555,7 @@ ${[...SUBST.entries()].map(([k, p]) => `.elementor .sm-doc ${p} > b{font-weight:
 fs.writeFileSync(path.join(OUT, "site.css"), RESET + css);
 
 /* ---------- JS ---------- */
-const JS_ORDER = ["header", "insure", "tabs", "team", "reviews", "hero-rotate", "articles-filter", "article"];
+const JS_ORDER = ["header", "form-other", "insure", "tabs", "team", "reviews", "hero-rotate", "articles-filter", "article"];
 let js = `/* Sofia Medical site scripts (from the static build). */\n`;
 js += fs.readFileSync(path.join(HERE, "shim.js"), "utf8") + "\n";
 for (const j of JS_ORDER) js += `/* ===== ${j}.js ===== */\n` + fs.readFileSync(path.join(ASSETS, "js", j + ".js"), "utf8") + "\n";

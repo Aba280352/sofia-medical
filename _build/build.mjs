@@ -140,6 +140,8 @@ function navDrawer(currentHref) {
 function headerLanding(cur) {
   const L = LANGS[cur], T = I18N[cur];
   const waCta = (cls) => `<a class="btn btn-wa ${cls}" href="${waLink(T.waHello)}" target="_blank" rel="noopener">${ibd(L.dir, T.wa, icon("whatsapp", "sm-ico sm-ico--fill"))}<span class="sm-sr">${T.newWin}</span></a>`;
+  // "Leave your details" jumps to the form at the bottom of the page (#lead), as the Hebrew header does
+  const leadCta = (cls, extra = "") => `<a class="btn btn-cta ${cls}" href="${L.ctaHref}"${extra}>${L.cta}</a>`;
   return `<a class="sm-skip" href="#main">${L.skip}</a>
 ${topbar(cur)}
 <header class="sm-header" id="sm-header">
@@ -153,7 +155,8 @@ ${topbar(cur)}
       </ul>
     </nav>
     <div class="sm-header__actions">${langSwitcher(cur, `sm-lang-${cur}`)}
-      ${waCta("sm-header__cta")}
+      ${waCta("sm-header__wa")}
+      ${leadCta("sm-header__cta")}
       <button class="sm-burger" type="button" aria-expanded="false" aria-controls="sm-drawer" aria-label="${T.menu}">${icon("menu", "sm-ico")}</button>
     </div>
   </div>
@@ -170,6 +173,7 @@ ${topbar(cur)}
           ${T.nav.map(([t, h]) => `<li><a href="${h}" data-close>${t}</a></li>`).join("\n          ")}
       </ul>
     </nav>
+    ${leadCta("sm-drawer__cta", " data-close")}
     ${waCta("sm-drawer__cta")}
     <ul class="sm-drawer__contact" role="list">
       <li><a href="${CONTACT.mobile.href}">${ibd(L.dir, `<span dir="ltr">${CONTACT.mobile.display}</span>`, icon("smartphone", "sm-ico"))}</a></li>
@@ -256,6 +260,7 @@ function page({ lang, title, description, robots, canonical, body, head = "" }) 
 <link rel="stylesheet" href="/assets/css/insure.css">
 <script src="/assets/js/insure.js" defer></script>` : ""}${head}
 <script src="/assets/js/header.js" defer></script>
+<script src="/assets/js/form-other.js" defer></script>
 </head>
 <body id="top">
 ${body}
@@ -475,7 +480,8 @@ const heroHome = () => `
         <div class="sm-form__field"><label for="lead-name">שם מלא</label><input id="lead-name" name="name" type="text" autocomplete="name" required></div>
         <div class="sm-form__field"><label for="lead-phone">טלפון</label><input id="lead-phone" name="phone" type="tel" inputmode="tel" autocomplete="tel" required dir="rtl"></div>
         <div class="sm-form__field"><label for="lead-topic">תחום הטיפול</label>
-          <select id="lead-topic" name="topic"><option value="">בחירה</option>${SERVICES.map((x) => `<option>${x.name}</option>`).join("")}</select></div>
+          <select id="lead-topic" name="topic"><option value="">בחירה</option>${SERVICES.map((x) => `<option>${x.name}</option>`).join("")}<option>אחר</option></select></div>
+        ${otherField("lead", "פירוט התלונה")}
         <button class="btn btn-cta" type="submit">השארת פרטים ${icon("arrow-left", "sm-ico sm-ico--arrow")}</button>
         <p class="sm-form__note">בשליחת הטופס אני מאשר/ת את <a href="/privacy">מדיניות הפרטיות</a>.</p>
       </form>
@@ -568,6 +574,9 @@ const bidiHtml = (html) => {
     return skip || !p.trim() ? p : latin(p);
   }).join("");
 };
+
+/* "Other" in the treatment list: a free text field, shown only when the last option is chosen (form-other.js) */
+const otherField = (id, label) => `<div class="sm-form__field sm-form__other"><label for="${id}-other">${label}</label><input id="${id}-other" name="other" type="text"></div>`;
 
 function homeLanding(k) {
   const T = I18N[k];
@@ -741,11 +750,12 @@ function homeLanding(k) {
     <div class="sm-faq__side">
       <h2 id="faq-title" class="sm-faq__title">${T.faq.title}</h2>
       <p class="sm-faq__lead">${T.faq.lead}</p>
-      <form class="sm-form" action="#" method="post" aria-label="${T.faq.form}">
+      <form class="sm-form" id="lead" action="#" method="post" aria-label="${T.faq.form}">
         <div class="sm-form__field"><label for="lead-name">${T.faq.name}</label><input id="lead-name" name="name" type="text" autocomplete="name" required></div>
         <div class="sm-form__field"><label for="lead-phone">${T.faq.phone}</label><input id="lead-phone" name="phone" type="tel" inputmode="tel" autocomplete="tel" required></div>
         <div class="sm-form__field"><label for="lead-topic">${T.faq.topic}</label>
-          <select id="lead-topic" name="topic"><option value="">${T.faq.choose}</option>${T.services.map((x) => `<option>${x.name}</option>`).join("")}</select></div>
+          <select id="lead-topic" name="topic"><option value="">${T.faq.choose}</option>${T.services.map((x) => `<option>${x.name}</option>`).join("")}<option>${T.faq.other}</option></select></div>
+        ${otherField("lead", T.faq.otherLabel)}
         <button class="btn btn-cta" type="submit">${T.faq.send} ${icon("arrow-left", "sm-ico sm-ico--arrow")}</button>
         <p class="sm-form__note">${T.faq.note}</p>
       </form>
@@ -1414,7 +1424,8 @@ const leadForm = (id) => `
         <div class="sm-form__field"><label for="${id}-phone">טלפון</label><input id="${id}-phone" name="phone" type="tel" inputmode="tel" autocomplete="tel" required dir="rtl"></div>
         <div class="sm-form__field"><label for="${id}-email">כתובת הדואר האלקטרוני שלך</label><input id="${id}-email" name="email" type="email" autocomplete="email" dir="ltr"></div>
         <div class="sm-form__field"><label for="${id}-topic">תחום הטיפול</label>
-          <select id="${id}-topic" name="topic"><option value="">בחירה</option>${SERVICES.map((x) => `<option>${x.name}</option>`).join("")}</select></div>
+          <select id="${id}-topic" name="topic"><option value="">בחירה</option>${SERVICES.map((x) => `<option>${x.name}</option>`).join("")}<option>אחר</option></select></div>
+        ${otherField(id, "פירוט התלונה")}
         <button class="btn btn-cta" type="submit">השארת פרטים ${icon("arrow-left", "sm-ico sm-ico--arrow")}</button>
         <p class="sm-form__note">בשליחת הטופס אני מאשר/ת את <a href="/privacy">מדיניות הפרטיות</a>.</p>
       </form>`;

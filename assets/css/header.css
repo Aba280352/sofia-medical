@@ -132,6 +132,7 @@ a[lang="ar"] { font-family: "Noto Sans Arabic", Tahoma, Arial, sans-serif; font-
 .sm-drawer__sub { padding-bottom: 8px; }
 .sm-drawer__sub a { min-height: 48px; padding-inline-start: 16px; font-size: 18px; font-weight: var(--fw-regular); }
 .sm-drawer__cta { width: 100%; }
+.sm-drawer__cta + .sm-drawer__cta { margin-top: 10px; } /* language pages: details + WhatsApp */
 .sm-drawer__contact { display: grid; gap: 4px; }
 .sm-drawer__contact a { display: flex; align-items: center; gap: 12px; min-height: 48px; color: var(--dark); text-decoration: none; font-size: 17px; }
 .sm-drawer__contact .sm-ico { color: var(--brand); }
@@ -185,6 +186,9 @@ html[lang="ar"] { --font-main: "IBM Plex Sans Arabic", "Polin", Tahoma, Arial, s
   .sm-header:not(.sm-header--landing) .sm-header__in { position: relative; }
   .sm-header:not(.sm-header--landing) .sm-header__cta { position: absolute; left: 50%; top: 50%; transform: translate(-50%, -50%); white-space: nowrap; }
 }
+
+/* Language pages: WhatsApp next to "leave your details" only on wide screens (it stays in the hero and the menu) */
+@media (max-width: 1240px) { .sm-header__wa { display: none; } }
 
 /* Left to right languages: the underline grows from the left */
 [dir="ltr"] .sm-nav__link::after { transform-origin: left; }

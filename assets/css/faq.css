@@ -24,6 +24,7 @@
 .sm-form input::placeholder { color: rgba(4, 62, 82, .5); }
 .sm-form input:focus-visible, .sm-form select:focus-visible { outline: 2px solid var(--c-light-blue); outline-offset: 3px; }
 .sm-form .btn { width: 100%; margin-top: 6px; }
+.sm-form__other:not(.is-on) { display: none; } /* shown by form-other.js when "Other" is chosen */
 .sm-form .btn:focus-visible { outline-color: #FEFEFE; }
 .sm-form__note { font-size: 14px; color: rgba(254, 254, 254, .8); }
 .sm-form__note a { color: var(--c-light-blue); }
