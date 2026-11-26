@@ -515,6 +515,8 @@ const RESET = `/* Sofia Medical: static design CSS converted for Elementor v4.
    Atomic containers act as plain HTML elements inside .sm-doc; the static rules below follow. */
 body[class*="elementor-kit-"]{font-family:var(--font-main);font-size:var(--fs-body);line-height:var(--lh-body);color:var(--text);background:var(--bg)}
 .elementor-location-header,.elementor.elementor-location-header>.sm-doc.e-con{display:contents}
+/* language landing pages: the header sits in its own .sm-doc inside the page; let it stick to the whole page */
+.elementor>.sm-doc.e-con:has(>.sm-header){display:contents}
 /* Reset layer: specificity (0,2,1). It beats Elementor's own defaults (0,2,0) and loses to every
    static rule (bare tags (0,2,1) come later, classes are (0,3,0)+), like browser defaults do. */
 .elementor .sm-doc.e-con{padding:0;margin:0;gap:normal;width:auto;min-width:auto;height:auto;min-height:auto;max-width:none;position:static;overflow:visible;z-index:auto;border-radius:0;transition:none;display:block;--display:block}

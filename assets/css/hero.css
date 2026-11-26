@@ -121,3 +121,8 @@
 [dir="ltr"] .sm-hero__bg img { transform: scaleX(-1); }
 /* Left to right languages: English words are longer, the title steps down a size */
 [dir="ltr"] .sm-hero__title { font-size: clamp(32px, 3.6vw, 52px); }
+/* Russian: long words, the service cards on phones get a little more room */
+@media (max-width: 480px) {
+  html[lang="ru"] .sm-service { padding-inline: 12px; }
+  html[lang="ru"] .sm-service__name { font-size: 15px; }
+}

@@ -599,7 +599,7 @@ function homeLanding(k) {
     <nav class="sm-services" aria-labelledby="services-strip-title">
       <h2 id="services-strip-title" class="sm-sr">${T.servicesTitle}</h2>
       <ul class="sm-services__list" role="list">
-        ${SERVICES.map((s, i) => `<li><a class="sm-service" href="${waLink(T.waAbout(T.services[i].topic))}" target="_blank" rel="noopener"><span class="sm-service__ico">${icon(s.icon, "sm-ico")}</span><span class="sm-service__name">${T.services[i].name}</span><span class="sm-service__more" aria-hidden="true">${T.ask} ${icon(chev, "sm-ico")}</span>${nw}</a></li>`).join("\n        ")}
+        ${SERVICES.map((s, i) => `<li><a class="sm-service" href="${waLink(T.waAbout(T.services[i].topic))}" target="_blank" rel="noopener"><span class="sm-service__ico">${icon(s.icon, "sm-ico")}</span><span class="sm-service__name">${T.services[i].name}</span><span class="sm-service__more" aria-hidden="true">${T.cardMore || T.ask} ${icon(chev, "sm-ico")}</span>${nw}</a></li>`).join("\n        ")}
       </ul>
     </nav>
   </div>
