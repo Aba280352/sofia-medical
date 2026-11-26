@@ -26,6 +26,22 @@ add_filter( 'wp_robots', function ( $r ) {
 	return $r;
 } );
 
+/* sitemap: no author sitemap (it exposes the admin username), and no noindex pages (the en/ru/ar landings) */
+add_filter( 'wp_sitemaps_add_provider', function ( $provider, $name ) {
+	return 'users' === $name ? false : $provider;
+}, 10, 2 );
+add_filter( 'wp_sitemaps_posts_query_args', function ( $args, $post_type ) {
+	if ( 'page' !== $post_type ) { return $args; }
+	$ids = get_posts( [ 'post_type' => 'page', 'post_status' => 'publish', 'fields' => 'ids', 'posts_per_page' => -1,
+		'meta_query' => [ [ 'key' => '_sofia_seo', 'value' => 'noindex', 'compare' => 'LIKE' ] ] ] );
+	if ( $ids ) { $args['post__not_in'] = array_merge( $args['post__not_in'] ?? [], $ids ); }
+	return $args;
+}, 10, 2 );
+/* author archives are not part of the site: send them home */
+add_action( 'template_redirect', function () {
+	if ( is_author() ) { wp_safe_redirect( home_url( '/' ), 301 ); exit; }
+}, 1 );
+
 /* meta description + JSON-LD */
 add_action( 'wp_head', function () {
 	$d = sofia_seo_data();
