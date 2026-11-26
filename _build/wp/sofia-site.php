@@ -26,6 +26,12 @@ add_filter( 'wp_robots', function ( $r ) {
 	return $r;
 } );
 
+/* Google tag (Analytics GA4 G-C8CLPB8JRL, account "סופיה מדיקל" under TZD SEO); not inside the Elementor editor */
+add_action( 'wp_head', function () {
+	if ( isset( $_GET['elementor-preview'] ) || is_preview() ) { return; }
+	echo "<script async src=\"https://www.googletagmanager.com/gtm.js?id=GTM-5M3RW5QN\"></script>\n<script>window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments);}gtag('js',new Date());</script>\n";
+}, 1 );
+
 /* sitemap: no author sitemap (it exposes the admin username), and no noindex pages (the en/ru/ar landings) */
 add_filter( 'wp_sitemaps_add_provider', function ( $provider, $name ) {
 	return 'users' === $name ? false : $provider;
