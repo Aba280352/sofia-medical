@@ -157,3 +157,72 @@ add_filter( 'body_class', function ( $classes ) {
 	foreach ( (array) ( $d['css'] ?? [] ) as $c ) { $classes[] = 'sm-css-' . sanitize_html_class( $c ); }
 	return $classes;
 } );
+
+/* ---------- element attributes without Elementor Pro ----------
+   The pages keep role / aria-* / hidden / dir / data-* (used by site.js) on their elements.
+   Elementor core does not print them, and Pro only prints them while its license is active,
+   so the site prints them itself: every Elementor document that renders (page, header, footer)
+   adds its elements' attributes to a map, and the final HTML gets them on the tag with the
+   matching data-interaction-id / data-id. Attributes a tag already has are left as they are,
+   so nothing is doubled when Pro prints them too.
+   Option sofia_attrs_mode: "on" = every visitor, "test" = only with ?sofia_attr=1, "off" = never. */
+$GLOBALS['sofia_attr_map'] = [];
+
+function sofia_attr_collect( $elements ) {
+	foreach ( (array) $elements as $el ) {
+		if ( ! is_array( $el ) ) { continue; }
+		$list = $el['settings']['attributes']['value'] ?? null;
+		if ( ! empty( $el['id'] ) && is_array( $list ) ) {
+			$pairs = [];
+			foreach ( $list as $item ) {
+				$k = $item['value']['key']['value'] ?? '';
+				$v = $item['value']['value']['value'] ?? '';
+				if ( ! is_string( $k ) || ! is_string( $v ) || '' === $v ) { continue; }
+				if ( ! preg_match( '/^[a-zA-Z_:][-a-zA-Z0-9_:.]*$/', $k ) || stripos( $k, 'on' ) === 0 ) { continue; }
+				$pairs[ strtolower( $k ) ] = html_entity_decode( $v, ENT_QUOTES | ENT_HTML5, 'UTF-8' );
+			}
+			if ( $pairs ) { $GLOBALS['sofia_attr_map'][ (string) $el['id'] ] = $pairs; }
+		}
+		if ( ! empty( $el['elements'] ) ) { sofia_attr_collect( $el['elements'] ); }
+	}
+}
+
+function sofia_attr_inject( $html ) {
+	if ( empty( $GLOBALS['sofia_attr_map'] ) || strpos( $html, 'data-' ) === false ) { return $html; }
+	$map = $GLOBALS['sofia_attr_map'];
+	$out = preg_replace_callback(
+		'/<([a-zA-Z][a-zA-Z0-9-]*)(\s(?:[^>]*?\s)?data-(?:interaction-)?id="([0-9a-zA-Z]+)"[^>]*)>/',
+		function ( $m ) use ( $map ) {
+			if ( ! isset( $map[ $m[3] ] ) ) { return $m[0]; }
+			$tag = $m[2];
+			preg_match_all( '/\s([a-zA-Z_:][-a-zA-Z0-9_:.]*)(?:\s*=\s*(?:"[^"]*"|\'[^\']*\'|[^\s>]+))?/', $tag, $names );
+			$has = array_flip( array_map( 'strtolower', $names[1] ) );
+			$add = '';
+			foreach ( $map[ $m[3] ] as $k => $v ) {
+				if ( isset( $has[ $k ] ) ) { continue; }
+				$add .= ' ' . $k . '="' . esc_attr( $v ) . '"';
+			}
+			return '' === $add ? $m[0] : '<' . $m[1] . $add . $tag . '>';
+		},
+		$html
+	);
+	return null === $out ? $html : $out;
+}
+
+function sofia_attr_enabled() {
+	$mode = get_option( 'sofia_attrs_mode', 'off' );
+	if ( 'on' === $mode ) { return true; }
+	return 'test' === $mode && isset( $_GET['sofia_attr'] );
+}
+
+add_filter( 'elementor/frontend/builder_content_data', function ( $data ) {
+	if ( sofia_attr_enabled() ) { sofia_attr_collect( $data ); }
+	return $data;
+}, 10, 1 );
+
+add_action( 'template_redirect', function () {
+	if ( ! sofia_attr_enabled() ) { return; }
+	if ( is_admin() || wp_doing_ajax() || is_feed() || ( defined( 'REST_REQUEST' ) && REST_REQUEST ) ) { return; }
+	if ( isset( $_GET['elementor-preview'] ) || is_preview() ) { return; }
+	ob_start( 'sofia_attr_inject' );
+}, 99 );
