@@ -25,6 +25,12 @@
 .sm-tile__text { font-size: 17px; line-height: 1.6; color: var(--text-muted); }
 .sm-tiles__note { max-width: 46em; margin-top: clamp(32px, 3vw, 48px); font-size: clamp(19px, 1.4vw, 22px); font-weight: var(--fw-medium); line-height: 1.6; color: var(--dark); }
 .sm-tiles__more { margin-top: clamp(32px, 3vw, 48px); }
+/* in the media: outlet label, title, link button at the bottom */
+.sm-tile__src { font-size: 15px; font-weight: var(--fw-medium); line-height: 1.4; color: var(--brand); }
+.sm-tile--media .sm-tile__title { font-size: clamp(19px, 1.35vw, 22px); }
+.sm-tile__btn { align-self: flex-start; margin-top: auto; }
+/* outline play icon as in the icon set (the media library keeps a filled copy of the same shape) */
+.sm-tile--media .sm-tile__ico svg path { fill: none; stroke: currentColor; stroke-width: 1.25; }
 /* arrangements: the details follow the cards without a second section gap */
 .sm-tiles + .sm-svcpage { padding-top: 0; }
 

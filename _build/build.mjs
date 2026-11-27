@@ -62,6 +62,7 @@ const MENU = [
     sub: [
       { label: "המלצות", href: "/המלצות" },
       { label: "המלצות וידאו", href: "/המלצות-וידאו" },
+      { label: "בתקשורת", href: "/בתקשורת" },
     ],
   },
   { label: "שאלות נפוצות", href: "/שאלות-נפוצות" },
@@ -526,7 +527,7 @@ const placeholder = (lang) => `
 const FOOT_NAV = [
   ["בית", "/"], ["אודות סופיה מדיקל", "/אודות-סופיה-מדיקל"], ["הצוות", "/הצוות"], ["צוות רב מקצועי", "/צוות-רב-מקצועי"],
   ["חזון המרכז", "/חזון-המרכז"], ["הסדרים", "/הסדרים"], ["המלצות", "/המלצות"], ["המלצות וידאו", "/המלצות-וידאו"],
-  ["שאלות נפוצות", "/שאלות-נפוצות"], ["צור קשר", "/צור-קשר"],
+  ["בתקשורת", "/בתקשורת"], ["שאלות נפוצות", "/שאלות-נפוצות"], ["צור קשר", "/צור-קשר"],
 ];
 const FOOT_ARTICLES = [
   ["מעבדת שינה", "/מאמרים/מעבדת-שינה"], ["טיפול בדום נשימה בשינה", "/מאמרים/טיפול-בדום-נשימה-בשינה"],
@@ -1774,6 +1775,40 @@ ${plainHero("arr-h1", [["הסדרים"]], "הסדרים", `קיימים הסדר
 ${ctaBand()}
 </main>`;
 
+/* ---------- In the media (/בתקשורת), 2026-11-27 ----------
+   Items from Dr. Alaa's MedReviews profile ("מהתקשורת") and Raanana News.
+   Titles as published; no outlet logos or screenshots (not ours to use). */
+const MEDIA_URL = "/בתקשורת";
+const MEDIA = [
+  { kind: "article", outlet: "צומת כפר סבא", title: "השיקום לא מסתיים בבית החולים: סופיה מדיקל מרחיבים את השיקום בקהילה", href: "https://www.tzomet-kfs.co.il/health/78179" },
+  { kind: "video", outlet: "חדשות N12", title: 'ישנים מעט? אתם בסיכון לחלות במחלות כרוניות. ד"ר עלא מחאמיד על מחקר שנעשה עם 8,000 מטופלים', href: "https://www.facebook.com/Loewenstein.rehab.medicalcenter/videos/5907477409276055/" },
+  { kind: "video", outlet: "רשת 13", title: "נהיגה בהשפעה: איך מתפקדים נהגים שלא ישנו כל הלילה?", href: "https://13tv.co.il/item/news/domestic/internal/driving-tired-903370040/" },
+  { kind: "video", outlet: "כאן, בתוכנית על סדר היום", title: "האם תנומה באמת עוזרת לשפר את תפקוד המוח?", href: "https://www.makan.org.il/content/news/makan-news/p-11626/861385/" },
+  { kind: "article", outlet: "ynet", title: 'ד"ר עלא מחאמיד מסביר על הפרעות שינה', href: "https://www.ynet.co.il/health/article/rkmy14ysjx" },
+  { kind: "article", outlet: "mako", title: "ירידה בעוצמת הפרשת הורמון הגדילה: כך משפיעות היקיצות בלילה על התפתחות הילדים", href: "https://www.mako.co.il/health-news/Article-a7fbe0ffe7c5d91027.htm" },
+  { kind: "article", outlet: "בחדרי חרדים", title: "כך תתמודדו עם המעבר לשעון החורף", href: "https://www.bhol.co.il/news/1293257" },
+  { kind: "article", outlet: "רעננה ניוז", title: "היחידה לאבחון הפרעות בשינה בלוינשטיין מרחיבה את פעילותה ומוסיפה שירותים חדשים", href: "https://raanana.news/%D7%94%D7%99%D7%97%D7%99%D7%93%D7%94-%D7%9C%D7%90%D7%91%D7%97%D7%95%D7%9F-%D7%94%D7%A4%D7%A8%D7%A2%D7%95%D7%AA-%D7%91%D7%A9%D7%99%D7%A0%D7%94-%D7%91%D7%9E%D7%A8%D7%9B%D7%96-%D7%94%D7%A8%D7%A4%D7%95/" },
+  { kind: "video", outlet: "אינסטגרם של המרכז הרפואי לוינשטיין", title: "4 עובדות שלא ידעתם על היחידה לאבחון הפרעות שינה", href: "https://www.instagram.com/loewenstein_medcenter/reel/ChhPC60FVQR/" },
+];
+const MEDIA_KIND = { video: ["play-line", "צפייה"], article: ["file-text", "קריאה"] };
+const mediaMain = () => `
+<main id="main" tabindex="-1">
+${plainHero("media-h1", [["בתקשורת"]], "בתקשורת", 'כתבות, ראיונות והופעות בתקשורת של ד"ר עלא מחאמיד ושל סופיה מדיקל, בנושאי שינה, שיקום ובריאות')}
+<section class="sm-tiles" aria-label="פרסומים בתקשורת">
+  <div class="sm-wrap">
+    <ul class="sm-tiles__grid" role="list">
+      ${MEDIA.map((m) => `<li class="sm-tile sm-tile--media">
+        <span class="sm-tile__ico">${icon(MEDIA_KIND[m.kind][0], "sm-ico")}</span>
+        <p class="sm-tile__src">${latin(m.outlet)}</p>
+        <h2 class="sm-tile__title">${latin(m.title)}</h2>
+        <a class="btn btn-ghost sm-tile__btn" href="${m.href}" target="_blank" rel="noopener">${MEDIA_KIND[m.kind][1]}<span class="sm-sr"> (נפתח בחלון חדש)</span> ${icon("arrow-left", "sm-ico sm-ico--arrow")}</a>
+      </li>`).join("\n      ")}
+    </ul>
+  </div>
+</section>
+${ctaBand()}
+</main>`;
+
 const mdtMain = () => `
 <main id="main" tabindex="-1">
 <section class="sm-phero" aria-labelledby="mdt-h1">
@@ -2375,6 +2410,7 @@ AREAS.forEach((p) => {
 // Arrangements + multidisciplinary team: same URLs, titles and meta descriptions as the current pages
 [
   { url: ARR_URL, title: "הסדרים עם כללית מושלם, BWell ומגדל | סופיה מדיקל", desc: 'ייעוץ אצל ד"ר עלא מחאמיד דרך כללית מושלם (150 ש"ח, ביקור טלפוני 100 ש"ח), ופיזיותרפיה, רפואת כאב ואורולוגיה דרך BWell, בהשתתפות עצמית לפי הזכאות.', name: "הסדרים", main: arrMain, css: ["page-service"] },
+  { url: MEDIA_URL, title: 'בתקשורת: כתבות וראיונות עם ד"ר עלא מחאמיד | סופיה מדיקל', desc: 'ד"ר עלא מחאמיד וסופיה מדיקל בתקשורת: ראיונות בחדשות N12, ברשת 13 ובכאן, וכתבות באתרי החדשות ובעיתונות המקומית על שינה ושיקום.', name: "בתקשורת", main: mediaMain },
   { url: MDT_URL, title: "צוות רב מקצועי עם מומחים ומטפלים מובילים | סופיה מדיקל", desc: "הצוות הרב מקצועי של סופיה מדיקל משלב רופאים, פיזיותרפיסטים ומטפלים משלימים לבניית תוכניות טיפול אישיות ומתואמות, עם תמיכה מסורה לכל אורך הדרך.", name: "צוות רב מקצועי", main: mdtMain },
 ].forEach((p) => {
   const url = SITE_URL + encodeURI(p.url);
