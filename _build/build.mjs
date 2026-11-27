@@ -1780,15 +1780,15 @@ ${ctaBand()}
    Titles as published; no outlet logos or screenshots (not ours to use). */
 const MEDIA_URL = "/בתקשורת";
 const MEDIA = [
-  { kind: "article", outlet: "צומת כפר סבא", title: "השיקום לא מסתיים בבית החולים: סופיה מדיקל מרחיבים את השיקום בקהילה", href: "https://www.tzomet-kfs.co.il/health/78179" },
-  { kind: "video", outlet: "חדשות N12", title: 'ישנים מעט? אתם בסיכון לחלות במחלות כרוניות. ד"ר עלא מחאמיד על מחקר שנעשה עם 8,000 מטופלים', href: "https://www.facebook.com/Loewenstein.rehab.medicalcenter/videos/5907477409276055/" },
-  { kind: "video", outlet: "רשת 13", title: "נהיגה בהשפעה: איך מתפקדים נהגים שלא ישנו כל הלילה?", href: "https://13tv.co.il/item/news/domestic/internal/driving-tired-903370040/" },
-  { kind: "video", outlet: "כאן, בתוכנית על סדר היום", title: "האם תנומה באמת עוזרת לשפר את תפקוד המוח?", href: "https://www.makan.org.il/content/news/makan-news/p-11626/861385/" },
-  { kind: "article", outlet: "ynet", title: 'ד"ר עלא מחאמיד מסביר על הפרעות שינה', href: "https://www.ynet.co.il/health/article/rkmy14ysjx" },
-  { kind: "article", outlet: "mako", title: "ירידה בעוצמת הפרשת הורמון הגדילה: כך משפיעות היקיצות בלילה על התפתחות הילדים", href: "https://www.mako.co.il/health-news/Article-a7fbe0ffe7c5d91027.htm" },
-  { kind: "article", outlet: "בחדרי חרדים", title: "כך תתמודדו עם המעבר לשעון החורף", href: "https://www.bhol.co.il/news/1293257" },
-  { kind: "article", outlet: "רעננה ניוז", title: "היחידה לאבחון הפרעות בשינה בלוינשטיין מרחיבה את פעילותה ומוסיפה שירותים חדשים", href: "https://raanana.news/%D7%94%D7%99%D7%97%D7%99%D7%93%D7%94-%D7%9C%D7%90%D7%91%D7%97%D7%95%D7%9F-%D7%94%D7%A4%D7%A8%D7%A2%D7%95%D7%AA-%D7%91%D7%A9%D7%99%D7%A0%D7%94-%D7%91%D7%9E%D7%A8%D7%9B%D7%96-%D7%94%D7%A8%D7%A4%D7%95/" },
-  { kind: "video", outlet: "אינסטגרם של המרכז הרפואי לוינשטיין", title: "4 עובדות שלא ידעתם על היחידה לאבחון הפרעות שינה", href: "https://www.instagram.com/loewenstein_medcenter/reel/ChhPC60FVQR/" },
+  { kind: "article", outlet: "צומת השרון, כפר סבא", logo: "tzomet", title: "השיקום לא מסתיים בבית החולים: סופיה מדיקל מרחיבים את השיקום בקהילה", href: "https://www.tzomet-kfs.co.il/health/78179" },
+  { kind: "video", outlet: "חדשות N12", logo: "n12", title: 'ישנים מעט? אתם בסיכון לחלות במחלות כרוניות. ד"ר עלא מחאמיד על מחקר שנעשה עם 8,000 מטופלים', href: "https://www.facebook.com/Loewenstein.rehab.medicalcenter/videos/5907477409276055/" },
+  { kind: "video", outlet: "רשת 13", logo: "13tv", title: "נהיגה בהשפעה: איך מתפקדים נהגים שלא ישנו כל הלילה?", href: "https://13tv.co.il/item/news/domestic/internal/driving-tired-903370040/" },
+  { kind: "video", outlet: "כאן, בתוכנית על סדר היום", logo: "kan", title: "האם תנומה באמת עוזרת לשפר את תפקוד המוח?", href: "https://www.makan.org.il/content/news/makan-news/p-11626/861385/" },
+  { kind: "article", outlet: "ynet", logo: "ynet", title: 'ד"ר עלא מחאמיד מסביר על הפרעות שינה', href: "https://www.ynet.co.il/health/article/rkmy14ysjx" },
+  { kind: "article", outlet: "mako", logo: "mako", title: "ירידה בעוצמת הפרשת הורמון הגדילה: כך משפיעות היקיצות בלילה על התפתחות הילדים", href: "https://www.mako.co.il/health-news/Article-a7fbe0ffe7c5d91027.htm" },
+  { kind: "article", outlet: "בחדרי חרדים", logo: "bhol", title: "כך תתמודדו עם המעבר לשעון החורף", href: "https://www.bhol.co.il/news/1293257" },
+  { kind: "article", outlet: "רעננה ניוז", logo: "raanana", title: "היחידה לאבחון הפרעות בשינה בלוינשטיין מרחיבה את פעילותה ומוסיפה שירותים חדשים", href: "https://raanana.news/%D7%94%D7%99%D7%97%D7%99%D7%93%D7%94-%D7%9C%D7%90%D7%91%D7%97%D7%95%D7%9F-%D7%94%D7%A4%D7%A8%D7%A2%D7%95%D7%AA-%D7%91%D7%A9%D7%99%D7%A0%D7%94-%D7%91%D7%9E%D7%A8%D7%9B%D7%96-%D7%94%D7%A8%D7%A4%D7%95/" },
+  { kind: "video", outlet: "אינסטגרם של המרכז הרפואי לוינשטיין", logo: "instagram", title: "4 עובדות שלא ידעתם על היחידה לאבחון הפרעות שינה", href: "https://www.instagram.com/loewenstein_medcenter/reel/ChhPC60FVQR/" },
 ];
 const MEDIA_KIND = { video: ["play-line", "צפייה"], article: ["file-text", "קריאה"] };
 const mediaMain = () => `
@@ -1798,7 +1798,7 @@ ${plainHero("media-h1", [["בתקשורת"]], "בתקשורת", 'כתבות, ר�
   <div class="sm-wrap">
     <ul class="sm-tiles__grid" role="list">
       ${MEDIA.map((m) => `<li class="sm-tile sm-tile--media">
-        <span class="sm-tile__ico">${icon(MEDIA_KIND[m.kind][0], "sm-ico")}</span>
+        <img class="sm-tile__logo" src="/assets/img/media/${m.logo}-128.webp" width="64" height="64" alt="" loading="lazy" decoding="async">
         <p class="sm-tile__src">${latin(m.outlet)}</p>
         <h2 class="sm-tile__title">${latin(m.title)}</h2>
         <a class="btn btn-ghost sm-tile__btn" href="${m.href}" target="_blank" rel="noopener">${MEDIA_KIND[m.kind][1]}<span class="sm-sr"> (נפתח בחלון חדש)</span> ${icon("arrow-left", "sm-ico sm-ico--arrow")}</a>
