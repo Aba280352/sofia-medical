@@ -11,6 +11,7 @@ import { PROFILES } from "./data-team-profiles.mjs";
 import { REVIEWS, REVIEWS_PAGE, VIDEOS } from "./data-reviews.mjs";
 import { FAQ, FAQ_PAGE } from "./data-faq.mjs";
 import { SERVICES_PAGE } from "./data-services.mjs";
+import { NEW_SERVICE_PAGES, NEW_SERVICE_CARDS } from "./data-new-services.mjs";
 import { SERVICE_PAGES } from "./data-service-pages.mjs";
 import { ARTICLES } from "./data-articles.mjs";
 import { AREAS } from "./data-areas.mjs";
@@ -26,6 +27,15 @@ const icon = (name, cls = "") =>
     .replace(/^﻿/, "")
     .replace(' xmlns="http://www.w3.org/2000/svg"', "")
     .replace("<svg", `<svg aria-hidden="true" focusable="false"${cls ? ` class="${cls}"` : ""}`);
+
+/* ---------- New service pages (2026-11-27): rheumatology (16) and CBT-I (17) ---------- */
+SERVICE_PAGES.push(...NEW_SERVICE_PAGES);
+SERVICES_PAGE.push(...NEW_SERVICE_CARDS);
+// team pages keep the person; the service keyword moves to the new service pages
+PROFILES["mohammad-mahajna"].title = 'ד"ר מוחמד מחאג\'נה: מומחה בראומטולוגיה ורפואה פנימית | סופיה מדיקל';
+PROFILES["mohammad-mahajna"].blocks.push({ t: "p", x: "פרטים נוספים על הייעוץ, ההכנה לפגישה והשאלות הנפוצות נמצאים בעמוד [[ראומטולוג פרטי בכפר סבא|/שירותים/ראומטולוג-פרטי]]." });
+PROFILES["vlada-guizman"].title = "ולאדה גויזמן: מומחית בהפרעות שינה | סופיה מדיקל";
+PROFILES["vlada-guizman"].blocks.push({ t: "p", x: "על שלבי הטיפול, מספר המפגשים ולמי הוא מתאים אפשר לקרוא בעמוד [[CBT-I: טיפול בנדודי שינה ללא תרופות|/שירותים/cbt-i-טיפול-בנדודי-שינה]]." });
 
 /* ---------- Business data (from the current site) ---------- */
 const CONTACT = {
@@ -279,7 +289,13 @@ const SERVICES = [
   { name: "שיקום מיני ואורולוגי", href: "/מאמרים/שיקום-מיני", icon: "heart-pulse" },
 ];
 // Latin words, emails and phone numbers read left to right inside Hebrew text
-const latin = (s) => s.replace(/([\w.+-]+@[\w-]+(?:\.[\w-]+)+|\+?\d[\d-]{6,}\d|[A-Za-z][A-Za-z0-9 ]*[A-Za-z0-9])/g, '<span dir="ltr">$1</span>');
+const latin = (s) => s.replace(/(CBT-I|[\w.+-]+@[\w-]+(?:\.[\w-]+)+|\+?\d[\d-]{6,}\d|[A-Za-z][A-Za-z0-9 ]*[A-Za-z0-9])/g, '<span dir="ltr">$1</span>');
+// [[anchor|/path]] inside data text becomes a link (the rest goes through latin)
+const rich = (s) => {
+  const L = [];
+  const t = s.replace(/\[\[([^|\]]+)\|([^\]]+)\]\]/g, (m, a, h) => { L.push(`<a href="${h}">${latin(a)}</a>`); return "\u0000" + (L.length - 1) + "\u0000"; });
+  return latin(t).replace(/\u0000(\d+)\u0000/g, (m, i) => L[+i]);
+};
 
 /* ---------- Insurance arrangements (client notes, 2026-11-25) ----------
    Texts from the client's notes document, dashes replaced. Used by the
@@ -1015,7 +1031,7 @@ const teamMain = () => `
    Icons instead of the current images (most are Getty stock from SITE123). */
 const SERVICES_URL = "/שירותים";
 const SERVICES_DESC = "שירותי מרכז רפואי רב תחומי המשלבים פיזיותרפיה, אבחון מתקדם וטיפול טכנולוגי מותאם לכל שלבי ההחלמה בסופיה מדיקל, עם ליווי מקצועי ושירות מסור בפריסה ארצית.";
-const SERVICES_WIDE = new Set([0, 5]);
+const SERVICES_WIDE = new Set([0, 5, 17]);
 const servicesMain = () => `
 <main id="main" tabindex="-1">
 <section class="sm-phero" aria-labelledby="services-h1">
@@ -1095,6 +1111,8 @@ const SVC_HERO = {
   5: { src: "/assets/img/treat-sleep", w: [600, 900] },
   9: { src: "/assets/img/treat-pain", w: [600, 900] },
   15: { person: "haitham-abu-nagma", name: 'ד"ר הייתם אבו נגמה', role: "אורולוג בכיר" },
+  16: { person: "mohammad-mahajna", name: 'ד"ר מוחמד עומר מחאג\'נה', role: "מומחה בראומטולוגיה ורפואה פנימית" },
+  17: { person: "vlada-guizman", name: "ולאדה גויזמן", role: "מטפלת מוסמכת בשיטת CBT-I" },
 };
 // device photos inside the text, placed after the H2 that names them
 const SVC_FIGS = {
@@ -1106,7 +1124,7 @@ const SVC_FIGS = {
 const svcShort = (i) => SERVICES_PAGE[i].title.split(":")[0];
 const svcItem = (s) => {
   const m = s.length > 50 && s.match(/^([^:]{3,60}):\s(.+)$/);
-  return m ? `<strong>${latin(m[1])}</strong> ${latin(m[2])}` : latin(s);
+  return m ? `<strong>${latin(m[1])}</strong> ${rich(m[2])}` : rich(s);
 };
 const svcBlocks = (p, i) => {
   const figs = SVC_FIGS[i] || [];
@@ -1116,7 +1134,7 @@ const svcBlocks = (p, i) => {
       return `<h2 class="sm-prose__h2">${latin(b.x)}</h2>` + (f ? `<figure class="sm-prose__fig"><img src="${f.src}" width="${f.w}" height="${f.h}" alt="${esc(f.alt)}" loading="lazy" decoding="async"></figure>` : "");
     }
     if (b.t === "h3") return `<h3 class="sm-prose__h3">${latin(b.x)}</h3>`;
-    if (b.t === "p") return `<p>${latin(b.x)}</p>`;
+    if (b.t === "p") return `<p>${rich(b.x)}</p>`;
     if (b.t === "ul") return `<ul class="sm-prose__list" role="list">${b.x.map((x) => `<li>${svcItem(x)}</li>`).join("")}</ul>`;
     if (b.t === "check") return `<ul class="sm-prose__check" role="list">${b.x.map((x) => `<li>${icon("check", "sm-ico")}<span>${svcItem(x)}</span></li>`).join("")}</ul>`;
     return "";
@@ -1696,21 +1714,61 @@ const PROFESSIONS = [
   ["מרפאים בעיסוק", "hand-heart"], ["מומחי סדים ופרוטזות", "footprints"], ["מטפלים ברפואה משלימה", "sparkles"],
 ];
 
-// Each arrangement with its own services, texts from the client's notes (2026-11-25, Ala asked)
+// Each arrangement with what it includes and the price (client, 2026-11-27)
 const ARR_TILES = [
-  ["כללית מושלם", INSURE[0].text],
-  ["BWell", INSURE[1].text],
-  ["מגדל", INSURE[1].text],
+  { name: "כללית מושלם", img: "badge-clalit-mushlam", text: 'ייעוץ אצל ד"ר עלא מחאמיד, מומחה ברפואה פיזיקלית ושיקום ומומחה לרפואת שינה.',
+    items: ['ביקור במרפאה: 150 ש"ח', 'ביקור טלפוני: 100 ש"ח', "בהתאם לזכאות בביטוח ולתנאי ההסדר"] },
+  { name: '<span dir="ltr">BWell</span> ומגדל', img: "badge-bwell", text: "טיפולים וייעוץ רפואי בהשתתפות עצמית, בהתאם לזכאות בביטוח:",
+    items: ["טיפולי פיזיותרפיה", 'ייעוץ אצל ד"ר ירונה שפר יעקב, מומחית לרפואת כאב', 'ייעוץ אצל ד"ר הייתם אבו נגמה, אורולוג'] },
+];
+const ARR_BLOCKS = [
+  { t: "h2", x: "מה כולל ההסדר עם כללית מושלם?" },
+  { t: "p", x: 'במסגרת ההסדר אפשר להגיע לייעוץ אצל [[ד"ר עלא מחאמיד|/הצוות/ד-ר-עלא-מחאמיד]] בתחומי השיקום ורפואת השינה. בספר השירות של כללית הוא רשום ברפואה פיזיקלית ושיקום, כולל עמוד שדרה, טיפול בכאב, נפגעי ספורט, שליטה בסוגרים, שיקום מיני, נפגעי ראש, שיקום ילדים ושיקום פגועי גפיים, וגם חוות דעת שנייה.' },
+  { t: "p", x: "הייעוץ מתאים גם כהערכה מקדימה לפני פיזיותרפיה, כדי לבנות תוכנית טיפול מדויקת ומותאמת אישית. אפשר להגיע לביקור במרפאה בכפר סבא, או לבחור ביקור טלפוני." },
+  { t: "h2", x: "מה כולל ההסדר עם BWell?" },
+  { t: "p", x: "במסגרת ההסדר עם BWell מבית מגדל אפשר לקבל בסופיה מדיקל [[טיפולי פיזיותרפיה|/שירותים/פיזיותרפיה-מתקדמת-בסופיה-מדיקל-טיפול-מדויק-עם-ראייה-שיקומית-רחבה]], ייעוץ אצל [[ד\"ר ירונה שפר יעקב|/הצוות/ד-ר-ירונה-שפר-יעקב]], מומחית לרפואת כאב, וייעוץ אורולוגי אצל [[ד\"ר הייתם אבו נגמה|/הצוות/ד-ר-הייתם-אבו-נגמה]]. ההשתתפות העצמית נקבעת לפי הזכאות בפוליסה." },
+  { t: "h2", x: "איך מזמינים תור במסגרת ההסדר?" },
+  { t: "ul", x: [
+    "בודקים את הזכאות שלכם מול כללית מושלם או מול BWell.",
+    "מתקשרים, שולחים הודעה בוואטסאפ או משאירים פרטים בטופס באתר.",
+    "מציינים באיזה הסדר אתם מגיעים, ואנחנו מתאמים איתכם מועד.",
+  ] },
+  { t: "h2", x: "שאלות נפוצות" },
+  { t: "h3", x: "איך יודעים אם אני זכאי להסדר?" },
+  { t: "p", x: "הזכאות נקבעת לפי סוג הביטוח שלכם. אפשר לבדוק באתר או במוקד של כללית או של BWell, ואפשר גם לשאול אותנו ונכוון אתכם." },
+  { t: "h3", x: "מה ההבדל בין ביקור במרפאה לביקור טלפוני?" },
+  { t: "p", x: "בביקור במרפאה הרופא יכול לבצע בדיקה גופנית. ביקור טלפוני מתאים לשיחת ייעוץ, למעבר על בדיקות ולהמשך מעקב, כשאין צורך בבדיקה." },
+  { t: "h3", x: "ואם אין לי כללית מושלם או BWell?" },
+  { t: "p", x: "אפשר להגיע לכל השירותים במרכז גם באופן פרטי. חלק מהביטוחים המשלימים והפרטיים מחזירים חלק מהעלות, בהתאם לפוליסה." },
 ];
 const arrMain = () => `
 <main id="main" tabindex="-1">
 ${plainHero("arr-h1", [["הסדרים"]], "הסדרים", `קיימים הסדרים עם כללית מושלם, <span dir="ltr">BWell</span> ומגדל לייעוץ רפואי בתחום השיקום וטיפול בכאב`)}
 <section class="sm-tiles" aria-label="הסדרים">
   <div class="sm-wrap">
-    <ul class="sm-tiles__grid sm-tiles__grid--3" role="list">
-      ${ARR_TILES.map(([n, t]) => `<li class="sm-tile"><span class="sm-tile__ico">${icon("shield-check", "sm-ico")}</span><h2 class="sm-tile__title">${latin(n)}</h2><p class="sm-tile__text">${t}</p></li>`).join("\n      ")}
+    <ul class="sm-tiles__grid sm-tiles__grid--2" role="list">
+      ${ARR_TILES.map((x) => `<li class="sm-tile sm-tile--arr">
+        <img class="sm-tile__seal" src="/assets/img/hero/${x.img}-160.webp" srcset="/assets/img/hero/${x.img}-160.webp 1x, /assets/img/hero/${x.img}-320.webp 2x" width="72" height="72" alt="" loading="lazy" decoding="async">
+        <h2 class="sm-tile__title">${x.name}</h2>
+        <p class="sm-tile__text">${x.text}</p>
+        <ul class="sm-tile__list" role="list">${x.items.map((i) => `<li>${icon("check", "sm-ico")}<span>${latin(i)}</span></li>`).join("")}</ul>
+      </li>`).join("\n      ")}
     </ul>
-    <p class="sm-tiles__more"><a class="btn btn-ghost" href="${FAQ_URL}">לכל השאלות</a></p>
+  </div>
+</section>
+<section class="sm-svcpage">
+  <div class="sm-wrap sm-svcpage__grid">
+    <article class="sm-prose">
+        ${ARR_BLOCKS.map((b) => b.t === "h2" ? `<h2 class="sm-prose__h2">${latin(b.x)}</h2>` : b.t === "h3" ? `<h3 class="sm-prose__h3">${latin(b.x)}</h3>` : b.t === "ul" ? `<ul class="sm-prose__list" role="list">${b.x.map((x) => `<li>${rich(x)}</li>`).join("")}</ul>` : `<p>${rich(b.x)}</p>`).join("\n        ")}
+    </article>
+    <aside class="sm-svcpage__side" aria-label="יצירת קשר">
+      <div class="sm-side__box sm-side__box--cta">
+        <p class="sm-side__title">השאירו פרטים <span class="hl">ונחזור אליכם</span></p>
+        <p class="sm-side__text">ספרו לנו באיזה הסדר אתם מגיעים, ונתאם איתכם מועד</p>
+        <a class="btn btn-cta" href="/צור-קשר">השארת פרטים ${icon("arrow-left", "sm-ico sm-ico--arrow")}</a>
+        <a class="btn btn-ghost" href="${CONTACT.mobile.href}"><span dir="ltr">${CONTACT.mobile.display}</span> ${icon("smartphone", "sm-ico")}</a>
+      </div>
+    </aside>
   </div>
 </section>
 ${ctaBand()}
@@ -1793,7 +1851,7 @@ const profileMain = (m) => {
 <section class="sm-svcpage">
   <div class="sm-wrap sm-svcpage__grid">
     <article class="sm-prose sm-prose--area">
-        ${p.blocks.map((b) => b.t === "h2" ? `<h2 class="sm-prose__h2">${latin(b.x)}</h2>` : b.t === "ul" ? `<ul class="sm-prose__list" role="list">${b.x.map((x) => `<li>${svcItem(x)}</li>`).join("")}</ul>` : `<p>${latin(b.x)}</p>`).join("\n        ")}
+        ${p.blocks.map((b) => b.t === "h2" ? `<h2 class="sm-prose__h2">${latin(b.x)}</h2>` : b.t === "ul" ? `<ul class="sm-prose__list" role="list">${b.x.map((x) => `<li>${svcItem(x)}</li>`).join("")}</ul>` : `<p>${rich(b.x)}</p>`).join("\n        ")}
     </article>
     <aside class="sm-svcpage__side" aria-label="יצירת קשר">
       <div class="sm-side__box sm-side__box--cta">
@@ -2316,7 +2374,7 @@ AREAS.forEach((p) => {
 
 // Arrangements + multidisciplinary team: same URLs, titles and meta descriptions as the current pages
 [
-  { url: ARR_URL, title: "הסדרים | סופיה מדיקל, שיקום, טיפול בכאב והפרעות שינה", desc: "הסדרים, סופיה מדיקל, שיקום, טיפול בכאב והפרעות שינה", name: "הסדרים", main: arrMain },
+  { url: ARR_URL, title: "הסדרים עם כללית מושלם, BWell ומגדל | סופיה מדיקל", desc: 'ייעוץ אצל ד"ר עלא מחאמיד דרך כללית מושלם (150 ש"ח, ביקור טלפוני 100 ש"ח), ופיזיותרפיה, רפואת כאב ואורולוגיה דרך BWell, בהשתתפות עצמית לפי הזכאות.', name: "הסדרים", main: arrMain, css: ["page-service"] },
   { url: MDT_URL, title: "צוות רב מקצועי עם מומחים ומטפלים מובילים | סופיה מדיקל", desc: "הצוות הרב מקצועי של סופיה מדיקל משלב רופאים, פיזיותרפיסטים ומטפלים משלימים לבניית תוכניות טיפול אישיות ומתואמות, עם תמיכה מסורה לכל אורך הדרך.", name: "צוות רב מקצועי", main: mdtMain },
 ].forEach((p) => {
   const url = SITE_URL + encodeURI(p.url);
@@ -2336,7 +2394,8 @@ AREAS.forEach((p) => {
 <meta property="og:description" content="${esc(p.desc)}">
 <meta property="og:url" content="${url}">
 <link rel="stylesheet" href="/assets/css/page-about.css">
-<link rel="stylesheet" href="/assets/css/page-misc.css">
+<link rel="stylesheet" href="/assets/css/page-misc.css">${(p.css || []).map((c) => `
+<link rel="stylesheet" href="/assets/css/${c}.css">`).join("")}
 <link rel="stylesheet" href="/assets/css/footer.css">
 <script type="application/ld+json">${JSON.stringify(ld)}</script>`,
     body: header("he", p.url) + p.main() + footer(),
